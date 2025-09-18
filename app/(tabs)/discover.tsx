@@ -1,6 +1,6 @@
 import { Text, View } from "react-native";
 
-export default function Index() {
+export default function DiscoverIndex() {
   return (
     <View
       style={{
@@ -9,7 +9,7 @@ export default function Index() {
         alignItems: "center",
       }}
     >
-      <Text>Este va a ser el Feed.</Text>
+      <Text>Este va a ser el Discover.</Text>
     </View>
   );
 }
