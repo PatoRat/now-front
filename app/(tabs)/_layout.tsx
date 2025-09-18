@@ -1,8 +1,8 @@
 import { FontAwesome } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 
-export default function TabLayout(){
-    return (
+export default function TabLayout() {
+  return (
     <Tabs>
       <Tabs.Screen
         name="discover"
