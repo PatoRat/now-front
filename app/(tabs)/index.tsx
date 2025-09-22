@@ -1,5 +1,9 @@
+import DATA from "@/assets/databases/data";
+import Post from "@/components/post";
+import { useRouter } from "expo-router";
 import {
   Dimensions,
+  FlatList,
   Image,
   Pressable,
   StyleSheet,
@@ -9,16 +13,18 @@ import {
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 export default function FeedIndex() {
+  const router = useRouter();
+
+  const nuevoPost = () => router.push({ pathname: "../postear" });
+
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.pestaña}>
 
-
         <Text style={styles.texto}>Este va a ser el Feed.</Text>
 
         <View style={styles.botonContainer}>
-          <Pressable onPress={() => console.log("futuro link")}>
-            {/** Probablemente termine derivando en un Link */}
+          <Pressable onPress={nuevoPost}>
             <Image
               source={require("@/assets/images/new-post.png")}
               style={styles.nuevoPosteo}
@@ -26,6 +32,16 @@ export default function FeedIndex() {
             />
           </Pressable>
         </View>
+
+        <FlatList
+          data={DATA}
+          renderItem={({ item }) => <Post
+            titulo={item.titulo}
+            descripcion={item.descripcion}
+            imagenes={item.imagenes}
+          />}
+          keyExtractor={item => item.id}
+        />
 
       </SafeAreaView>
     </SafeAreaProvider>
