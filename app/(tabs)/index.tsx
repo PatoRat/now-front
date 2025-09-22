@@ -1,5 +1,5 @@
 import DATA from "@/assets/databases/data";
-import Post from "@/components/post";
+import Post from "@/components/Post";
 import { useRouter } from "expo-router";
 import {
   Dimensions,
