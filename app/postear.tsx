@@ -1,6 +1,12 @@
 import PostInputsHandler from "@/components/PostInputsHandler";
 import { useRouter } from "expo-router";
-import { Dimensions, StyleSheet, Text, View } from "react-native";
+import {
+  Dimensions,
+  KeyboardAvoidingView,
+  StyleSheet,
+  Text,
+  View
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PostScreen() {
@@ -8,10 +14,20 @@ export default function PostScreen() {
 
   return (
     <SafeAreaView style={styles.pestaña}>
-      <View style={styles.content}>
-        <Text style={styles.texto}>Este va a ser el Post.</Text>
-        <PostInputsHandler router={router} />
-      </View>
+
+      <KeyboardAvoidingView
+        style={{ flex: 1, width: "100%" }}
+        behavior="height"
+        keyboardVerticalOffset={80}
+      >
+
+        <View style={styles.content}>
+          <Text style={styles.texto}>Este va a ser el Post.</Text>
+          <PostInputsHandler router={router} />
+        </View>
+
+      </KeyboardAvoidingView>
+
     </SafeAreaView>
   );
 }
