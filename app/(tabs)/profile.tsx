@@ -1,17 +1,15 @@
 import { StyleSheet, Text } from "react-native";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProfileIndex() {
   return (
-    <SafeAreaProvider>
-      <SafeAreaView style={styles.pestaña}>
+    <SafeAreaView style={styles.pestaña}>
 
 
-        <Text style={styles.texto}>Este va a ser el Profile.</Text>
+      <Text style={styles.texto}>Este va a ser el Profile.</Text>
 
 
-      </SafeAreaView>
-    </SafeAreaProvider>
+    </SafeAreaView>
   );
 }
 
@@ -23,5 +21,7 @@ const styles = StyleSheet.create({
   },
   texto: {
     color: "white",
+    alignSelf: "center",
+    marginBottom: 8,
   },
 });

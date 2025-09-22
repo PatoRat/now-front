@@ -7,9 +7,9 @@ import {
     View
 } from "react-native";
 
-const Post = ({titulo, descripcion, imagenes }: Omit<PostType, "id">) => (
-    <View>
-        <Text>{titulo}</Text>
+const Post = ({ titulo, descripcion, imagenes }: Omit<PostType, "id">) => (
+    <View style={styles.postContainer}>
+        <Text style={styles.titulo}>{titulo}</Text>
 
         {imagenes.length > 0 && (
             <View style={styles.imagenContainer}>
@@ -25,8 +25,8 @@ const Post = ({titulo, descripcion, imagenes }: Omit<PostType, "id">) => (
                 )}
             </View>
         )}
-        
-        <Text>{descripcion}</Text>
+
+        {!!descripcion && <Text style={styles.descripcion}>{descripcion}</Text>}
     </View>
 );
 
@@ -34,7 +34,7 @@ export default Post;
 
 const styles = StyleSheet.create({
     postContainer: {
-        backgroundColor: "#1e1e1e", // fondo tipo card
+        backgroundColor: "#1e1e1e",
         borderRadius: 12,
         padding: 16,
         marginVertical: 8,
@@ -50,17 +50,17 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: "bold",
         color: "#fff",
-        marginBottom: 8,
+        marginBottom: 12,
     },
     imagenContainer: {
         width: "100%",
-        aspectRatio: 1.5, // altura proporcional a la anchura
+        aspectRatio: 1.5,
         borderRadius: 12,
         overflow: "hidden",
-        marginBottom: 8,
+        marginBottom: 12,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#333", // placeholder si no hay imagen
+        backgroundColor: "#333",
     },
     imagen: {
         width: "100%",
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
         position: "absolute",
         top: 8,
         right: 8,
-        backgroundColor: "rgba(0,0,0,0.5)",
+        backgroundColor: "rgba(0,0,0,0.55)",
         paddingHorizontal: 6,
         paddingVertical: 2,
         borderRadius: 12,

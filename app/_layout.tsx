@@ -1,25 +1,35 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import { useColorScheme } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export default function RootLayout() {
+  const scheme = useColorScheme()
+
   return (
-    <ThemeProvider value={useColorScheme() === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
+    <SafeAreaProvider>
 
-        <Stack.Screen name="(tabs)" options={{
-          headerShown: false,
-          animation: "slide_from_bottom"
-        }} />
+      <ThemeProvider value={scheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <Stack
+          screenOptions={{
+            statusBarStyle: scheme === 'dark' ? 'light' : 'dark',
+          }}
+        >
 
-        <Stack.Screen name="postear" options={{
-          title: "Post",
-          animation: "slide_from_bottom"
-        }} />
+          <Stack.Screen name="(tabs)" options={{
+            headerShown: false,
+            animation: "slide_from_bottom"
+          }} />
 
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+          <Stack.Screen name="postear" options={{
+            title: "Post",
+            animation: "slide_from_bottom"
+          }} />
+
+        </Stack>
+      </ThemeProvider>
+
+    </SafeAreaProvider>
+
   );
 }

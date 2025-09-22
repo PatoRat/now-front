@@ -8,54 +8,58 @@ import {
   Pressable,
   StyleSheet,
   Text,
-  View
+  View,
 } from "react-native";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function FeedIndex() {
   const router = useRouter();
-
   const nuevoPost = () => router.push({ pathname: "../postear" });
 
   return (
-    <SafeAreaProvider>
-      <SafeAreaView style={styles.pestaña}>
+    <SafeAreaView style={styles.pestaña}>
+      <Text style={styles.texto}>Este va a ser el Feed.</Text>
 
-        <Text style={styles.texto}>Este va a ser el Feed.</Text>
-
-        <View style={styles.botonContainer}>
-          <Pressable onPress={nuevoPost}>
-            <Image
-              source={require("@/assets/images/new-post.png")}
-              style={styles.nuevoPosteo}
-              resizeMode="contain"
-            />
-          </Pressable>
-        </View>
-
-        <FlatList
-          data={DATA}
-          renderItem={({ item }) => <Post
+      <FlatList
+        data={DATA}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <Post
             titulo={item.titulo}
             descripcion={item.descripcion}
             imagenes={item.imagenes}
-          />}
-          keyExtractor={item => item.id}
-        />
+          />
+        )}
+        contentContainerStyle={styles.listaContenido}
+        showsVerticalScrollIndicator={false}
+      />
 
-      </SafeAreaView>
-    </SafeAreaProvider>
+      <View style={styles.botonContainer}>
+        <Pressable onPress={nuevoPost}>
+          <Image
+            source={require("@/assets/images/new-post.png")}
+            style={styles.nuevoPosteo}
+            resizeMode="contain"
+          />
+        </Pressable>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   pestaña: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: "#0f0f0f",
+    paddingTop: 8,
   },
   texto: {
     color: "white",
+    alignSelf: "center",
+    marginBottom: 8,
+  },
+  listaContenido: {
+    paddingBottom: 100,
   },
   botonContainer: {
     position: "absolute",
@@ -63,7 +67,7 @@ const styles = StyleSheet.create({
     right: 20,
   },
   nuevoPosteo: {
-    width: Dimensions.get("window").width * 0.1,
-    height: Dimensions.get("window").height * 0.1,
+    width: Dimensions.get("window").width * 0.16,
+    height: Dimensions.get("window").width * 0.16,
   },
 });
