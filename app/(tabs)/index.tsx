@@ -1,19 +1,28 @@
 import DATA from "@/assets/databases/data";
 import Post from "@/components/Post";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
 import {
-  Dimensions,
-  FlatList,
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
+    Dimensions,
+    FlatList,
+    Image,
+    Pressable,
+    StyleSheet,
+    Text,
+    View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function FeedIndex() {
   const router = useRouter();
+  const [posts, setPosts] = useState(DATA);
+
+  useFocusEffect(
+    useCallback(() => {
+      setPosts([...DATA]);
+    }, [])
+  );
+
   const nuevoPost = () => router.push({ pathname: "../postear" });
 
   return (
@@ -21,7 +30,7 @@ export default function FeedIndex() {
       <Text style={styles.texto}>Este va a ser el Feed.</Text>
 
       <FlatList
-        data={DATA}
+        data={posts}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <Post

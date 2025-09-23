@@ -15,11 +15,7 @@ export default function PostScreen() {
   return (
     <SafeAreaView style={styles.pestaña}>
 
-      <KeyboardAvoidingView
-        style={{ flex: 1, width: "100%" }}
-        behavior="height"
-        keyboardVerticalOffset={80}
-      >
+      <KeyboardAvoidingView style={{ flex: 1, width: "100%" }}>
 
         <View style={styles.content}>
           <Text style={styles.texto}>Este va a ser el Post.</Text>
