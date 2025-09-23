@@ -9,6 +9,7 @@ import {
     TextInput,
     View,
 } from "react-native";
+import ImageSelectorButton from "./ImageSelectorButton";
 
 const PostInputsHandler = (props: {router: Router}) => {
     const [titulo, setTitulo] = useState("");
@@ -52,9 +53,10 @@ const PostInputsHandler = (props: {router: Router}) => {
 
             <View style={styles.buttonsRow}>
                 {/**
-                 * <ImageSelectorButton onPress={setImagenes} />
+                 * <ImageSelectorButton onSelect={setImagenes} />
                  * de momento no veo que funcione bien, lo saco y despues consulto
                  */}
+                 <ImageSelectorButton onSelect={setImagenes} />
                 
                 <Pressable
                     onPress={publicarPosteo}
