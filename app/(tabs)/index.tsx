@@ -1,15 +1,15 @@
 import DATA from "@/assets/databases/data";
-import Post from "@/components/Post";
+import Post from "@/stuff/draft/Post";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import {
-    Dimensions,
-    FlatList,
-    Image,
-    Pressable,
-    StyleSheet,
-    Text,
-    View
+  Dimensions,
+  FlatList,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
