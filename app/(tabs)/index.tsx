@@ -1,5 +1,5 @@
 import DATA from "@/assets/databases/data";
-import Post from "@/stuff/draft/Post";
+import Post from "@/components/Post";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import {
