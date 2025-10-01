@@ -27,10 +27,10 @@ Join our community of developers creating universal apps.
 
 ## Learn about us
 
-Read our [Mission_Statement] in our `GitHub`:
-(https://github.com/nachodibartolo/now/blob/main/now_mission_statement.md)
+Read our mission statement in our `GitHub`:
+[Mission_Statement](https://github.com/nachodibartolo/now/blob/main/now_mission_statement.md)
 
 ## Useful links
 
 We will leave useful links here that may come in handy:
-(https://expo.dev/blog/expo-app-folder-structure-best-practices)
+[How to organize Expo app folder structure for clarity and scalability](https://expo.dev/blog/expo-app-folder-structure-best-practices)
