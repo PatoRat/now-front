@@ -3,7 +3,7 @@ import { Tabs } from "expo-router";
 
 export default function TabLayout() {
   return (
-    <Tabs initialRouteName="index">
+    <Tabs screenOptions={{animation: "shift"}} initialRouteName="index">
       <Tabs.Screen
         name="discover"
         options={{
