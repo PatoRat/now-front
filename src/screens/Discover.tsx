@@ -1,5 +1,5 @@
 import DATA from "@/assets/databases/data";
-import Post from "@/components/Post";
+import Post from "@/src/components/Post";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import {
@@ -11,9 +11,8 @@ import {
   Text,
   View
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function FeedIndex() {
+export default function Discover() {
   const router = useRouter();
   const [posts, setPosts] = useState(DATA);
 
@@ -26,7 +25,7 @@ export default function FeedIndex() {
   const nuevoPost = () => router.push({ pathname: "../postear" });
 
   return (
-    <SafeAreaView style={styles.pestaña}>
+    <View>
       <Text style={styles.texto}>Este va a ser el Feed.</Text>
 
       <FlatList
@@ -52,16 +51,11 @@ export default function FeedIndex() {
           />
         </Pressable>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  pestaña: {
-    flex: 1,
-    backgroundColor: "#0f0f0f",
-    paddingTop: 8,
-  },
   texto: {
     color: "white",
     alignSelf: "center",

@@ -52,10 +52,6 @@ const PostInputsHandler = (props: {router: Router}) => {
             </View>
 
             <View style={styles.buttonsRow}>
-                {/**
-                 * <ImageSelectorButton onSelect={setImagenes} />
-                 * de momento no veo que funcione bien, lo saco y despues consulto
-                 */}
                  <ImageSelectorButton onSelect={setImagenes} />
                 
                 <Pressable
