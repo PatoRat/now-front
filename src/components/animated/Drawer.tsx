@@ -17,8 +17,8 @@ export const Drawer = (props: {
     width: number
 }) => {
 
-    const {theme, setTheme} = useContext(ThemeContext);
-    const slideAnim = useState(new Animated.Value(0))[0];
+    const { theme, setTheme } = useContext(ThemeContext);
+    const [slideAnim] = useState(() => new Animated.Value(0));
     const textColor = (theme === DarkTheme) ? "#fff" : "#000";
     const menuButtonColor = (theme === DarkTheme) ? "#121212" : "#121212";
     const overlayColor = "rgba(0,0,0,0.2)";
@@ -29,7 +29,7 @@ export const Drawer = (props: {
     const toggleDrawer = () => {
         Animated.timing(slideAnim, {
             toValue: props.isDrawerOpen ? 0 : 1,
-            duration: 300,
+            duration: 280,
             useNativeDriver: true,
         }).start();
         props.onPress(!props.isDrawerOpen);
@@ -37,15 +37,18 @@ export const Drawer = (props: {
 
     const translateX = slideAnim.interpolate({
         inputRange: [0, 1],
-        outputRange: [-props.width * 0.4, 0],
+        outputRange: [-props.width * 0.7, 0],
     });
 
     //  Función para cambiar tema
     const toggleTheme = () => {
-        setTheme(DefaultTheme);
+        setTheme(theme === DarkTheme ? DefaultTheme : DarkTheme);
     };
     return (
-        <View>
+        <View
+            style={StyleSheet.absoluteFillObject}
+            pointerEvents={props.isDrawerOpen ? "auto" : "box-none"}
+        >
             {/* Botón hamburguesa */}
             < Pressable
                 style={[styles.menuButton, { backgroundColor: menuButtonColor }]}
@@ -98,27 +101,24 @@ export const Drawer = (props: {
 
 const stylesFunc = (width: number) => StyleSheet.create({
     menuButton: {
-        position: "absolute",
         top: 45,
         left: 20,
         zIndex: 10,
         padding: 10,
         borderRadius: 8,
+        elevation: 10
     },
     overlay: {
+        ...StyleSheet.absoluteFillObject,
         position: "absolute",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
         zIndex: 5,
     },
     drawer: {
         position: "absolute",
-        top: 10,
+        top: 0,
+        bottom: 0,
         left: 0,
-        width: width * 0.4,
-        height: "100%",
+        width: width * 0.7,
         paddingTop: 80,
         paddingHorizontal: 15,
         zIndex: 6,
