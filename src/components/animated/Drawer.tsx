@@ -4,19 +4,17 @@ import { DarkTheme, DefaultTheme } from "@react-navigation/native";
 import { useContext, useState } from "react";
 import {
     Animated,
-    Dimensions,
     Pressable,
     StyleSheet,
     Text,
     View
 } from "react-native";
 
-const { width } = Dimensions.get("window");
-
 export const Drawer = (props: {
     isDrawerOpen: boolean,
     onPress: React.Dispatch<React.SetStateAction<boolean>>,
-    backgroundColor: "#121212" | "#f0f2f5"
+    backgroundColor: "#121212" | "#f0f2f5",
+    width: number
 }) => {
 
     const {theme, setTheme} = useContext(ThemeContext);
@@ -25,6 +23,8 @@ export const Drawer = (props: {
     const menuButtonColor = (theme === DarkTheme) ? "#121212" : "#121212";
     const overlayColor = "rgba(0,0,0,0.2)";
     const backgroundColor = props.backgroundColor;
+
+    const styles = stylesFunc(props.width);
 
     const toggleDrawer = () => {
         Animated.timing(slideAnim, {
@@ -37,7 +37,7 @@ export const Drawer = (props: {
 
     const translateX = slideAnim.interpolate({
         inputRange: [0, 1],
-        outputRange: [-width * 0.4, 0],
+        outputRange: [-props.width * 0.4, 0],
     });
 
     //  Función para cambiar tema
@@ -96,7 +96,7 @@ export const Drawer = (props: {
     )
 }
 
-const styles = StyleSheet.create({
+const stylesFunc = (width: number) => StyleSheet.create({
     menuButton: {
         position: "absolute",
         top: 45,
