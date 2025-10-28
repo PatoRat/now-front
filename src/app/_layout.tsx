@@ -1,4 +1,4 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { ThemeProvider } from '@/src/components/context-provider/Theme';
 import { Stack } from 'expo-router';
 import { useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -9,7 +9,7 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
 
-      <ThemeProvider value={scheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <ThemeProvider>
         <Stack
           screenOptions={{
             statusBarStyle: scheme === 'dark' ? 'light' : 'dark',
