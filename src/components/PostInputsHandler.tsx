@@ -5,7 +5,7 @@ import { Picker } from "@react-native-picker/picker";
 import { Theme } from "@react-navigation/native";
 import * as Location from 'expo-location';
 import { Router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
     ImageSourcePropType,
     Modal,
@@ -37,14 +37,34 @@ const PostInputsHandler = (props: { router: Router }) => {
     const [direccion, setDireccion] = useState<string | null>(null);
   /// Cuando el usuario selecciona en el mapa:
     const seleccionarUbicacion = async (coord: { latitude: number; longitude: number }) => {
+  // Guardamos la coordenada
         setUbicacion(coord);
+
+        // Centrar el mapa con animación si la ref existe
+        try {
+            mapRef.current?.animateToRegion(
+            {
+                latitude: coord.latitude,
+                longitude: coord.longitude,
+                latitudeDelta: 0.01,
+                longitudeDelta: 0.01,
+            },
+            800 // duración en ms
+            );
+        } catch (err) {
+            // no crítico, sólo en caso de que animateToRegion falle
+            console.warn("animateToRegion falló:", err);
+        }
+
+        // permiso + reverse geocode
         try {
             const { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== "granted") return alert("Se necesitan permisos de ubicación");
+            if (status !== "granted") {
+            alert("Se necesitan permisos de ubicación");
+            return;
+            }
 
             const [dir] = await Location.reverseGeocodeAsync(coord);
-
-            // Formateamos solo calle, número y ciudad
             const direccionFormateada = `${dir.street || ""} ${dir.name || ""}, ${dir.city || ""}`.trim();
             setDireccion(direccionFormateada || "Dirección no disponible");
         } catch (e) {
@@ -52,6 +72,8 @@ const PostInputsHandler = (props: { router: Router }) => {
             setDireccion("Dirección no disponible");
         }
     };
+
+    const mapRef = useRef<MapView | null>(null);
 
 
   // 🔹 Calculamos fechaFin automáticamente cuando cambian fechaInicio o duración
@@ -228,7 +250,7 @@ const PostInputsHandler = (props: { router: Router }) => {
                     </Text>
                 </Text>
                 </View>
-            )}\
+            )}
 
         {/* Ubicación */}
             <View style={styles.section}>
@@ -246,61 +268,122 @@ const PostInputsHandler = (props: { router: Router }) => {
             {mostrarMapa && (
                 <Modal animationType="slide" transparent={false}>
                     <View style={{ flex: 1 }}>
-                    <MapView
-                        style={{ flex: 1 }}
-                        initialRegion={{
-                        latitude: ubicacion?.latitude || -34.6037,
-                        longitude: ubicacion?.longitude || -58.3816,
-                        latitudeDelta: 0.01,
-                        longitudeDelta: 0.01,
-                        }}
-                        onPress={(e) => seleccionarUbicacion(e.nativeEvent.coordinate)}
-                    >
-                        {ubicacion && <Marker coordinate={ubicacion} />}
-                    </MapView>
-
-                    {/* Contenedor inferior para mostrar dirección y botones */}
-                    <View
-                        style={{
-                        backgroundColor: theme.colors.card,
-                        padding: 16,
-                        borderTopLeftRadius: 20,
-                        borderTopRightRadius: 20,
-                        }}
-                    >
-                        <Text style={{ color: theme.colors.text, marginBottom: 8 }}>
-                        {direccion
-                            ? `📍 ${direccion}`
-                            : ubicacion
-                            ? "Obteniendo dirección..."
-                            : "Toca el mapa para seleccionar una ubicación"}
-                        </Text>
-
-                        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-                        <Pressable
-                            style={[
-                            styles.primaryBtn,
-                            { backgroundColor: "#999", flex: 1, marginRight: 8 },
-                            ]}
-                            onPress={() => setMostrarMapa(false)}
-                        >
-                            <Text style={styles.primaryBtnText}>Cancelar</Text>
-                        </Pressable>
-
-                        <Pressable
-                            style={[styles.primaryBtn, { flex: 1 }]}
-                            onPress={() => {
-                            if (!ubicacion) {
-                                alert("Seleccioná una ubicación antes de confirmar.");
-                                return;
-                            }
-                            setMostrarMapa(false);
+                        {/* 🔍 Buscador manual sin API */}
+                        <View
+                            style={{
+                            position: "absolute",
+                            top: 40,
+                            left: 10,
+                            right: 10,
+                            backgroundColor: theme.colors.card,
+                            borderRadius: 10,
+                            padding: 8,
+                            elevation: 4,
+                            zIndex: 1,
+                            flexDirection: "row",
+                            alignItems: "center",
                             }}
                         >
-                            <Text style={styles.primaryBtnText}>Confirmar</Text>
-                        </Pressable>
+                            <TextInput
+                            style={{
+                                flex: 1,
+                                backgroundColor: theme.colors.background,
+                                color: theme.colors.text,
+                                paddingHorizontal: 10,
+                                borderRadius: 8,
+                            }}
+                            placeholder="Buscar dirección..."
+                            placeholderTextColor="#aaa"
+                            value={direccion || ""}
+                            onChangeText={setDireccion}
+                            />
+                            <Pressable
+                            style={{
+                                marginLeft: 8,
+                                backgroundColor: "#3B82F6",
+                                paddingHorizontal: 12,
+                                paddingVertical: 8,
+                                borderRadius: 8,
+                            }}
+                            onPress={async () => {
+                                if (!direccion) return alert("Ingresá una dirección para buscar.");
+                                try {
+                                const resultados = await Location.geocodeAsync(direccion);
+                                if (resultados.length > 0) {
+                                    const coord = {
+                                    latitude: resultados[0].latitude,
+                                    longitude: resultados[0].longitude,
+                                    };
+                                    seleccionarUbicacion(coord);
+                                } else {
+                                    alert("No se encontró esa dirección.");
+                                }
+                                } catch (err) {
+                                console.error(err);
+                                alert("Error al buscar la dirección.");
+                                }
+                            }}
+                            >
+                            <Text style={{ color: "white", fontWeight: "bold" }}>Buscar</Text>
+                            </Pressable>
                         </View>
-                    </View>
+                        <MapView
+                            ref={mapRef}
+                            style={{ flex: 1 }}
+                            initialRegion={{
+                                latitude: ubicacion?.latitude || -34.6037,
+                                longitude: ubicacion?.longitude || -58.3816,
+                                latitudeDelta: 0.01,
+                                longitudeDelta: 0.01,
+                            }}
+                            onPress={(e) => seleccionarUbicacion(e.nativeEvent.coordinate)}
+                            >
+                            {ubicacion && <Marker coordinate={ubicacion} />}
+                        </MapView>
+
+
+                        {/* Contenedor inferior para mostrar dirección y botones */}
+                        <View
+                            style={{
+                            backgroundColor: theme.colors.card,
+                            padding: 16,
+                            borderTopLeftRadius: 20,
+                            borderTopRightRadius: 20,
+                            }}
+                        >
+                            <Text style={{ color: theme.colors.text, marginBottom: 8 }}>
+                            {direccion
+                                ? `📍 ${direccion}`
+                                : ubicacion
+                                ? "Obteniendo dirección..."
+                                : "Toca el mapa para seleccionar una ubicación"}
+                            </Text>
+
+                            <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                            <Pressable
+                                style={[
+                                styles.primaryBtn,
+                                { backgroundColor: "#999", flex: 1, marginRight: 8 },
+                                ]}
+                                onPress={() => setMostrarMapa(false)}
+                            >
+                                <Text style={styles.primaryBtnText}>Cancelar</Text>
+                            </Pressable>
+
+                            <Pressable
+                                style={[styles.primaryBtn, { flex: 1 }]}
+                                onPress={() => {
+                                if (!ubicacion) {
+                                    alert("Seleccioná una ubicación antes de confirmar.");
+                                    return;
+                                }
+                                setMostrarMapa(false);
+                                }}
+                            >
+                                <Text style={styles.primaryBtnText}>Confirmar</Text>
+                            </Pressable>
+                            </View>
+                        </View>
                     </View>
                 </Modal>
             )}
