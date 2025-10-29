@@ -9,7 +9,7 @@ import {
     View
 } from "react-native";
 
-const Post = ({ titulo, descripcion, imagenes }: Omit<PostType, "id">) => {
+const Post = ({ titulo, descripcion, imagenes , fechaInicio, fechaFin }: Omit<PostType, "id">) => {
     const { theme } = useContextApp();
     const { width } = useWindowDimensions();
 

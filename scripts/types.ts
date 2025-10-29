@@ -11,6 +11,8 @@ type PostType = {
     titulo: string,
     descripcion: string,
     imagenes: ImageSourcePropType[]
+    fechaInicio : Date
+    fechaFin : Date
 };
 
 type ImageSelectorButtonProps = {
