@@ -11,11 +11,12 @@ export default function TabLayout() {
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
 
       {/* Tabs (contenido principal) */}
-      <Tabs screenOptions={{ animation: "shift" }} initialRouteName="index">
+      <Tabs screenOptions={{ animation: "shift", tabBarInactiveBackgroundColor: theme.colors.background, tabBarActiveBackgroundColor: theme.colors.card }} initialRouteName="index">
         <Tabs.Screen
           name="favs"
           options={{
             title: "Favs",
+            // headerLeft: () => (<Drawer />),
             tabBarIcon: ({ color }) => (
               <FontAwesome size={28} name="star" color={color} />
             ),

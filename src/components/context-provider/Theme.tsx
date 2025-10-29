@@ -4,7 +4,7 @@ import { Theme } from "@react-navigation/native";
 import { createContext, useContext, useState } from "react";
 
 const ThemeContext = createContext<ThemeContextProps>({
-    theme: {} as Theme,
+    theme: BamvDark,
     setTheme: () => { }
 });
 /*

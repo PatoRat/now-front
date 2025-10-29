@@ -1,5 +1,5 @@
 import DATA from "@/assets/databases/data";
-import { useContextApp } from "@/src/components/context-provider/Theme";
+import { useTheme } from "@/src/components/context-provider/Theme";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 import { Theme } from "@react-navigation/native";
@@ -21,7 +21,7 @@ import ImageSelectorButton from "./ImageSelectorButton";
 
 const PostInputsHandler = (props: { router: Router }) => {
     const [titulo, setTitulo] = useState("");
-    const { theme } = useContextApp();
+    const { theme } = useTheme();
     const { width } = useWindowDimensions();
     const styles = stylesFn(theme, width);
     const [descripcion, setDescripcion] = useState("");
