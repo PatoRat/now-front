@@ -1,3 +1,4 @@
+import { ThemeColors } from "@/scripts/types";
 import { ThemeContext } from "@/src/components/context-provider/Theme";
 import { FontAwesome } from "@expo/vector-icons";
 import { DarkTheme, DefaultTheme } from "@react-navigation/native";
@@ -7,24 +8,25 @@ import {
     Pressable,
     StyleSheet,
     Text,
+    useWindowDimensions,
     View
 } from "react-native";
+import { EdgeInsets, useSafeAreaInsets } from "react-native-safe-area-context";
 
 export const Drawer = (props: {
     isDrawerOpen: boolean,
-    onPress: React.Dispatch<React.SetStateAction<boolean>>,
-    backgroundColor: "#121212" | "#f0f2f5",
-    width: number
+    onPress: React.Dispatch<React.SetStateAction<boolean>>
 }) => {
+
+    const { width } = useWindowDimensions();
+    const insets = useSafeAreaInsets();
+    const drawerWidth = Math.min(420, width - insets.left - 8);
 
     const { theme, setTheme } = useContext(ThemeContext);
     const [slideAnim] = useState(() => new Animated.Value(0));
-    const textColor = (theme === DarkTheme) ? "#fff" : "#000";
-    const menuButtonColor = (theme === DarkTheme) ? "#121212" : "#121212";
-    const overlayColor = "rgba(0,0,0,0.2)";
-    const backgroundColor = props.backgroundColor;
+    const backgroundColor = theme.colors.card;
 
-    const styles = stylesFunc(props.width);
+    const styles = stylesFunc(drawerWidth, theme.colors, insets);
 
     const toggleDrawer = () => {
         Animated.timing(slideAnim, {
@@ -37,13 +39,20 @@ export const Drawer = (props: {
 
     const translateX = slideAnim.interpolate({
         inputRange: [0, 1],
-        outputRange: [-props.width * 0.7, 0],
+        outputRange: [-drawerWidth * 0.7, 0],
+    });
+
+    const overlayOpacity = slideAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, 1],
     });
 
     //  Función para cambiar tema
     const toggleTheme = () => {
-        setTheme(theme === DarkTheme ? DefaultTheme : DarkTheme);
-    };
+        setTheme(theme.dark ? DarkTheme : DefaultTheme);
+        console.log(theme.dark);
+    }
+
     return (
         <View
             style={StyleSheet.absoluteFillObject}
@@ -51,19 +60,21 @@ export const Drawer = (props: {
         >
             {/* Botón hamburguesa */}
             < Pressable
-                style={[styles.menuButton, { backgroundColor: menuButtonColor }]}
+                style={styles.menuButton}
                 onPress={toggleDrawer}
             >
-                <FontAwesome name="bars" size={28} color="#fff" />
+                <FontAwesome name="bars" size={28} color={theme.dark ? "#fff" : "#121212"} />
             </Pressable >
 
             {/* Overlay para cerrar al tocar fuera  NO QUITAR!!!!!!!*/}
             {
                 props.isDrawerOpen && (
-                    <Pressable
-                        style={[styles.overlay, { backgroundColor: overlayColor }]}
-                        onPress={toggleDrawer}
-                    />
+                    <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]}>
+                        <Pressable
+                            style={StyleSheet.absoluteFill}
+                            onPress={toggleDrawer}
+                        />
+                    </Animated.View>
                 )
             }
 
@@ -72,25 +83,25 @@ export const Drawer = (props: {
                 style={[styles.drawer, { transform: [{ translateX }], backgroundColor }]}
             >
                 <Pressable style={styles.drawerItem} onPress={toggleTheme}>
-                    <Text style={[styles.drawerText, { color: textColor }]}>
+                    <Text style={styles.drawerText}>
                         TEMA
                     </Text>
                 </Pressable>
 
                 <Pressable style={styles.drawerItem} onPress={toggleDrawer}>
-                    <Text style={[styles.drawerText, { color: textColor }]}>
+                    <Text style={styles.drawerText}>
                         MIS EVENTOS
                     </Text>
                 </Pressable>
 
                 <Pressable style={styles.drawerItem} onPress={toggleDrawer}>
-                    <Text style={[styles.drawerText, { color: textColor }]}>
+                    <Text style={styles.drawerText}>
                         SOPORTE
                     </Text>
                 </Pressable>
 
                 <Pressable style={styles.drawerItem} onPress={toggleDrawer}>
-                    <Text style={[styles.drawerText, { color: textColor }]}>
+                    <Text style={styles.drawerText}>
                         CERRAR SESIÓN
                     </Text>
                 </Pressable>
@@ -99,17 +110,24 @@ export const Drawer = (props: {
     )
 }
 
-const stylesFunc = (width: number) => StyleSheet.create({
+const stylesFunc = (width: number, colors: ThemeColors, insets: EdgeInsets) => StyleSheet.create({
     menuButton: {
-        top: 45,
-        left: 20,
+        position: "absolute",
+        top: Math.max(16, insets.top + 8),
+        left: 16,
+        width: 44,
+        height: 44,
         zIndex: 10,
-        padding: 10,
-        borderRadius: 8,
-        elevation: 10
+        justifyContent: "center",
+        overflow: "hidden",
+        borderRadius: 10,
+        alignItems: "center",
+        elevation: 10,
+        backgroundColor: colors.card
     },
     overlay: {
         ...StyleSheet.absoluteFillObject,
+        backgroundColor: "rgba(0,0,0,0.2)",
         position: "absolute",
         zIndex: 5,
     },
@@ -119,7 +137,9 @@ const stylesFunc = (width: number) => StyleSheet.create({
         bottom: 0,
         left: 0,
         width: width * 0.7,
-        paddingTop: 80,
+        paddingTop: insets.top + 64,
+        paddingLeft: insets.left + 16,
+        paddingBottom: insets.bottom + 16,
         paddingHorizontal: 15,
         zIndex: 6,
         elevation: 6,
@@ -133,5 +153,6 @@ const stylesFunc = (width: number) => StyleSheet.create({
     },
     drawerText: {
         fontSize: 16,
+        color: colors.text
     },
 });

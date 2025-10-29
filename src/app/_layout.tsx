@@ -1,10 +1,10 @@
-import { ThemeProvider } from '@/src/components/context-provider/Theme';
+import { ThemeContext, ThemeProvider } from '@/src/components/context-provider/Theme';
 import { Stack } from 'expo-router';
-import { useColorScheme } from 'react-native';
+import { useContext } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 export default function RootLayout() {
-  const scheme = useColorScheme()
+  const { theme } = useContext(ThemeContext)
 
   return (
     <SafeAreaProvider>
@@ -12,7 +12,7 @@ export default function RootLayout() {
       <ThemeProvider>
         <Stack
           screenOptions={{
-            statusBarStyle: scheme === 'dark' ? 'light' : 'dark',
+            statusBarStyle: theme.dark ? 'light' : 'dark'
           }}
         >
 

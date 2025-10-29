@@ -1,6 +1,5 @@
 import { ThemeContext } from "@/src/components/context-provider/Theme";
 import { FontAwesome } from "@expo/vector-icons";
-import { DarkTheme } from "@react-navigation/native";
 import { Tabs } from "expo-router";
 import { useContext } from "react";
 import {
@@ -10,10 +9,9 @@ import {
 export default function TabLayout() {
   //  Colores según el tema
   const { theme } = useContext(ThemeContext);
-  const backgroundColor = (theme === DarkTheme) ? "#121212" : "#f0f2f5";
 
   return (
-    <View style={{ flex: 1, backgroundColor }}>
+    <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
 
       {/* Tabs (contenido principal) */}
       <Tabs screenOptions={{ animation: "shift" }} initialRouteName="index">

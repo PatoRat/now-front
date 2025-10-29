@@ -1,10 +1,6 @@
+import { ImageSelectorButtonProps } from "@/scripts/types";
 import * as ImagePicker from "expo-image-picker";
-import { ImageSourcePropType, Pressable, StyleSheet, Text } from "react-native";
-
-
-type ImageSelectorButtonProps = {
-    onSelect: React.Dispatch<React.SetStateAction<ImageSourcePropType[]>>;
-};
+import { Pressable, StyleSheet, Text } from "react-native";
 
 const ImageSelectorButton = ({ onSelect }: ImageSelectorButtonProps) => {
 
