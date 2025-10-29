@@ -8,7 +8,6 @@ import {
   Image,
   Pressable,
   StyleSheet,
-  Text,
   View
 } from "react-native";
 
@@ -26,7 +25,6 @@ export default function Discover() {
 
   return (
     <View>
-      <Text style={styles.texto}>Este va a ser el Feed.</Text>
 
       <FlatList
         data={posts}
