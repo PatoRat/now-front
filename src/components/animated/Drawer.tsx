@@ -13,11 +13,9 @@ import {
 } from "react-native";
 import { EdgeInsets, useSafeAreaInsets } from "react-native-safe-area-context";
 
-export const Drawer = (props: {
-    isDrawerOpen: boolean,
-    onPress: React.Dispatch<React.SetStateAction<boolean>>
-}) => {
+export const Drawer = () => {
 
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const { width } = useWindowDimensions();
     const insets = useSafeAreaInsets();
     const drawerWidth = Math.min(420, width - insets.left - 8);
@@ -30,11 +28,11 @@ export const Drawer = (props: {
 
     const toggleDrawer = () => {
         Animated.timing(slideAnim, {
-            toValue: props.isDrawerOpen ? 0 : 1,
+            toValue: isDrawerOpen ? 0 : 1,
             duration: 280,
             useNativeDriver: true,
         }).start();
-        props.onPress(!props.isDrawerOpen);
+        setIsDrawerOpen(!isDrawerOpen);
     };
 
     const translateX = slideAnim.interpolate({
@@ -53,7 +51,7 @@ export const Drawer = (props: {
     return (
         <View
             style={StyleSheet.absoluteFillObject}
-            pointerEvents={props.isDrawerOpen ? "auto" : "box-none"}
+            pointerEvents={isDrawerOpen ? "auto" : "box-none"}
         >
             {/* Botón hamburguesa */}
             < Pressable
@@ -65,7 +63,7 @@ export const Drawer = (props: {
 
             {/* Overlay para cerrar al tocar fuera  NO QUITAR!!!!!!!*/}
             {
-                props.isDrawerOpen && (
+                isDrawerOpen && (
                     <Animated.View style={[styles.overlay, { opacity: overlayOpacity }]}>
                         <Pressable
                             style={StyleSheet.absoluteFill}
