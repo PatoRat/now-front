@@ -1,7 +1,7 @@
+import { BamvDark, BamvLight } from "@/scripts/themes";
 import { ThemeColors } from "@/scripts/types";
 import { ThemeContext } from "@/src/components/context-provider/Theme";
 import { FontAwesome } from "@expo/vector-icons";
-import { DarkTheme, DefaultTheme } from "@react-navigation/native";
 import { useContext, useState } from "react";
 import {
     Animated,
@@ -49,7 +49,7 @@ export const Drawer = (props: {
 
     //  Función para cambiar tema
     const toggleTheme = () => {
-        setTheme(theme.dark ? DarkTheme : DefaultTheme);
+        setTheme(theme.dark ? BamvLight : BamvDark);
         console.log(theme.dark);
     }
 
