@@ -3,6 +3,7 @@ import { useTheme } from "@/src/components/context-provider/Theme";
 import { Theme } from "@react-navigation/native";
 import {
   Image,
+  Pressable,
   StyleSheet,
   Text,
   useWindowDimensions,
@@ -41,7 +42,7 @@ const Post = ({ titulo, descripcion, imagenes, fechaInicio, fechaFin, direccion 
         {/* Mostrar dirección */}
             {direccion && (
             <View style={styles.direccionContainer}>
-                <Text style={styles.direccionIcon}>📍</Text>
+                <Pressable style={styles.direccionIcon}>📍</Pressable>
                 <Text style={styles.direccionText}>{direccion}</Text>
             </View>
             )}
@@ -76,6 +77,7 @@ const stylesFn = (theme: Theme, width: number) =>
     },
     titulo: {
       fontSize: 18,
+      justifyContent : "center",
       fontFamily: theme.fonts.bold.fontFamily,
       fontWeight: theme.fonts.bold.fontWeight,
       color: theme.colors.text,
