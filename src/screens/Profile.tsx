@@ -1,9 +1,9 @@
 import { ThemeColors } from "@/scripts/types";
-import { useContextApp } from "@/src/components/context-provider/Theme";
+import { useTheme } from "@/src/components/context-provider/Theme";
 import { StyleSheet, Text } from "react-native";
 
 export default function Profile() {
-    const {theme} = useContextApp();
+    const {theme} = useTheme();
     const styles = stylesFn(theme.colors);
     
     return (<Text style={styles.texto}>Este va a ser el Profile.</Text>);

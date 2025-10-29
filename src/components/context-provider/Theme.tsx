@@ -24,9 +24,9 @@ const ThemeProvider = ({ children }: ThemeProviderProps) => {
     );
 }
 
-const useContextApp = () =>{
+const useTheme = () =>{
     return useContext(ThemeContext);
 }
 
-export { ThemeContext, ThemeProvider, useContextApp };
+export { ThemeContext, ThemeProvider, useTheme };
 

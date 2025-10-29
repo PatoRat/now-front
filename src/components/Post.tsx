@@ -1,5 +1,5 @@
 import { PostType } from "@/scripts/types";
-import { useContextApp } from "@/src/components/context-provider/Theme";
+import { useTheme } from "@/src/components/context-provider/Theme";
 import { Theme } from "@react-navigation/native";
 import {
     Image,
@@ -10,7 +10,7 @@ import {
 } from "react-native";
 
 const Post = ({ titulo, descripcion, imagenes }: Omit<PostType, "id">) => {
-    const { theme } = useContextApp();
+    const { theme } = useTheme();
     const { width } = useWindowDimensions();
 
     const styles = stylesFn(theme, width);
