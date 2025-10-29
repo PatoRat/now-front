@@ -14,10 +14,6 @@ const StackPersonalizado = () => {
                     headerShown: false,
                     animation: "slide_from_bottom"
                 }} />
-                <Stack.Screen name="(auth)" options={{
-                    title: "Login",
-                    animation: "slide_from_bottom"
-                }} />
             </Stack>
         )
     }
