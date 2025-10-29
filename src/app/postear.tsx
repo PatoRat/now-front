@@ -1,3 +1,4 @@
+import { Drawer } from "@/src/components/animated/Drawer";
 import Postear from "@/src/screens/Postear";
 import {
   StyleSheet
@@ -8,7 +9,7 @@ export default function PostScreen() {
 
   return (
     <SafeAreaView style={styles.pestaña}>
-
+      <Drawer />
       <Postear />
 
     </SafeAreaView>
