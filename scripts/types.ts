@@ -6,6 +6,13 @@ type ThemeContextProps = {
     setTheme: (theme: Theme) => void
 };
 
+type AuthContextProps = {
+    usuario: string,
+    // contrasenia: string,
+    isLogged: boolean,
+    logear: (usuario: string, contrasenia: string) => void
+};
+
 type PostType = {
     id: string,
     titulo: string,
@@ -24,7 +31,7 @@ type ImageSelectorButtonProps = {
     onSelect: React.Dispatch<React.SetStateAction<ImageSourcePropType[]>>;
 };
 
-type ThemeProviderProps = {
+type ProviderProps = {
     children: React.ReactNode;
 };
 
@@ -38,8 +45,7 @@ type ThemeColors = {
 }
 
 export {
-    ImageSelectorButtonProps,
-    PostType, ThemeColors, ThemeContextProps,
-    ThemeProviderProps
+    AuthContextProps, ImageSelectorButtonProps,
+    PostType, ProviderProps, ThemeColors, ThemeContextProps
 };
 

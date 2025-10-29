@@ -1,5 +1,5 @@
 import { BamvDark } from "@/scripts/themes";
-import { ThemeContextProps, ThemeProviderProps } from "@/scripts/types";
+import { ProviderProps, ThemeContextProps } from "@/scripts/types";
 import { Theme } from "@react-navigation/native";
 import { createContext, useContext, useState } from "react";
 
@@ -14,7 +14,7 @@ La idea es copiar un poco el formato del ThemeProvider de react navigation
 pero agregando la posibilidad de modificar el estado desde children
 */
 
-const ThemeProvider = ({ children }: ThemeProviderProps) => {
+const ThemeProvider = ({ children }: ProviderProps) => {
     const [theme, setTheme] = useState<Theme>(BamvDark);
 
     return (
@@ -24,9 +24,7 @@ const ThemeProvider = ({ children }: ThemeProviderProps) => {
     );
 }
 
-const useContextApp = () =>{
-    return useContext(ThemeContext);
-}
+const useTheme = () => useContext(ThemeContext);
 
-export { ThemeContext, ThemeProvider, useContextApp };
+export { ThemeProvider, useTheme };
 

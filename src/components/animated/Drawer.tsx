@@ -1,6 +1,6 @@
 import { BamvDark, BamvLight } from "@/scripts/themes";
 import { ThemeColors } from "@/scripts/types";
-import { useContextApp } from "@/src/components/context-provider/Theme";
+import { useTheme } from "@/src/components/context-provider/Theme";
 import { FontAwesome } from "@expo/vector-icons";
 import { useState } from "react";
 import {
@@ -20,7 +20,7 @@ export const Drawer = () => {
     const insets = useSafeAreaInsets();
     const drawerWidth = Math.min(420, width - insets.left - 8);
 
-    const { theme, setTheme } = useContextApp();
+    const { theme, setTheme } = useTheme();
     const [slideAnim] = useState(() => new Animated.Value(0));
     const backgroundColor = theme.colors.card;
 
