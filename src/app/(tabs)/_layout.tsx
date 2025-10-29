@@ -1,14 +1,13 @@
-import { ThemeContext } from "@/src/components/context-provider/Theme";
+import { useContextApp } from "@/src/components/context-provider/Theme";
 import { FontAwesome } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
-import { useContext } from "react";
 import {
   View
 } from "react-native";
 
 export default function TabLayout() {
   //  Colores según el tema
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useContextApp();
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>

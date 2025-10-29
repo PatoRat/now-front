@@ -1,8 +1,8 @@
 import { BamvDark, BamvLight } from "@/scripts/themes";
 import { ThemeColors } from "@/scripts/types";
-import { ThemeContext } from "@/src/components/context-provider/Theme";
+import { useContextApp } from "@/src/components/context-provider/Theme";
 import { FontAwesome } from "@expo/vector-icons";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import {
     Animated,
     Pressable,
@@ -22,7 +22,7 @@ export const Drawer = (props: {
     const insets = useSafeAreaInsets();
     const drawerWidth = Math.min(420, width - insets.left - 8);
 
-    const { theme, setTheme } = useContext(ThemeContext);
+    const { theme, setTheme } = useContextApp();
     const [slideAnim] = useState(() => new Animated.Value(0));
     const backgroundColor = theme.colors.card;
 
@@ -48,10 +48,7 @@ export const Drawer = (props: {
     });
 
     //  Función para cambiar tema
-    const toggleTheme = () => {
-        setTheme(theme.dark ? BamvLight : BamvDark);
-        console.log(theme.dark);
-    }
+    const toggleTheme = () => setTheme(theme.dark ? BamvLight : BamvDark);
 
     return (
         <View

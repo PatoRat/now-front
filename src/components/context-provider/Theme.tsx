@@ -1,6 +1,7 @@
+import { BamvDark } from "@/scripts/themes";
 import { ThemeContextProps, ThemeProviderProps } from "@/scripts/types";
-import { DarkTheme, Theme } from "@react-navigation/native";
-import { createContext, useState } from "react";
+import { Theme } from "@react-navigation/native";
+import { createContext, useContext, useState } from "react";
 
 const ThemeContext = createContext<ThemeContextProps>({
     theme: {} as Theme,
@@ -14,7 +15,7 @@ pero agregando la posibilidad de modificar el estado desde children
 */
 
 const ThemeProvider = ({ children }: ThemeProviderProps) => {
-    const [theme, setTheme] = useState<Theme>(DarkTheme);
+    const [theme, setTheme] = useState<Theme>(BamvDark);
 
     return (
         <ThemeContext.Provider value={{ theme, setTheme }}>
@@ -23,5 +24,9 @@ const ThemeProvider = ({ children }: ThemeProviderProps) => {
     );
 }
 
-export { ThemeContext, ThemeProvider };
+const useContextApp = () =>{
+    return useContext(ThemeContext);
+}
+
+export { ThemeContext, ThemeProvider, useContextApp };
 
