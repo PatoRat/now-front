@@ -3,10 +3,12 @@ import { useContextApp } from "@/src/components/context-provider/Theme";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 import { Theme } from "@react-navigation/native";
+import * as Location from 'expo-location';
 import { Router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
     ImageSourcePropType,
+    Modal,
     Pressable,
     StyleSheet,
     Text,
@@ -14,21 +16,43 @@ import {
     useWindowDimensions,
     View,
 } from "react-native";
+import MapView, { Marker } from 'react-native-maps';
 import ImageSelectorButton from "./ImageSelectorButton";
 
 const PostInputsHandler = (props: { router: Router }) => {
-  const [titulo, setTitulo] = useState("");
-  const { theme } = useContextApp();
-  const { width } = useWindowDimensions();
-  const styles = stylesFn(theme, width);
-  const [descripcion, setDescripcion] = useState("");
-  const [imagenes, setImagenes] = useState<ImageSourcePropType[]>([]);
-  const [mostrarHoraPicker, setMostrarHoraPicker] = useState(false);
-  const [fechaInicio, setFechaInicio] = useState<Date>(new Date());
-  const [duracion, setDuracion] = useState("");
-  const [fechaFin, setFechaFin] = useState<Date | null>(null);
-  const [mostrarPickerDuracion, setMostrarPickerDuracion] = useState(false);
-  const [mostrarPicker, setMostrarPicker] = useState(false);
+    const [titulo, setTitulo] = useState("");
+    const { theme } = useContextApp();
+    const { width } = useWindowDimensions();
+    const styles = stylesFn(theme, width);
+    const [descripcion, setDescripcion] = useState("");
+    const [imagenes, setImagenes] = useState<ImageSourcePropType[]>([]);
+    const [mostrarHoraPicker, setMostrarHoraPicker] = useState(false);
+    const [fechaInicio, setFechaInicio] = useState<Date>(new Date());
+    const [duracion, setDuracion] = useState("");
+    const [fechaFin, setFechaFin] = useState<Date | null>(null);
+    const [mostrarPickerDuracion, setMostrarPickerDuracion] = useState(false);
+    const [mostrarPicker, setMostrarPicker] = useState(false);
+    const [ubicacion, setUbicacion] = useState<{ latitude: number; longitude: number } | null>(null);
+    const [mostrarMapa, setMostrarMapa] = useState(false);
+    const [direccion, setDireccion] = useState<string | null>(null);
+  /// Cuando el usuario selecciona en el mapa:
+    const seleccionarUbicacion = async (coord: { latitude: number; longitude: number }) => {
+        setUbicacion(coord);
+        try {
+            const { status } = await Location.requestForegroundPermissionsAsync();
+            if (status !== "granted") return alert("Se necesitan permisos de ubicación");
+
+            const [dir] = await Location.reverseGeocodeAsync(coord);
+
+            // Formateamos solo calle, número y ciudad
+            const direccionFormateada = `${dir.street || ""} ${dir.name || ""}, ${dir.city || ""}`.trim();
+            setDireccion(direccionFormateada || "Dirección no disponible");
+        } catch (e) {
+            console.error("Error al obtener dirección:", e);
+            setDireccion("Dirección no disponible");
+        }
+    };
+
 
   // 🔹 Calculamos fechaFin automáticamente cuando cambian fechaInicio o duración
   useEffect(() => {
@@ -41,19 +65,30 @@ const PostInputsHandler = (props: { router: Router }) => {
     }
   }, [duracion, fechaInicio]);
 
-  const publicarPosteo = () => {
-    if (!fechaInicio || !fechaFin) return;
 
-    DATA.unshift({
-      id: (DATA.length + 1).toString(),
-      titulo,
-      descripcion,
-      imagenes,
-      fechaInicio,
-      fechaFin,
-    });
+    const publicarPosteo = () => {
+        if (!fechaInicio || !fechaFin || !ubicacion || !direccion) {
+            alert("Por favor completa todos los campos, incluyendo la ubicación.");
+            return;
+        }
+
+        DATA.unshift({
+            id: (DATA.length + 1).toString(),
+            titulo,
+            descripcion,
+            imagenes,
+            fechaInicio,
+            fechaFin,
+            ubicacion: {
+            latitude: ubicacion.latitude,
+            longitude: ubicacion.longitude,
+            direccion: direccion,
+            },
+        });
 
     props.router.back();
+
+
   };
 
   return (
@@ -193,7 +228,84 @@ const PostInputsHandler = (props: { router: Router }) => {
                     </Text>
                 </Text>
                 </View>
+            )}\
+
+        {/* Ubicación */}
+            <View style={styles.section}>
+            <Pressable
+                style={styles.input}
+                onPress={() => setMostrarMapa(true)}
+            >
+                <Text style={{ color: theme.colors.text }}>
+                    {ubicacion
+                        ? `Ubicación seleccionada: ${direccion}`
+                        : 'Seleccionar ubicación'}
+                </Text>
+            </Pressable>
+            </View>
+            {mostrarMapa && (
+                <Modal animationType="slide" transparent={false}>
+                    <View style={{ flex: 1 }}>
+                    <MapView
+                        style={{ flex: 1 }}
+                        initialRegion={{
+                        latitude: ubicacion?.latitude || -34.6037,
+                        longitude: ubicacion?.longitude || -58.3816,
+                        latitudeDelta: 0.01,
+                        longitudeDelta: 0.01,
+                        }}
+                        onPress={(e) => seleccionarUbicacion(e.nativeEvent.coordinate)}
+                    >
+                        {ubicacion && <Marker coordinate={ubicacion} />}
+                    </MapView>
+
+                    {/* Contenedor inferior para mostrar dirección y botones */}
+                    <View
+                        style={{
+                        backgroundColor: theme.colors.card,
+                        padding: 16,
+                        borderTopLeftRadius: 20,
+                        borderTopRightRadius: 20,
+                        }}
+                    >
+                        <Text style={{ color: theme.colors.text, marginBottom: 8 }}>
+                        {direccion
+                            ? `📍 ${direccion}`
+                            : ubicacion
+                            ? "Obteniendo dirección..."
+                            : "Toca el mapa para seleccionar una ubicación"}
+                        </Text>
+
+                        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                        <Pressable
+                            style={[
+                            styles.primaryBtn,
+                            { backgroundColor: "#999", flex: 1, marginRight: 8 },
+                            ]}
+                            onPress={() => setMostrarMapa(false)}
+                        >
+                            <Text style={styles.primaryBtnText}>Cancelar</Text>
+                        </Pressable>
+
+                        <Pressable
+                            style={[styles.primaryBtn, { flex: 1 }]}
+                            onPress={() => {
+                            if (!ubicacion) {
+                                alert("Seleccioná una ubicación antes de confirmar.");
+                                return;
+                            }
+                            setMostrarMapa(false);
+                            }}
+                        >
+                            <Text style={styles.primaryBtnText}>Confirmar</Text>
+                        </Pressable>
+                        </View>
+                    </View>
+                    </View>
+                </Modal>
             )}
+
+
 
         {/* Botones */}
             <View style={styles.buttonsRow}>

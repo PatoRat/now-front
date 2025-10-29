@@ -35,9 +35,12 @@ export default function Discover() {
             descripcion={item.descripcion}
             imagenes={item.imagenes}
             fechaInicio={item.fechaInicio}
-            fechaFin={item.fechaFin}    
+            fechaFin={item.fechaFin}
+            ubicacion={item.ubicacion}
+            direccion={item.ubicacion?.direccion}
           />
         )}
+
         contentContainerStyle={styles.listaContenido}
         showsVerticalScrollIndicator={false}
       />

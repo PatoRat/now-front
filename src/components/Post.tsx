@@ -9,7 +9,7 @@ import {
     View
 } from "react-native";
 
-const Post = ({ titulo, descripcion, imagenes, fechaInicio, fechaFin }: Omit<PostType, "id">) => {
+const Post = ({ titulo, descripcion, imagenes, fechaInicio, fechaFin, direccion }: Omit<PostType, "id"> & { direccion?: string }) => {
   const { theme } = useContextApp();
   const { width } = useWindowDimensions();
   const styles = stylesFn(theme, width);
@@ -23,27 +23,37 @@ const Post = ({ titulo, descripcion, imagenes, fechaInicio, fechaFin }: Omit<Pos
 
   return (
     <View style={styles.postContainer}>
-      <Text style={styles.titulo}>{titulo}</Text>
+        <Text style={styles.titulo}>{titulo}</Text>
 
-      {imagenes.length > 0 && (
-        <View style={styles.imagenContainer}>
-          <Image source={imagenes[0]} style={styles.imagen} resizeMode="cover" />
-          {imagenes.length > 1 && (
-            <View style={styles.overlay}>
-              <Text style={styles.overlayText}>+{imagenes.length - 1}</Text>
+        {imagenes.length > 0 && (
+            <View style={styles.imagenContainer}>
+            <Image source={imagenes[0]} style={styles.imagen} resizeMode="cover" />
+            {imagenes.length > 1 && (
+                <View style={styles.overlay}>
+                <Text style={styles.overlayText}>+{imagenes.length - 1}</Text>
+                </View>
+            )}
             </View>
-          )}
-        </View>
-      )}
+        )}
+
+        {!!descripcion && <Text style={styles.descripcion}>{descripcion}</Text>}
+
+        {/* Mostrar dirección */}
+            {direccion && (
+            <View style={styles.direccionContainer}>
+                <Text style={styles.direccionIcon}>📍</Text>
+                <Text style={styles.direccionText}>{direccion}</Text>
+            </View>
+            )}
 
       {/* Fechas Inicio y Fin */}
-      <View style={styles.fechasContainer}>
-        <Text style={styles.fechaText}>Inicio: {formatoFecha(fechaInicio)}</Text>
-        <Text style={styles.fechaText}>Fin: {formatoFecha(fechaFin)}</Text>
-      </View>
+        <View style={styles.fechasContainer}>
+            <Text style={styles.fechaText}>Inicio: {formatoFecha(fechaInicio)}</Text>
+            <Text style={styles.fechaText}>Fin: {formatoFecha(fechaFin)}</Text>
+        </View>
 
-      {!!descripcion && <Text style={styles.descripcion}>{descripcion}</Text>}
     </View>
+    
   );
 };
 
@@ -116,4 +126,31 @@ const stylesFn = (theme: Theme, width: number) =>
       fontSize: 14,
       color: theme.colors.text,
     },
+    direccion: {
+        color: theme.colors.text,
+        fontSize: 14,
+        marginTop: 4,
+    },
+    direccionContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        backgroundColor: theme.colors.border, // fondo suave
+        paddingHorizontal: 10,
+        paddingVertical: 6,
+        borderRadius: 8,
+        marginBottom: 12,
+    },
+
+    direccionIcon: {
+        marginRight: 6,
+        fontSize: 16,
+    },
+
+    direccionText: {
+        fontSize: 14,
+        color: theme.colors.text,
+        flexShrink: 1, // para que el texto no se desborde
+    },
+
+
   });
