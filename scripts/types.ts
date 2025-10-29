@@ -10,7 +10,8 @@ type AuthContextProps = {
     usuario: string,
     // contrasenia: string,
     isLogged: boolean,
-    logear: (usuario: string, contrasenia: string) => void
+    logear: (usuario: string, contrasenia: string) => void,
+    signUp: () => void
 };
 
 type PostType = {

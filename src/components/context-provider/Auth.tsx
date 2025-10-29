@@ -6,6 +6,7 @@ const AuthContext = createContext<AuthContextProps>({
     // contrasenia: {} as string,
     isLogged: {} as boolean,
     logear: () => { },
+    signUp: () => { }
 });
 
 const AuthProvider = ({ children }: ProviderProps) => {
@@ -20,7 +21,7 @@ const AuthProvider = ({ children }: ProviderProps) => {
     }
 
     return (
-        <AuthContext.Provider value={{ usuario, isLogged, logear }}>
+        <AuthContext.Provider value={{ usuario, isLogged, logear, signUp }}>
             {children}
         </AuthContext.Provider>
     );
@@ -28,5 +29,7 @@ const AuthProvider = ({ children }: ProviderProps) => {
 
 const useAuth = () => useContext(AuthContext);
 
-export { AuthProvider, useAuth };
+const signUp = () => { }
+
+export { AuthProvider, signUp, useAuth };
 
