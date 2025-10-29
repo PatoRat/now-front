@@ -1,9 +1,7 @@
 import { useContextApp } from "@/src/components/context-provider/Theme";
 import { FontAwesome } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
-import {
-  View
-} from "react-native";
+import { View } from "react-native";
 
 export default function TabLayout() {
   //  Colores según el tema
