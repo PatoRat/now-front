@@ -18,6 +18,13 @@ type PostType = {
     titulo: string,
     descripcion: string,
     imagenes: ImageSourcePropType[]
+    fechaInicio : Date
+    fechaFin : Date
+    ubicacion : {
+      latitude: number,
+      longitude: number,
+      direccion: string
+    }
 };
 
 type ImageSelectorButtonProps = {
