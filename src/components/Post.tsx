@@ -1,5 +1,6 @@
 import { PostType } from "@/scripts/types";
 import { useTheme } from "@/src/components/context-provider/Theme";
+import { FontAwesome } from "@expo/vector-icons";
 import { Theme } from "@react-navigation/native";
 import {
   Image,
@@ -42,7 +43,13 @@ const Post = ({ titulo, descripcion, imagenes, fechaInicio, fechaFin, direccion 
         {/* Mostrar dirección */}
             {direccion && (
             <View style={styles.direccionContainer}>
-                <Pressable style={styles.direccionIcon}>📍</Pressable>
+                <Pressable style={styles.direccionIcon} options={{
+                  // headerLeft: () => (<Drawer />),
+                  tabBarIcon: ({ color }) => (
+                    <FontAwesome size={28} name="star" color={color} />
+                  ),
+                }}>
+              </Pressable>
                 <Text style={styles.direccionText}>{direccion}</Text>
             </View>
             )}
