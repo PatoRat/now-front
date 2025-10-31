@@ -108,15 +108,15 @@ export const Drawer = () => {
 const stylesFunc = (width: number, colors: ThemeColors, insets: EdgeInsets) => StyleSheet.create({
     menuButton: {
         position: "absolute",
-        top: Math.max(16, insets.top + 8),
+        top: Math.max(4, insets.top +10),
         left: 16,
         width: 44,
         height: 44,
         zIndex: 10,
-        justifyContent: "center",
+        justifyContent: "center", // centra verticalmente
+        alignItems: "center",
         overflow: "hidden",
         borderRadius: 10,
-        alignItems: "center",
         elevation: 10,
         backgroundColor: colors.card
     },

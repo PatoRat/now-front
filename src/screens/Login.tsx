@@ -4,6 +4,7 @@ import { Theme } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
+  Image,
   Pressable,
   StyleSheet,
   Text,
@@ -31,7 +32,13 @@ const Login = () => {
 
   return (
     <View style={styles.container}>
+
       <View style={styles.card}>
+      <Image
+        source={require("@/assets/images/NOW-LOGO.png")}
+        style={styles.logo}
+        resizeMode="contain"
+      />
         <Text style={styles.title}>Iniciar sesión</Text>
         <Text style={styles.subtitle}>Accedé a tu cuenta para continuar</Text>
 
@@ -83,6 +90,13 @@ const stylesFn = (theme: Theme, width: number) =>
       alignItems: "center",
       paddingHorizontal: 20,
     },
+    logo: {
+      width: 180,
+      height: 80,
+      marginBottom: 20,
+      alignSelf: "center",
+    },
+
     card: {
       width: "100%",
       maxWidth: 400,

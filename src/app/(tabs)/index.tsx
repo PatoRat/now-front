@@ -1,5 +1,4 @@
 import { ThemeColors } from "@/scripts/types";
-import { Drawer } from "@/src/components/animated/Drawer";
 import { useTheme } from "@/src/components/context-provider/Theme";
 import Discover from "@/src/screens/Discover";
 import { StyleSheet } from "react-native";
@@ -11,7 +10,6 @@ export default function DiscoverIndex() {
 
   return (
     <SafeAreaView style={styles.pestaña}>
-      <Drawer />
       <Discover />
     </SafeAreaView>
   );

@@ -4,7 +4,6 @@ import { FontAwesome } from "@expo/vector-icons";
 import { Theme } from "@react-navigation/native";
 import {
   Image,
-  Pressable,
   StyleSheet,
   Text,
   useWindowDimensions,
@@ -42,17 +41,12 @@ const Post = ({ titulo, descripcion, imagenes, fechaInicio, fechaFin, direccion 
 
         {/* Mostrar dirección */}
             {direccion && (
-            <View style={styles.direccionContainer}>
-                <Pressable style={styles.direccionIcon} options={{
-                  // headerLeft: () => (<Drawer />),
-                  tabBarIcon: ({ color }) => (
-                    <FontAwesome size={28} name="star" color={color} />
-                  ),
-                }}>
-              </Pressable>
+              <View style={styles.direccionContainer}>
+                <FontAwesome style={styles.direccionIcon} size={24} name="map-marker" color="red" />
                 <Text style={styles.direccionText}>{direccion}</Text>
-            </View>
+              </View>
             )}
+
 
       {/* Fechas Inicio y Fin */}
         <View style={styles.fechasContainer}>
@@ -84,11 +78,11 @@ const stylesFn = (theme: Theme, width: number) =>
     },
     titulo: {
       fontSize: 18,
-      justifyContent : "center",
       fontFamily: theme.fonts.bold.fontFamily,
       fontWeight: theme.fonts.bold.fontWeight,
       color: theme.colors.text,
       marginBottom: 12,
+      textAlign: "center",
     },
     imagenContainer: {
       width: "100%",
@@ -143,7 +137,7 @@ const stylesFn = (theme: Theme, width: number) =>
     direccionContainer: {
         flexDirection: "row",
         alignItems: "center",
-        backgroundColor: theme.colors.border, // fondo suave
+        backgroundColor: theme.colors.border,
         paddingHorizontal: 10,
         paddingVertical: 6,
         borderRadius: 8,
@@ -158,7 +152,7 @@ const stylesFn = (theme: Theme, width: number) =>
     direccionText: {
         fontSize: 14,
         color: theme.colors.text,
-        flexShrink: 1, // para que el texto no se desborde
+        flexShrink: 1,
     },
 
 

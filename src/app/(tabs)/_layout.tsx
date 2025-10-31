@@ -1,22 +1,40 @@
+import { Drawer } from "@/src/components/animated/Drawer";
 import { useTheme } from "@/src/components/context-provider/Theme";
 import { FontAwesome } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
-import { View } from "react-native";
+import { Image, View } from "react-native";
 
 export default function TabLayout() {
-  //  Colores según el tema
   const { theme } = useTheme();
 
   return (
-    <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+    <View style={{ flex: 1 }}>
+      {/* Drawer superpuesto */}
+      <Drawer />
 
-      {/* Tabs (contenido principal) */}
-      <Tabs screenOptions={{ animation: "shift", tabBarInactiveBackgroundColor: theme.colors.background, tabBarActiveBackgroundColor: theme.colors.card }} initialRouteName="index">
+      {/* Tabs principales */}
+      <Tabs
+        screenOptions={{
+          animation: "shift",
+          headerTitleAlign: "center",
+          tabBarStyle: { backgroundColor: theme.colors.background },
+          tabBarInactiveBackgroundColor: theme.colors.background,
+          tabBarActiveBackgroundColor: theme.colors.card,
+          headerStyle: { backgroundColor: theme.colors.card },
+          headerTintColor: "black",
+          headerTitle: () => (
+            <Image
+              source={require("@/assets/images/NOW-LOGO.png")}
+              style={{ width: 120, height: 110, resizeMode: "contain" }}
+            />
+          ),
+        }}
+        initialRouteName="index"
+      >
         <Tabs.Screen
           name="favs"
           options={{
-            title: "Favs",
-            // headerLeft: () => (<Drawer />),
+            title: "FAVS",
             tabBarIcon: ({ color }) => (
               <FontAwesome size={28} name="star" color={color} />
             ),
@@ -25,7 +43,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="index"
           options={{
-            title: "Discover",
+            title: "DISCOVER",
             tabBarIcon: ({ color }) => (
               <FontAwesome size={28} name="search" color={color} />
             ),
@@ -34,7 +52,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="profile"
           options={{
-            title: "Profile",
+            title: "PROFILE",
             tabBarIcon: ({ color }) => (
               <FontAwesome size={28} name="male" color={color} />
             ),
