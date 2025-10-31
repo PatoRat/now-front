@@ -5,6 +5,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { useState } from "react";
 import {
     Animated,
+    Linking,
     Pressable,
     StyleSheet,
     Text,
@@ -89,7 +90,11 @@ export const Drawer = () => {
                     </Text>
                 </Pressable>
 
-                <Pressable style={styles.drawerItem} onPress={toggleDrawer}>
+                <Pressable style={styles.drawerItem} onPress={() => {
+                    toggleTheme();
+                    Linking.openURL('https://fijate.com/es/tools/generador-frases-motivacionales');
+                    }}
+                >
                     <Text style={styles.drawerText}>
                         SOPORTE
                     </Text>
@@ -108,15 +113,15 @@ export const Drawer = () => {
 const stylesFunc = (width: number, colors: ThemeColors, insets: EdgeInsets) => StyleSheet.create({
     menuButton: {
         position: "absolute",
-        top: Math.max(16, insets.top + 8),
+        top: Math.max(4, insets.top +10),
         left: 16,
         width: 44,
         height: 44,
         zIndex: 10,
         justifyContent: "center",
+        alignItems: "center",
         overflow: "hidden",
         borderRadius: 10,
-        alignItems: "center",
         elevation: 10,
         backgroundColor: colors.card
     },
