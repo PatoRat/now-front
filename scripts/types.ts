@@ -22,8 +22,8 @@ type PostType = {
     fechaInicio : Date
     fechaFin : Date
     ubicacion : {
-      latitude: number,
-      longitude: number,
+      latitud: number,
+      longitud: number,
       direccion: string
     }
 };

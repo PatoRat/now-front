@@ -5,15 +5,15 @@ const DATA: PostType[] = [
     id: "1",
     titulo: "Afrika",
     descripcion: "Hoy, noche del mes en Afrika Club, no te la pierdas",
-    imagenes: [
+    imagenes: [//ver como se aplica
       { uri: "https://lh3.googleusercontent.com/p/AF1QipOvl8JNluUE7VeTDIs_od4sW2ZY6C330W-KHBwy=s680-w680-h510-rw" },
       { uri: "https://lh3.googleusercontent.com/gps-cs-s/AC9h4noydtcHzXNvnQ0dJ33yWeUPA2N5bUXKWj_gnZb5vYLNMmB-XUxaWrvFzLUt6LTYDdQW2-tmsrL9w79QZOnURvDLHxRiDb2pNPYb9M63K14lK1_A_gZ968FbTwTcu4or_UAd1lMl=s680-w680-h510-rw" }
     ],
     fechaInicio: new Date("2025-11-01T22:30:00"),
     fechaFin: new Date("2025-11-02T02:00:00"),
-    ubicacion: {
-      latitude: -34.6037,
-      longitude: -58.3816,
+    ubicacion: {//ver como se aplica
+      latitud: -34.6037,
+      longitud: -58.3816,
       direccion: "Junín 1787, Buenos Aires"
     }
   },
@@ -27,8 +27,8 @@ const DATA: PostType[] = [
     fechaInicio: new Date("2025-11-02T19:45:00"),
     fechaFin: new Date("2025-11-02T23:00:00"),
     ubicacion: {
-      latitude: -34.5880,
-      longitude: -58.4030,
+      latitud: -34.5880,
+      longitud: -58.4030,
       direccion: "Plaza Vicente López, Buenos Aires"
     }
   },
@@ -40,8 +40,8 @@ const DATA: PostType[] = [
     fechaInicio: new Date("2025-11-03T10:00:00"),
     fechaFin: new Date("2025-11-03T22:00:00"),
     ubicacion: {
-      latitude: -34.6158,
-      longitude: -58.4333,
+      latitud: -34.6158,
+      longitud: -58.4333,
       direccion: "Av. Cabildo 500, Buenos Aires"
     }
   }
