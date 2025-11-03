@@ -15,7 +15,8 @@ const DATA: PostType[] = [
       latitud: -34.6037,
       longitud: -58.3816,
       direccion: "Junín 1787, Buenos Aires"
-    }
+    },
+    creador: "Mateo Villanueva",
   },
   {
     id: "2",
@@ -30,7 +31,8 @@ const DATA: PostType[] = [
       latitud: -34.5880,
       longitud: -58.4030,
       direccion: "Plaza Vicente López, Buenos Aires"
-    }
+    },
+    creador: "Mateo Villanueva",
   },
   {
     id: "3",
@@ -43,7 +45,8 @@ const DATA: PostType[] = [
       latitud: -34.6158,
       longitud: -58.4333,
       direccion: "Av. Cabildo 500, Buenos Aires"
-    }
+    },
+    creador: "Mateo Villanueva",
   }
 ];
 

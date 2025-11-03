@@ -93,6 +93,7 @@ export default function Discover() {
               fechaFin={item.fechaFin}
               ubicacion={item.ubicacion}
               direccion={item.ubicacion?.direccion}
+              creador={item.creador}
             />
           </Pressable>
         )}
@@ -220,14 +221,21 @@ export default function Discover() {
             <Text style={styles.fechaText}>
               Fin: {selectedPost.fechaFin ? formatoFecha(selectedPost.fechaFin) : ""}
             </Text>
+            {/* Creador del post */}
+            <View style={{ alignItems: "center", marginTop: 10 }}>
+              <Text style={{ fontSize: 16, fontWeight: "bold", color: theme.colors.text }}>
+                Creado por: {selectedPost.creador}
+              </Text>
+            </View>
+
 
             {/*  Ubicación */}
               {selectedPost.ubicacion && (
                 <Pressable
                   onPress={() =>
                     abrirEnMaps(
-                      selectedPost.ubicacion.latitude,
-                      selectedPost.ubicacion.longitude
+                      selectedPost.ubicacion.latitud,
+                      selectedPost.ubicacion.longitud
                     )
                   }
                   android_ripple={{ color: "rgba(255,255,255,0.2)" }}

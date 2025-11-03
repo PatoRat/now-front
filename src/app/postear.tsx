@@ -9,7 +9,7 @@ export default function PostScreen() {
 
   return (
     <SafeAreaView style={styles.pestaña}>
-      <Drawer />
+      <Drawer/>
       <Postear />
 
     </SafeAreaView>
@@ -22,5 +22,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  drawer: {
+    top: 10,
   },
 });

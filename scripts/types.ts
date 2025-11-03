@@ -26,6 +26,7 @@ type PostType = {
       longitud: number,
       direccion: string
     }
+    creador: string,
 };
 
 type ImageSelectorButtonProps = {

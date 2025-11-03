@@ -154,6 +154,6 @@ const stylesFn = (theme: Theme, width: number) =>
         color: theme.colors.text,
         flexShrink: 1,
     },
-
-
-  });
+    
+  }
+);
