@@ -7,10 +7,9 @@ type ThemeContextProps = {
 };
 
 type AuthContextProps = {
-    usuario: string,
-    // contrasenia: string,
     isLogged: boolean,
-    logear: (usuario: string, contrasenia: string) => void,
+    guardar_sesion: (token: string) => void,
+    destruir_sesion: () => void,
     signUp: () => void
 };
 
@@ -19,12 +18,12 @@ type PostType = {
     titulo: string,
     descripcion: string,
     imagenes: ImageSourcePropType[]
-    fechaInicio : Date
-    fechaFin : Date
-    ubicacion : {
-      latitud: number,
-      longitud: number,
-      direccion: string
+    fechaInicio: Date
+    fechaFin: Date
+    ubicacion: {
+        latitud: number,
+        longitud: number,
+        direccion: string
     }
     creador: string,
 };

@@ -1,27 +1,28 @@
 import { AuthContextProps, ProviderProps } from "@/scripts/types";
+import * as SecureStore from "expo-secure-store";
 import { createContext, useContext, useState } from "react";
 
 const AuthContext = createContext<AuthContextProps>({
-    usuario: {} as string,
-    // contrasenia: {} as string,
     isLogged: {} as boolean,
-    logear: () => { },
+    guardar_sesion: () => { },
+    destruir_sesion: () => { },
     signUp: () => { }
 });
 
 const AuthProvider = ({ children }: ProviderProps) => {
-    const [usuario, setUsuario] = useState("guest");
-    const [contrasenia, setContrasenia] = useState("");
     const [isLogged, setLogged] = useState(false);
 
-    const logear = (usuario: string, contrasenia: string) => {
-        setUsuario(usuario);
-        setContrasenia(contrasenia);
+    const guardar_sesion = async (token: string) => {
+        await SecureStore.setItemAsync("token", token);
         setLogged(true);
     }
 
+    const destruir_sesion = async () => {
+        setLogged(false);
+    }
+
     return (
-        <AuthContext.Provider value={{ usuario, isLogged, logear, signUp }}>
+        <AuthContext.Provider value={{ isLogged, guardar_sesion, destruir_sesion, signUp }}>
             {children}
         </AuthContext.Provider>
     );
