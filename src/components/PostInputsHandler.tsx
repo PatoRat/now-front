@@ -102,10 +102,11 @@ const PostInputsHandler = (props: { router: Router }) => {
             fechaInicio,
             fechaFin,
             ubicacion: {
-            latitude: ubicacion.latitude,
-            longitude: ubicacion.longitude,
+            latitud: ubicacion.latitude,
+            longitud: ubicacion.longitude,
             direccion: direccion,
             },
+            creador: "jiji"
         });
 
     props.router.back();
