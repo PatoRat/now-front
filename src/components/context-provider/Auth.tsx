@@ -16,7 +16,7 @@ const AuthContext = createContext<AuthContextProps>({
 const AuthProvider = ({ children }: ProviderProps) => {
     const [token, setToken] = useState("");
     const [isLogged, setLogged] = useState(false);
-    const [usuario, setUsuario] = useState<UserData>({//agregar favs
+    const [usuario, setUsuario] = useState<UserData>({
         id: 0,
         nombre: "guest",
         numeroAvatar: 0,
