@@ -8,6 +8,8 @@ type ThemeContextProps = {
 
 type AuthContextProps = {
     isLogged: boolean,
+    isFetching: boolean,
+    usuario: UserData,
     guardar_sesion: (token: string) => void,
     destruir_sesion: () => void,
     signUp: () => void
@@ -36,6 +38,34 @@ type ProviderProps = {
     children: React.ReactNode;
 };
 
+type UserData = {
+    id: number,
+    nombre: string,
+    numeroAvatar: number,
+    favs: Fav[]
+};
+
+type Fav = ({
+    ubicacion: {
+        eventId: number;
+        latitud: number;
+        longitud: number;
+        direccion: string;
+    } | null;
+    imagenes: {
+        id: number;
+        eventId: number;
+        url: string;
+    }[];
+} & {
+    id: number;
+    titulo: string;
+    descripcion: string;
+    fechaInicio: Date;
+    fechaFin: Date;
+    userId: number | null;
+})
+
 type ThemeColors = {
     primary: string;
     background: string;
@@ -46,7 +76,8 @@ type ThemeColors = {
 }
 
 export {
-    AuthContextProps, ImageSelectorButtonProps,
-    PostType, ProviderProps, ThemeColors, ThemeContextProps
+    AuthContextProps, Fav, ImageSelectorButtonProps,
+    PostType, ProviderProps, ThemeColors, ThemeContextProps,
+    UserData
 };
 

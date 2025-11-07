@@ -1,11 +1,19 @@
 import { useAuth } from "@/src/components/context-provider/Auth";
 import { useTheme } from "@/src/components/context-provider/Theme";
 import { Stack } from "expo-router";
-import { Image } from "react-native";
+import { ActivityIndicator, Image } from "react-native";
 
 const StackPersonalizado = () => {
-  const { usuario, isLogged } = useAuth();
+  const { usuario, isLogged, isFetching } = useAuth();
   const { theme } = useTheme();
+
+  if (isFetching) {
+    return (
+      <Stack>
+        <ActivityIndicator />
+      </Stack>
+    );
+  }
 
   if (!isLogged) {
     return (
