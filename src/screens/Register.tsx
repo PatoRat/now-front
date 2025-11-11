@@ -34,6 +34,7 @@ const Register = () => {
         }
         else {
           await registrarse(nombre, email, contrasenia, numeroAvatar);
+          // router.replace("/(tabs)")
         }
 
       } catch (error) {

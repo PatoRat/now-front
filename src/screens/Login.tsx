@@ -27,6 +27,7 @@ const Login = () => {
     if (!isFetching) {
       try {
         await login(email, password);
+        // router.replace("/(tabs)")
 
       } catch (error) {
         console.error("Ocurrio un error: ", error);

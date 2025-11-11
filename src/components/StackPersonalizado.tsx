@@ -4,7 +4,7 @@ import { Stack } from "expo-router";
 import { ActivityIndicator, Image } from "react-native";
 
 const StackPersonalizado = () => {
-  const { usuario, isLogged, isFetching } = useAuth();
+  const { isLogged, isFetching } = useAuth();
   const { theme } = useTheme();
 
   if (isFetching) {
