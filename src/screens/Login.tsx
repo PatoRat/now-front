@@ -15,7 +15,7 @@ import {
 
 const Login = () => {
   const router = useRouter();
-  const { guardar_sesion } = useAuth();
+  const { login, isFetching } = useAuth();
   const { theme } = useTheme();
   const { width } = useWindowDimensions();
   const styles = stylesFn(theme, width);
@@ -23,28 +23,16 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const onLogin = () => {
-    guardar_sesion(email);
-    router.replace("/(tabs)");
-  };
+  const onLogin = async () => {
+    if (!isFetching) {
+      try {
+        await login(email, password);
 
-  /*
-  const producto: Omit<ItemProps, "id"> = {
-      imagenURL: imagenURLProducto,
-      titulo: tituloProducto,
-      precio: precioProducto,
-      descripcion: descripcionProducto
-  };
-  try {
-      const response = await fetch(`${URL_BACKEND}/products`, {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(producto),
-      });
-
-  */
+      } catch (error) {
+        console.error("Ocurrio un error: ", error);
+      }
+    }
+  }
 
   const registrar = () => router.push({ pathname: "../(auth)/register" });
 

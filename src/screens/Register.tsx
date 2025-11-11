@@ -1,6 +1,7 @@
 import { useAuth } from "@/src/components/context-provider/Auth";
 import { useTheme } from "@/src/components/context-provider/Theme";
 import { useRouter } from "expo-router";
+import { useState } from "react";
 import {
   Pressable,
   StyleSheet,
@@ -12,17 +13,38 @@ import {
 
 const Register = () => {
   const router = useRouter();
-  const { signUp } = useAuth();
+  const { registrarse, isFetching } = useAuth();
   const { theme } = useTheme();
   const { width } = useWindowDimensions();
   const styles = stylesFn(theme, width);
 
+  const [nombre, setNombre] = useState("");
+  const [email, setEmail] = useState("");
+  const [contrasenia, setContrasenia] = useState("");
+  const [confirmarPsw, setPswConfirm] = useState("");
+  const [numeroAvatar/*, setNumeroAvatar*/] = useState(0);
+
+
   const onRegister = async () => {
-    await signUp(/* datos del form */);
-    router.replace("/(tabs)");
+    if (!isFetching) {
+      try {
+        if (!(contrasenia === confirmarPsw)) {
+          console.error("Las contraseñas deben coincidir");
+          {/* Poner algun componente bonito de animacion que haga el Alert */ }
+        }
+        else {
+          await registrarse(nombre, email, contrasenia, numeroAvatar);
+        }
+
+      } catch (error) {
+        console.error("Ocurrio un error: ", error);
+        {/* Poner algun componente bonito de animacion que haga el Alert */ }
+      }
+    }
   };
 
-  const volverLogin = () => router.push({ pathname: "../(auth)/login" });
+  // const volverLogin = () => router.push({ pathname: "../(auth)/login" });
+  const volverLogin = () => router.back();
 
   return (
     <View style={styles.container}>
@@ -32,26 +54,36 @@ const Register = () => {
         <TextInput
           placeholder="Nombre completo"
           placeholderTextColor={theme.colors.border}
+          value={nombre}
+          onChangeText={setNombre}
           style={styles.input}
         />
         <TextInput
           placeholder="Email"
           placeholderTextColor={theme.colors.border}
+          value={email}
+          onChangeText={setEmail}
           keyboardType="email-address"
           style={styles.input}
         />
         <TextInput
           placeholder="Contraseña"
           placeholderTextColor={theme.colors.border}
+          value={contrasenia}
+          onChangeText={setContrasenia}
           secureTextEntry
           style={styles.input}
         />
         <TextInput
           placeholder="Confirmar contraseña"
           placeholderTextColor={theme.colors.border}
+          value={confirmarPsw}
+          onChangeText={setPswConfirm}
           secureTextEntry
           style={styles.input}
         />
+
+        {/** Habría que meter un selector para elegir el avatar, o por defecto le asignamos uno */}
 
         <Pressable onPress={onRegister} style={styles.button}>
           <Text style={styles.buttonText}>Registrarme</Text>

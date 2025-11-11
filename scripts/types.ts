@@ -10,9 +10,10 @@ type AuthContextProps = {
     isLogged: boolean,
     isFetching: boolean,
     usuario: UserData,
-    guardar_sesion: (token: string) => void,
+    token: string,
+    login: (email: string, contrasenia: string) => void,
     destruir_sesion: () => void,
-    signUp: () => void
+    registrarse: (nombre: string, email: string, contrasenia: string, numeroAvatar: number) => void
 };
 
 type PostType = {

@@ -8,27 +8,28 @@ const AuthContext = createContext<AuthContextProps>({
     isLogged: {} as boolean,
     usuario: {} as UserData,
     isFetching: false,
-    guardar_sesion: () => { },
+    token: "",
+    login: () => { },
     destruir_sesion: () => { },
-    signUp: () => { }
+    registrarse: () => { }
 });
 
 const AuthProvider = ({ children }: ProviderProps) => {
     const [token, setToken] = useState("");
     const [isLogged, setLogged] = useState(false);
-    const [usuario, setUsuario] = useState<UserData>({
+    const [usuario] = useState<UserData>({
         id: 0,
         nombre: "guest",
         numeroAvatar: 0,
         favs: {} as Fav[]
     });
 
-    const fetchUser = async (token: string) => {
+    const fetchUser = async (tokenAuth: string) => {
         await new Promise((resolve) => setTimeout(resolve, 2000));
 
         const response = await fetch(`${URL_BACKEND}/my-user`, {
             headers: {
-                'Authorization': `Bearer ${token}`,
+                'Authorization': `Bearer ${tokenAuth}`,
             }
         });
 
@@ -64,10 +65,11 @@ const AuthProvider = ({ children }: ProviderProps) => {
         })();
     }, []);
 
-    const guardar_sesion = async (token: string) => {
+    const guardar_sesion = async (tokenAuth: string) => {
         setLogged(true);
+        setToken(tokenAuth);
         await SecureStore.setItemAsync('isLogged', 'true').catch(() => { });
-        await SecureStore.setItemAsync("token", token).catch(() => { });
+        await SecureStore.setItemAsync("token", tokenAuth).catch(() => { });
     }
 
     const destruir_sesion = async () => {
@@ -76,8 +78,70 @@ const AuthProvider = ({ children }: ProviderProps) => {
         await SecureStore.deleteItemAsync('token').catch(() => { });
     }
 
+    const login = async (email: string, contrasenia: string) => {
+        try {
+            const response = await fetch(`${URL_BACKEND}/users/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ email: email, password: contrasenia })
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error);
+            }
+
+            const tokenAuth = await response.json();
+
+            await guardar_sesion(tokenAuth);
+
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    const registrarse = async (
+        nombre: string,
+        email: string,
+        contrasenia: string,
+        numeroAvatar: number
+    ) => {
+        try {
+            const response = await fetch(`${URL_BACKEND}/users/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    nombre: nombre,
+                    email: email,
+                    password: contrasenia,
+                    numeroAvatar: numeroAvatar
+                })
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error);
+            }
+
+            const tokenAuth = await response.json();
+
+            await guardar_sesion(tokenAuth);
+
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
     return (
-        <AuthContext.Provider value={{ isLogged, usuario: data ? data : usuario, guardar_sesion, destruir_sesion, signUp, isFetching }}>
+        <AuthContext.Provider value={{ isLogged, usuario: data ? data : usuario, token, login, destruir_sesion, registrarse, isFetching }}>
             {children}
         </AuthContext.Provider>
     );
@@ -85,7 +149,5 @@ const AuthProvider = ({ children }: ProviderProps) => {
 
 const useAuth = () => useContext(AuthContext);
 
-const signUp = () => { }
-
-export { AuthProvider, signUp, useAuth };
+export { AuthProvider, useAuth };
 
