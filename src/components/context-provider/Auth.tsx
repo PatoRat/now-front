@@ -1,8 +1,10 @@
 import { AuthContextProps, Fav, ProviderProps, UserData } from "@/scripts/types";
 import { URL_BACKEND } from "@/src/config";
-import { useQuery } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
 import * as SecureStore from "expo-secure-store";
 import { createContext, useContext, useEffect, useState } from "react";
+
+const queryClient = new QueryClient();
 
 const AuthContext = createContext<AuthContextProps>({
     isLogged: {} as boolean,
@@ -141,9 +143,11 @@ const AuthProvider = ({ children }: ProviderProps) => {
     }
 
     return (
-        <AuthContext.Provider value={{ isLogged, usuario: data ? data : usuario, token, login, destruir_sesion, registrarse, isFetching }}>
-            {children}
-        </AuthContext.Provider>
+        <QueryClientProvider client={queryClient}>
+            <AuthContext.Provider value={{ isLogged, usuario: data ? data : usuario, token, login, destruir_sesion, registrarse, isFetching }}>
+                {children}
+            </AuthContext.Provider>
+        </QueryClientProvider>
     );
 };
 
