@@ -1,13 +1,11 @@
 import { AuthContextProps, Fav, ProviderProps, UserData } from "@/scripts/types";
 import { URL_BACKEND } from "@/src/config";
-import { useQuery } from "@tanstack/react-query";
 import * as SecureStore from "expo-secure-store";
 import { createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext<AuthContextProps>({
     isLogged: {} as boolean,
     usuario: {} as UserData,
-    isFetching: false,
     token: "",
     login: () => { },
     destruir_sesion: () => { },
@@ -17,7 +15,7 @@ const AuthContext = createContext<AuthContextProps>({
 const AuthProvider = ({ children }: ProviderProps) => {
     const [token, setToken] = useState("");
     const [isLogged, setLogged] = useState(false);
-    const [usuario] = useState<UserData>({
+    const [usuario, setUsuario] = useState<UserData>({
         id: 0,
         nombre: "guest",
         numeroAvatar: 0,
@@ -25,7 +23,7 @@ const AuthProvider = ({ children }: ProviderProps) => {
     });
 
     const fetchUser = async (tokenAuth: string) => {
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        console.log("llegue al fetch", tokenAuth);
 
         const response = await fetch(`${URL_BACKEND}/my-user`, {
             headers: {
@@ -34,23 +32,19 @@ const AuthProvider = ({ children }: ProviderProps) => {
         });
 
         if (!response.ok) {
+            console.error(response.body);
             throw new Error("Error al obtener la información del usuario");
         }
 
-        return response.json() as Promise<UserData>
+        return response.json();
     }
-
-    const { isFetching, data, } = useQuery({
-        queryKey: ["user", token],
-        enabled: !!token,
-        queryFn: () => fetchUser(token)
-    });
 
     useEffect(() => {
         (async () => {
             try {
                 const storedLogged = await SecureStore.getItemAsync('isLogged');
                 const tokenSaved = await SecureStore.getItemAsync('token');
+                console.log(`useEffect, con storedLogged: ${storedLogged} y token: ${tokenSaved}`);
                 if (storedLogged === 'true') {
                     setLogged(true);
                 } else {
@@ -58,6 +52,7 @@ const AuthProvider = ({ children }: ProviderProps) => {
                 }
                 if (tokenSaved) {
                     setToken(tokenSaved);
+                    setUsuario(await fetchUser(tokenSaved));
                 }
             } catch (e) {
                 console.error(e);
@@ -66,6 +61,7 @@ const AuthProvider = ({ children }: ProviderProps) => {
     }, []);
 
     const guardar_sesion = async (tokenAuth: string) => {
+        console.log("llegue");
         setLogged(true);
         setToken(tokenAuth);
         await SecureStore.setItemAsync('isLogged', 'true').catch(() => { });
@@ -80,11 +76,14 @@ const AuthProvider = ({ children }: ProviderProps) => {
 
     const login = async (email: string, contrasenia: string) => {
         try {
+            const storedLogged = await SecureStore.getItemAsync('isLogged');
+            const tokenSaved = await SecureStore.getItemAsync('token');
+            console.log("token", tokenSaved);
+            console.log("esta loggeado", storedLogged);
             const response = await fetch(`${URL_BACKEND}/users/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
                 },
                 body: JSON.stringify({ email: email, password: contrasenia })
             });
@@ -141,7 +140,7 @@ const AuthProvider = ({ children }: ProviderProps) => {
     }
 
     return (
-        <AuthContext.Provider value={{ isLogged, usuario: data ? data : usuario, token, login, destruir_sesion, registrarse, isFetching }}>
+        <AuthContext.Provider value={{ isLogged, usuario, token, login, destruir_sesion, registrarse }}>
             {children}
         </AuthContext.Provider>
     );

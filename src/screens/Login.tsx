@@ -15,7 +15,7 @@ import {
 
 const Login = () => {
   const router = useRouter();
-  const { login, isFetching } = useAuth();
+  const { login } = useAuth();
   const { theme } = useTheme();
   const { width } = useWindowDimensions();
   const styles = stylesFn(theme, width);
@@ -24,7 +24,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
 
   const onLogin = async () => {
-    if (!isFetching) {
+    // if (!isFetching) {
       try {
         await login(email, password);
         // router.replace("/(tabs)")
@@ -32,7 +32,7 @@ const Login = () => {
       } catch (error) {
         console.error("Ocurrio un error: ", error);
       }
-    }
+    // }
   }
 
   const registrar = () => router.push({ pathname: "../(auth)/register" });

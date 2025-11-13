@@ -1,21 +1,22 @@
 import { useAuth } from "@/src/components/context-provider/Auth";
 import { useTheme } from "@/src/components/context-provider/Theme";
 import { Stack } from "expo-router";
-import { ActivityIndicator, Image } from "react-native";
+import { Image } from "react-native";
 
 const StackPersonalizado = () => {
-  const { isLogged, isFetching } = useAuth();
+  const { isLogged } = useAuth();
   const { theme } = useTheme();
 
-  if (isFetching) {
-    return (
-      <Stack>
-        <ActivityIndicator />
-      </Stack>
-    );
-  }
+  // if (isFetching) {
+  //   return (
+  //     <Stack>
+  //       <ActivityIndicator />
+  //     </Stack>
+  //   );
+  // }
 
   if (!isLogged) {
+    console.log("estoy en login");
     return (
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen
@@ -29,6 +30,7 @@ const StackPersonalizado = () => {
       </Stack>
     );
   } else {
+    console.log("estoy en tabs");
     return (
       <Stack
         screenOptions={{
@@ -38,6 +40,14 @@ const StackPersonalizado = () => {
       >
         <Stack.Screen
           name="(tabs)"
+          options={{
+            headerShown: false,
+            animation: "slide_from_bottom",
+          }}
+        />
+
+        <Stack.Screen
+          name="(auth)"
           options={{
             headerShown: false,
             animation: "slide_from_bottom",

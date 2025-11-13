@@ -8,7 +8,6 @@ type ThemeContextProps = {
 
 type AuthContextProps = {
     isLogged: boolean,
-    isFetching: boolean,
     usuario: UserData,
     token: string,
     login: (email: string, contrasenia: string) => void,
