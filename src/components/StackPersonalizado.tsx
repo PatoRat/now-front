@@ -15,10 +15,13 @@ const StackPersonalizado = () => {
   //   );
   // }
 
-  if (!isLogged) {
-    console.log("estoy en login");
-    return (
-      <Stack screenOptions={{ headerShown: false }}>
+  return (
+    <Stack screenOptions={{
+      headerShown: false,
+      statusBarStyle: "light",
+      contentStyle: { backgroundColor: theme.colors.background },
+    }}>
+      <Stack.Protected guard={!isLogged}>
         <Stack.Screen
           name="(auth)"
           options={{
@@ -27,17 +30,8 @@ const StackPersonalizado = () => {
             contentStyle: { backgroundColor: theme.colors.background },
           }}
         />
-      </Stack>
-    );
-  } else {
-    console.log("estoy en tabs");
-    return (
-      <Stack
-        screenOptions={{
-          statusBarStyle: "light",
-          contentStyle: { backgroundColor: theme.colors.background },
-        }}
-      >
+      </Stack.Protected>
+      <Stack.Protected guard={isLogged}>
         <Stack.Screen
           name="(tabs)"
           options={{
@@ -73,9 +67,9 @@ const StackPersonalizado = () => {
             animation: "slide_from_bottom",
           }}
         />
-      </Stack>
-    );
-  }
+      </Stack.Protected>
+    </Stack>
+  );
 };
 
 export { StackPersonalizado };

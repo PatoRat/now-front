@@ -13,6 +13,7 @@ import {
     View
 } from "react-native";
 import { EdgeInsets, useSafeAreaInsets } from "react-native-safe-area-context";
+import { useAuth } from "../context-provider/Auth";
 
 export const Drawer = () => {
 
@@ -22,6 +23,7 @@ export const Drawer = () => {
     const drawerWidth = Math.min(420, width - insets.left - 8);
 
     const { theme, setTheme } = useTheme();
+    const { destruir_sesion } = useAuth();
     const [slideAnim] = useState(() => new Animated.Value(0));
     const backgroundColor = theme.colors.card;
 
@@ -34,6 +36,11 @@ export const Drawer = () => {
             useNativeDriver: true,
         }).start();
         setIsDrawerOpen(!isDrawerOpen);
+    };
+
+    const cerrarSesion = () => {
+        toggleDrawer();
+        destruir_sesion();
     };
 
     const translateX = slideAnim.interpolate({
@@ -100,7 +107,7 @@ export const Drawer = () => {
                     </Text>
                 </Pressable>
 
-                <Pressable style={styles.drawerItem} onPress={toggleDrawer}>
+                <Pressable style={styles.drawerItem} onPress={cerrarSesion}>
                     <Text style={styles.drawerText}>
                         CERRAR SESIÓN
                     </Text>

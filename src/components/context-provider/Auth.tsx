@@ -70,6 +70,7 @@ const AuthProvider = ({ children }: ProviderProps) => {
 
     const destruir_sesion = async () => {
         setLogged(false);
+        setToken("");
         await SecureStore.setItemAsync('isLogged', 'false').catch(() => { });
         await SecureStore.deleteItemAsync('token').catch(() => { });
     }
