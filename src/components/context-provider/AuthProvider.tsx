@@ -1,35 +1,20 @@
 import { Fav, ProviderProps, UserData } from "@/scripts/types";
-import { URL_BACKEND } from "@/src/config";
+import { userGet, userLogin, userRegister } from "@/src/app/api/user.route";
 import * as SecureStore from "expo-secure-store";
 import { useEffect, useState } from "react";
 import { AuthContext } from "./AuthContext";
 
 const AuthProvider = ({ children }: ProviderProps) => {
-    const [token, setToken] = useState("");
-    const [isLogged, setLogged] = useState(false);
-    const [usuario, setUsuario] = useState<UserData>({
+    const usuarioDefault = {
         id: 0,
         nombre: "guest",
         numeroAvatar: 0,
         favs: {} as Fav[]
-    });
+    };
 
-    const fetchUser = async (tokenAuth: string) => {
-        console.log("llegue al fetch", tokenAuth);
-
-        const response = await fetch(`${URL_BACKEND}/my-user`, {
-            headers: {
-                'Authorization': `Bearer ${tokenAuth}`,
-            }
-        });
-
-        if (!response.ok) {
-            console.error(response.body);
-            throw new Error("Error al obtener la información del usuario");
-        }
-
-        return response.json();
-    }
+    const [token, setToken] = useState("");
+    const [isLogged, setLogged] = useState(false);
+    const [usuario, setUsuario] = useState<UserData>(usuarioDefault);
 
     useEffect(() => {
         (async () => {
@@ -39,7 +24,7 @@ const AuthProvider = ({ children }: ProviderProps) => {
                 if (tokenSaved) {
                     setLogged(true);
                     setToken(tokenSaved);
-                    setUsuario(await fetchUser(tokenSaved));
+                    setUsuario(await userGet(tokenSaved));
                 }
             } catch (e) {
                 console.error(e);
@@ -51,33 +36,25 @@ const AuthProvider = ({ children }: ProviderProps) => {
         console.log("llegue");
         setLogged(true);
         setToken(tokenAuth);
+        setUsuario(await userGet(tokenAuth));
+
         await SecureStore.setItemAsync("token", tokenAuth).catch(() => { });
     }
 
     const destruir_sesion = async () => {
         setLogged(false);
         setToken("");
+        setUsuario(usuarioDefault);
+
         await SecureStore.deleteItemAsync('token').catch(() => { });
     }
 
     const login = async (email: string, contrasenia: string) => {
         try {
-            const tokenSaved = await SecureStore.getItemAsync('token');
-            console.log("token", tokenSaved);
-            const response = await fetch(`${URL_BACKEND}/users/login`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email: email, password: contrasenia })
-            });
+            // const tokenSaved = await SecureStore.getItemAsync('token');
+            // console.log("token", tokenSaved);
 
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.error);
-            }
-
-            const tokenAuth = await response.json();
+            const tokenAuth = await userLogin(email, contrasenia);
 
             await guardar_sesion(tokenAuth);
 
@@ -94,26 +71,7 @@ const AuthProvider = ({ children }: ProviderProps) => {
         numeroAvatar: number
     ) => {
         try {
-            const response = await fetch(`${URL_BACKEND}/users/register`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                    nombre: nombre,
-                    email: email,
-                    password: contrasenia,
-                    numeroAvatar: numeroAvatar
-                })
-            });
-
-            if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.error);
-            }
-
-            const tokenAuth = await response.json();
+            const tokenAuth = await userRegister(nombre, email, contrasenia, numeroAvatar);
 
             await guardar_sesion(tokenAuth);
 
