@@ -1,5 +1,5 @@
-import { useAuth } from "@/src/components/context-provider/Auth";
-import { useTheme } from "@/src/components/context-provider/Theme";
+import { useAuth } from "@/src/hooks/useAuth";
+import { useTheme } from "@/src/hooks/useTheme";
 import { Theme } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
@@ -25,13 +25,13 @@ const Login = () => {
 
   const onLogin = async () => {
     // if (!isFetching) {
-      try {
-        await login(email, password);
-        // router.replace("/(tabs)")
+    try {
+      await login(email, password);
+      // router.replace("/(tabs)")
 
-      } catch (error) {
-        console.error("Ocurrio un error: ", error);
-      }
+    } catch (error) {
+      console.error("Ocurrio un error: ", error);
+    }
     // }
   }
 

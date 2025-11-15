@@ -1,5 +1,5 @@
-import { useAuth } from "@/src/components/context-provider/Auth";
-import { useTheme } from "@/src/components/context-provider/Theme";
+import { useAuth } from "@/src/hooks/useAuth";
+import { useTheme } from "@/src/hooks/useTheme";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -13,7 +13,7 @@ import {
 
 const Register = () => {
   const router = useRouter();
-  const { registrarse, isFetching } = useAuth();
+  const { registrarse } = useAuth();
   const { theme } = useTheme();
   const { width } = useWindowDimensions();
   const styles = stylesFn(theme, width);
@@ -26,22 +26,22 @@ const Register = () => {
 
 
   const onRegister = async () => {
-    if (!isFetching) {
-      try {
-        if (!(contrasenia === confirmarPsw)) {
-          console.error("Las contraseñas deben coincidir");
-          {/* Poner algun componente bonito de animacion que haga el Alert */ }
-        }
-        else {
-          await registrarse(nombre, email, contrasenia, numeroAvatar);
-          // router.replace("/(tabs)")
-        }
 
-      } catch (error) {
-        console.error("Ocurrio un error: ", error);
+    try {
+      if (!(contrasenia === confirmarPsw)) {
+        console.error("Las contraseñas deben coincidir");
         {/* Poner algun componente bonito de animacion que haga el Alert */ }
       }
+      else {
+        await registrarse(nombre, email, contrasenia, numeroAvatar);
+        // router.replace("/(tabs)")
+      }
+
+    } catch (error) {
+      console.error("Ocurrio un error: ", error);
+      {/* Poner algun componente bonito de animacion que haga el Alert */ }
     }
+
   };
 
   // const volverLogin = () => router.push({ pathname: "../(auth)/login" });

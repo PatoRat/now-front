@@ -1,5 +1,5 @@
 import { ThemeColors } from "@/scripts/types";
-import { useTheme } from "@/src/components/context-provider/Theme";
+import { useTheme } from "@/src/hooks/useTheme";
 import Favs from "@/src/screens/Favs";
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";

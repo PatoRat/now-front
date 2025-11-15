@@ -1,6 +1,6 @@
 import DATA from "@/assets/databases/data";
-import { useTheme } from "@/src/components/context-provider/Theme";
 import Post from "@/src/components/Post";
+import { useTheme } from "@/src/hooks/useTheme";
 import { FontAwesome } from "@expo/vector-icons";
 import { Theme } from "@react-navigation/native";
 import { BlurView } from 'expo-blur';

@@ -1,5 +1,5 @@
 import { ThemeColors } from "@/scripts/types";
-import { useTheme } from "@/src/components/context-provider/Theme";
+import { useTheme } from "@/src/hooks/useTheme";
 import { StyleSheet, Text } from "react-native";
 
 export default function Favs() {

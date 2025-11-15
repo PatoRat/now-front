@@ -1,7 +1,7 @@
-import { useAuth } from "@/src/components/context-provider/Auth";
-import { useTheme } from "@/src/components/context-provider/Theme";
 import { Stack } from "expo-router";
 import { Image } from "react-native";
+import { useAuth } from "../hooks/useAuth";
+import { useTheme } from "../hooks/useTheme";
 
 const StackPersonalizado = () => {
   const { isLogged } = useAuth();
@@ -14,6 +14,8 @@ const StackPersonalizado = () => {
   //     </Stack>
   //   );
   // }
+
+  console.log("Estas logged?:", isLogged);
 
   return (
     <Stack screenOptions={{

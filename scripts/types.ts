@@ -1,10 +1,3 @@
-import { Theme } from "@react-navigation/native";
-import { ImageSourcePropType } from "react-native";
-
-type ThemeContextProps = {
-    theme: Theme,
-    setTheme: (theme: Theme) => void
-};
 
 type AuthContextProps = {
     isLogged: boolean,
@@ -13,25 +6,6 @@ type AuthContextProps = {
     login: (email: string, contrasenia: string) => void,
     destruir_sesion: () => void,
     registrarse: (nombre: string, email: string, contrasenia: string, numeroAvatar: number) => void
-};
-
-type PostType = {
-    id: string,
-    titulo: string,
-    descripcion: string,
-    imagenes: ImageSourcePropType[]
-    fechaInicio: Date
-    fechaFin: Date
-    ubicacion: {
-        latitud: number,
-        longitud: number,
-        direccion: string
-    }
-    creador: string,
-};
-
-type ImageSelectorButtonProps = {
-    onSelect: React.Dispatch<React.SetStateAction<ImageSourcePropType[]>>;
 };
 
 type ProviderProps = {
@@ -76,8 +50,8 @@ type ThemeColors = {
 }
 
 export {
-    AuthContextProps, Fav, ImageSelectorButtonProps,
-    PostType, ProviderProps, ThemeColors, ThemeContextProps,
+    AuthContextProps, Fav,
+    ProviderProps, ThemeColors,
     UserData
 };
 

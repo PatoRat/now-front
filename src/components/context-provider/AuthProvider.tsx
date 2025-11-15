@@ -1,16 +1,8 @@
-import { AuthContextProps, Fav, ProviderProps, UserData } from "@/scripts/types";
+import { Fav, ProviderProps, UserData } from "@/scripts/types";
 import { URL_BACKEND } from "@/src/config";
 import * as SecureStore from "expo-secure-store";
-import { createContext, useContext, useEffect, useState } from "react";
-
-const AuthContext = createContext<AuthContextProps>({
-    isLogged: {} as boolean,
-    usuario: {} as UserData,
-    token: "",
-    login: () => { },
-    destruir_sesion: () => { },
-    registrarse: () => { }
-});
+import { useEffect, useState } from "react";
+import { AuthContext } from "./AuthContext";
 
 const AuthProvider = ({ children }: ProviderProps) => {
     const [token, setToken] = useState("");
@@ -42,15 +34,10 @@ const AuthProvider = ({ children }: ProviderProps) => {
     useEffect(() => {
         (async () => {
             try {
-                const storedLogged = await SecureStore.getItemAsync('isLogged');
                 const tokenSaved = await SecureStore.getItemAsync('token');
-                console.log(`useEffect, con storedLogged: ${storedLogged} y token: ${tokenSaved}`);
-                if (storedLogged === 'true') {
-                    setLogged(true);
-                } else {
-                    setLogged(false);
-                }
+                console.log(`useEffect, con token: ${tokenSaved}`);
                 if (tokenSaved) {
+                    setLogged(true);
                     setToken(tokenSaved);
                     setUsuario(await fetchUser(tokenSaved));
                 }
@@ -64,23 +51,19 @@ const AuthProvider = ({ children }: ProviderProps) => {
         console.log("llegue");
         setLogged(true);
         setToken(tokenAuth);
-        await SecureStore.setItemAsync('isLogged', 'true').catch(() => { });
         await SecureStore.setItemAsync("token", tokenAuth).catch(() => { });
     }
 
     const destruir_sesion = async () => {
         setLogged(false);
         setToken("");
-        await SecureStore.setItemAsync('isLogged', 'false').catch(() => { });
         await SecureStore.deleteItemAsync('token').catch(() => { });
     }
 
     const login = async (email: string, contrasenia: string) => {
         try {
-            const storedLogged = await SecureStore.getItemAsync('isLogged');
             const tokenSaved = await SecureStore.getItemAsync('token');
             console.log("token", tokenSaved);
-            console.log("esta loggeado", storedLogged);
             const response = await fetch(`${URL_BACKEND}/users/login`, {
                 method: 'POST',
                 headers: {
@@ -147,7 +130,5 @@ const AuthProvider = ({ children }: ProviderProps) => {
     );
 };
 
-const useAuth = () => useContext(AuthContext);
-
-export { AuthProvider, useAuth };
+export { AuthProvider };
 

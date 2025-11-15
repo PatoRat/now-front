@@ -1,5 +1,4 @@
 import DATA from "@/assets/databases/data";
-import { useTheme } from "@/src/components/context-provider/Theme";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 import { Theme } from "@react-navigation/native";
@@ -17,6 +16,7 @@ import {
     View,
 } from "react-native";
 import MapView, { Marker } from 'react-native-maps';
+import { useTheme } from "../hooks/useTheme";
 import ImageSelectorButton from "./ImageSelectorButton";
 
 const PostInputsHandler = (props: { router: Router }) => {

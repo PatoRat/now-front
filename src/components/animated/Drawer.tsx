@@ -1,6 +1,7 @@
 import { BamvDark, BamvLight } from "@/scripts/themes";
 import { ThemeColors } from "@/scripts/types";
-import { useTheme } from "@/src/components/context-provider/Theme";
+import { useAuth } from "@/src/hooks/useAuth";
+import { useTheme } from "@/src/hooks/useTheme";
 import { FontAwesome } from "@expo/vector-icons";
 import { useState } from "react";
 import {
@@ -13,7 +14,6 @@ import {
     View
 } from "react-native";
 import { EdgeInsets, useSafeAreaInsets } from "react-native-safe-area-context";
-import { useAuth } from "../context-provider/Auth";
 
 export const Drawer = () => {
 
@@ -100,7 +100,7 @@ export const Drawer = () => {
                 <Pressable style={styles.drawerItem} onPress={() => {
                     toggleTheme();
                     Linking.openURL('https://fijate.com/es/tools/generador-frases-motivacionales');
-                    }}
+                }}
                 >
                     <Text style={styles.drawerText}>
                         SOPORTE
@@ -120,7 +120,7 @@ export const Drawer = () => {
 const stylesFunc = (width: number, colors: ThemeColors, insets: EdgeInsets) => StyleSheet.create({
     menuButton: {
         position: "absolute",
-        top: Math.max(4, insets.top +10),
+        top: Math.max(4, insets.top + 10),
         left: 16,
         width: 44,
         height: 44,
