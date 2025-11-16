@@ -8,18 +8,18 @@ const queryClient = new QueryClient();
 
 export default function RootLayout() {
 
-  return (
-    <SafeAreaProvider>
+	return (
+		<SafeAreaProvider>
 
-      <ThemeProvider>
-        <QueryClientProvider client={queryClient}>
-          <AuthProvider>
-            <StackPersonalizado />
-          </AuthProvider>
-        </QueryClientProvider>
-      </ThemeProvider>
+			<ThemeProvider>
+				<QueryClientProvider client={queryClient}>
+					<AuthProvider>
+						<StackPersonalizado />
+					</AuthProvider>
+				</QueryClientProvider>
+			</ThemeProvider>
 
-    </SafeAreaProvider>
+		</SafeAreaProvider>
 
-  );
+	);
 }

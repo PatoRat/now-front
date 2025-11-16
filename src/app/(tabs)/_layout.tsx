@@ -6,71 +6,71 @@ import { Image, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TabLayout() {
-  const { theme } = useTheme();
+	const { theme } = useTheme();
 
-  return (
-    <SafeAreaView
-        style={{ flex: 1, backgroundColor: theme.colors.card }}
-        edges={['top']}
-    >
-      <View style={{ flex: 1 }}>
-        {/* Drawer superpuesto */}
-        <Drawer />
+	return (
+		<SafeAreaView
+			style={{ flex: 1, backgroundColor: theme.colors.card }}
+			edges={['top']}
+		>
+			<View style={{ flex: 1 }}>
+				{/* Drawer superpuesto */}
+				<Drawer />
 
-        {/* Tabs principales */}
-        <Tabs
-          screenOptions={{
-            animation: "shift",
-            headerTitleAlign: "center",
-            tabBarActiveTintColor : "#52e4f5ff",
-            tabBarStyle: {
-              backgroundColor: theme.colors.background,
-              borderTopWidth: 0,       // #################
-              elevation: 0,             // arregla la linea blanca de las tabs
-              shadowColor: "transparent", //############
-            },
-            tabBarInactiveBackgroundColor: theme.colors.background,
-            tabBarActiveBackgroundColor: theme.colors.card,
-            headerStyle: { backgroundColor: theme.colors.card },
-            headerTintColor: "black",
-            headerTitle: () => (
-              <Image
-                source={require("@/assets/images/NOW-LOGO.png")}
-                style={{ width: 120, height: 110, resizeMode: "contain" }}
-              />
-            ),
-          }}
-          initialRouteName="index"
-        >
-          <Tabs.Screen
-            name="favs"
-            options={{
-              title: "FAVS",
-              tabBarIcon: ({ color }) => (
-                <FontAwesome size={28} name="star" color={color} />
-              ),
-            }}
-          />
-          <Tabs.Screen
-            name="index"
-            options={{
-              title: "DISCOVER",
-              tabBarIcon: ({ color }) => (
-                <FontAwesome size={28} name="search" color={color} />
-              ),
-            }}
-          />
-          <Tabs.Screen
-            name="profile"
-            options={{
-              title: "PROFILE",
-              tabBarIcon: ({ color }) => (
-                <FontAwesome size={28} name="male" color={color} />
-              ),
-            }}
-          />
-        </Tabs>
-      </View>
-    </SafeAreaView>
-  );
+				{/* Tabs principales */}
+				<Tabs
+					screenOptions={{
+						animation: "shift",
+						headerTitleAlign: "center",
+						tabBarActiveTintColor: "#52e4f5ff",
+						tabBarStyle: {
+							backgroundColor: theme.colors.background,
+							borderTopWidth: 0,       // #################
+							elevation: 0,             // arregla la linea blanca de las tabs
+							shadowColor: "transparent", //############
+						},
+						tabBarInactiveBackgroundColor: theme.colors.background,
+						tabBarActiveBackgroundColor: theme.colors.card,
+						headerStyle: { backgroundColor: theme.colors.card },
+						headerTintColor: "black",
+						headerTitle: () => (
+							<Image
+								source={require("@/assets/images/NOW-LOGO.png")}
+								style={{ width: 120, height: 110, resizeMode: "contain" }}
+							/>
+						),
+					}}
+					initialRouteName="index"
+				>
+					<Tabs.Screen
+						name="favs"
+						options={{
+							title: "FAVS",
+							tabBarIcon: ({ color }) => (
+								<FontAwesome size={28} name="star" color={color} />
+							),
+						}}
+					/>
+					<Tabs.Screen
+						name="index"
+						options={{
+							title: "DISCOVER",
+							tabBarIcon: ({ color }) => (
+								<FontAwesome size={28} name="search" color={color} />
+							),
+						}}
+					/>
+					<Tabs.Screen
+						name="profile"
+						options={{
+							title: "PROFILE",
+							tabBarIcon: ({ color }) => (
+								<FontAwesome size={28} name="male" color={color} />
+							),
+						}}
+					/>
+				</Tabs>
+			</View>
+		</SafeAreaView>
+	);
 }

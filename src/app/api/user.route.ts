@@ -1,12 +1,14 @@
 import { URL_BACKEND } from "@/src/config";
 
+const USER_ROUTE = URL_BACKEND + "/users";
+
 const userRegister = async (
     nombre: string,
     email: string,
     password: string,
     numeroAvatar: number
 ) => {
-    const response = await fetch(`${URL_BACKEND}/users/register`, {
+    const response = await fetch(`${USER_ROUTE}/register`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -28,7 +30,7 @@ const userRegister = async (
 };
 
 const userLogin = async (email: string, password: string) => {
-    const response = await fetch(`${URL_BACKEND}/users/login`, {
+    const response = await fetch(`${USER_ROUTE}/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -47,7 +49,8 @@ const userLogin = async (email: string, password: string) => {
 const userGet = async (tokenAuth: string) => {
     console.log("llegue al fetch", tokenAuth);
 
-    const response = await fetch(`${URL_BACKEND}/my-user`, {
+    const response = await fetch(`${USER_ROUTE}/my-user`, {
+        method: "GET",
         headers: {
             'Authorization': `Bearer ${tokenAuth}`,
         }
