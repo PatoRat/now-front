@@ -91,8 +91,8 @@ const Register = () => {
 					</Text>
 				</Pressable>
 
-				<Pressable onPress={volverLogin}>
-					<Text style={styles.link}>¿Ya tenés cuenta? Iniciá sesión</Text>
+				<Pressable onPress={volverLogin} style={styles.registerLink}>
+					<Text style={styles.registerHighlight}>¿Ya tenés cuenta? Iniciá sesión</Text>
 				</Pressable>
 			</View>
 		</View>
@@ -148,10 +148,12 @@ const stylesFn = (theme: any, width: number) =>
 			fontSize: 16,
 			fontWeight: "bold",
 		},
-		link: {
+		registerHighlight: {
 			color: "#3B82F6",
-			textAlign: "center",
-			marginTop: 16,
-			fontSize: 14,
+			fontWeight: "700",
+		},
+		registerLink: {
+			alignItems: "center",
+			marginTop: 8,
 		},
 	});

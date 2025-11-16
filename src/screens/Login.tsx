@@ -76,9 +76,8 @@ const Login = () => {
 
 				{/* Registrar */}
 				<Pressable onPress={registrar} style={styles.registerLink}>
-					<Text style={styles.registerText}>
-						¿No tenés cuenta?{" "}
-						<Text style={styles.registerHighlight}>Registrate</Text>
+					<Text style={styles.registerHighlight}>
+						¿No tenés cuenta? Registrarse
 					</Text>
 				</Pressable>
 			</View>
@@ -157,10 +156,6 @@ const stylesFn = (theme: Theme, width: number) =>
 		registerLink: {
 			alignItems: "center",
 			marginTop: 8,
-		},
-		registerText: {
-			color: theme.colors.text,
-			fontSize: 14,
 		},
 		registerHighlight: {
 			color: "#3B82F6",
