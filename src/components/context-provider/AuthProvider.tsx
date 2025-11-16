@@ -1,5 +1,5 @@
 import { Fav, UserData } from "@/scripts/types";
-import { userGet, userLogin, userRegister } from "@/src/app/api/user.route";
+import { userGet, userLogin, userRegister } from "@/src/api/user.route";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import * as SecureStore from "expo-secure-store";
 import { useEffect, useState } from "react";

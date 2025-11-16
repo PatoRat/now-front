@@ -47,7 +47,7 @@ const userLogin = async (email: string, password: string) => {
 }
 
 const userGet = async (tokenAuth: string) => {
-    console.log("llegue al fetch", tokenAuth);
+    // console.log("llegue al fetch", tokenAuth);
 
     const response = await fetch(`${USER_ROUTE}/my-user`, {
         method: "GET",

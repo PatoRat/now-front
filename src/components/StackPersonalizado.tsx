@@ -1,5 +1,5 @@
 import { Stack } from "expo-router";
-import { ActivityIndicator, Image } from "react-native";
+import { Image } from "react-native";
 import { useAuth } from "../hooks/useAuth";
 import { useTheme } from "../hooks/useTheme";
 
@@ -8,11 +8,21 @@ const StackPersonalizado = () => {
 	const { theme } = useTheme();
 
 	if (isFetching) {
-	  return (
-	    <Stack>
-	      <ActivityIndicator />
-	    </Stack>
-	  );
+		return (
+			<Stack screenOptions={{
+				headerShown: false,
+				statusBarStyle: "light",
+				contentStyle: { backgroundColor: theme.colors.background },
+			}}>
+				<Stack.Screen
+					name="esperar"
+					options={{
+						headerShown: false,
+						animation: "slide_from_bottom",
+					}}
+				/>
+			</Stack>
+		);
 	}
 
 	// console.log("Estas logged?:", isLogged);
