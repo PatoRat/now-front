@@ -5,7 +5,7 @@ const USER_ROUTE = URL_BACKEND + "/users";
 const userRegister = async (
     nombre: string,
     email: string,
-    password: string,
+    contrasenia: string,
     numeroAvatar: number
 ) => {
     const response = await fetch(`${USER_ROUTE}/register`, {
@@ -16,7 +16,7 @@ const userRegister = async (
         body: JSON.stringify({
             nombre: nombre,
             email: email,
-            password: password,
+            contrasenia: contrasenia,
             numeroAvatar: numeroAvatar
         })
     })

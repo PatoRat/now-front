@@ -33,8 +33,7 @@ const Register = () => {
 				{/* Poner algun componente bonito de animacion que haga el Alert */ }
 			}
 			else {
-				await registrarse(nombre, email, contrasenia, numeroAvatar);
-				// router.replace("/(tabs)")
+				registrarse.mutate({ nombre, email, contrasenia, numeroAvatar });
 			}
 
 		} catch (error) {
@@ -86,8 +85,10 @@ const Register = () => {
 
 				{/** Habría que meter un selector para elegir el avatar, o por defecto le asignamos uno */}
 
-				<Pressable onPress={onRegister} style={styles.button}>
-					<Text style={styles.buttonText}>Registrarme</Text>
+				<Pressable onPress={onRegister} style={styles.button} disabled={registrarse.isPending}>
+					<Text style={styles.buttonText}>
+						{registrarse.isPending ? "Creando cuenta..." : "Registrarme"}
+					</Text>
 				</Pressable>
 
 				<Pressable onPress={volverLogin}>

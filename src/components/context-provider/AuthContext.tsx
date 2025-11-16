@@ -1,4 +1,5 @@
-import { UserData } from "@/scripts/types";
+import { LoginInput, RegisterInput, UserData } from "@/scripts/types";
+import { UseMutationResult } from "@tanstack/react-query";
 import { createContext } from "react";
 
 type AuthContextProps = {
@@ -6,14 +7,9 @@ type AuthContextProps = {
     isFetching: boolean,
     usuario: UserData,
     token: string | null,
-    login: (email: string, contrasenia: string) => Promise<void>,
+    login: UseMutationResult<any, Error, LoginInput, unknown>,
     destruir_sesion: () => Promise<void>,
-    registrarse: (
-        nombre: string,
-        email: string,
-        contrasenia: string,
-        numeroAvatar: number
-    ) => Promise<void>
+    registrarse: UseMutationResult<any, Error, RegisterInput, unknown>
 };
 
 const AuthContext = createContext<AuthContextProps>({
@@ -21,9 +17,9 @@ const AuthContext = createContext<AuthContextProps>({
     isFetching: true,
     usuario: {} as UserData,
     token: null,
-    login: async () => {},
+    login: {} as UseMutationResult<any, Error, LoginInput, unknown>,
     destruir_sesion: async () => { },
-    registrarse: async () => { }
+    registrarse: {} as UseMutationResult<any, Error, RegisterInput, unknown>
 });
 
 export { AuthContext };

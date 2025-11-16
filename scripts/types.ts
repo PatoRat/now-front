@@ -15,6 +15,15 @@ type PostType = {
     creador: string,
 };
 
+type RegisterInput = {
+    nombre: string,
+    email: string,
+    contrasenia: string,
+    numeroAvatar: number
+};
+
+type LoginInput = Omit<RegisterInput, "nombre" | "numeroAvatar">;
+
 type UserData = {
     id: number,
     nombre: string,
@@ -53,7 +62,7 @@ type ThemeColors = {
 }
 
 export {
-    Fav, PostType, ThemeColors,
+    Fav, LoginInput, PostType, RegisterInput, ThemeColors,
     UserData
 };
 

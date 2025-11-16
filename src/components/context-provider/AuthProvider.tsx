@@ -1,6 +1,6 @@
-import { Fav, UserData } from "@/scripts/types";
+import { Fav, LoginInput, RegisterInput, UserData } from "@/scripts/types";
 import { userGet, userLogin, userRegister } from "@/src/api/user.route";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as SecureStore from "expo-secure-store";
 import { useEffect, useState } from "react";
 import { AuthContext } from "./AuthContext";
@@ -91,37 +91,33 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         queryClient.removeQueries({ queryKey: ["auth", "me"] });
     }
 
-    const login = async (email: string, contrasenia: string) => {
-        try {
-            // const tokenSaved = await SecureStore.getItemAsync('token');
-            // console.log("token", tokenSaved);
+    const login = useMutation({
+        mutationFn: ({
+            email,
+            contrasenia
+        }: LoginInput) => userLogin(email, contrasenia),
 
-            const tokenAuth = await userLogin(email, contrasenia);
+        onError: (error: Error) => console.error(error.message),
 
-            await guardar_sesion(tokenAuth);
-
-        } catch (error) {
-            console.error(error);
-            throw error;
+        onSuccess: async (token) => {
+            await guardar_sesion(token);
         }
-    }
+    });
 
-    const registrarse = async (
-        nombre: string,
-        email: string,
-        contrasenia: string,
-        numeroAvatar: number
-    ) => {
-        try {
-            const tokenAuth = await userRegister(nombre, email, contrasenia, numeroAvatar);
+    const registrarse = useMutation({
+        mutationFn: ({
+            nombre,
+            email,
+            contrasenia,
+            numeroAvatar
+        }: RegisterInput) => userRegister(nombre, email, contrasenia, numeroAvatar),
 
-            await guardar_sesion(tokenAuth);
+        onError: (error: Error) => console.error(error.message),
 
-        } catch (error) {
-            console.error(error);
-            throw error;
+        onSuccess: async (token) => {
+            await guardar_sesion(token);
         }
-    }
+    });
 
     return (
         <AuthContext.Provider value={{

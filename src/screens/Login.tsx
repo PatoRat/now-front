@@ -21,18 +21,16 @@ const Login = () => {
 	const styles = stylesFn(theme, width);
 
 	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
+	const [contrasenia, setContrasenia] = useState("");
 
 	const onLogin = async () => {
-		// if (!isFetching) {
 		try {
-			await login(email, password);
-			// router.replace("/(tabs)")
+			login.mutate({ email, contrasenia });
 
 		} catch (error) {
 			console.error("Ocurrio un error: ", error);
+			{/* Poner algun componente bonito de animacion que haga el Alert */ }
 		}
-		// }
 	}
 
 	const registrar = () => router.push({ pathname: "../(auth)/register" });
@@ -64,14 +62,16 @@ const Login = () => {
 					style={styles.input}
 					placeholder="Contraseña"
 					placeholderTextColor="#aaa"
-					value={password}
-					onChangeText={setPassword}
+					value={contrasenia}
+					onChangeText={setContrasenia}
 					secureTextEntry
 				/>
 
 				{/* Botón Entrar */}
-				<Pressable style={styles.btnPrimary} onPress={onLogin}>
-					<Text style={styles.btnPrimaryText}>Entrar</Text>
+				<Pressable style={styles.btnPrimary} onPress={onLogin} disabled={login.isPending}>
+					<Text style={styles.btnPrimaryText}>
+						{login.isPending ? "Entrando" : "Entrar"}
+					</Text>
 				</Pressable>
 
 				{/* Registrar */}
