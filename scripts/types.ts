@@ -1,18 +1,5 @@
 import { ImageSourcePropType } from "react-native";
 
-type AuthContextProps = {
-    isLogged: boolean,
-    usuario: UserData,
-    token: string,
-    login: (email: string, contrasenia: string) => void,
-    destruir_sesion: () => void,
-    registrarse: (nombre: string, email: string, contrasenia: string, numeroAvatar: number) => void
-};
-
-type ProviderProps = {
-    children: React.ReactNode;
-};
-
 type PostType = {
     id: string,
     titulo: string,
@@ -66,7 +53,7 @@ type ThemeColors = {
 }
 
 export {
-    AuthContextProps, Fav, PostType, ProviderProps, ThemeColors,
+    Fav, PostType, ThemeColors,
     UserData
 };
 

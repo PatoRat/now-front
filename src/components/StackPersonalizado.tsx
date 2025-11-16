@@ -1,21 +1,21 @@
 import { Stack } from "expo-router";
-import { Image } from "react-native";
+import { ActivityIndicator, Image } from "react-native";
 import { useAuth } from "../hooks/useAuth";
 import { useTheme } from "../hooks/useTheme";
 
 const StackPersonalizado = () => {
-	const { isLogged } = useAuth();
+	const { isLogged, isFetching } = useAuth();
 	const { theme } = useTheme();
 
-	// if (isFetching) {
-	//   return (
-	//     <Stack>
-	//       <ActivityIndicator />
-	//     </Stack>
-	//   );
-	// }
+	if (isFetching) {
+	  return (
+	    <Stack>
+	      <ActivityIndicator />
+	    </Stack>
+	  );
+	}
 
-	console.log("Estas logged?:", isLogged);
+	// console.log("Estas logged?:", isLogged);
 
 	return (
 		<Stack screenOptions={{
