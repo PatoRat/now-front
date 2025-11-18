@@ -16,7 +16,7 @@ import {
     View,
 } from "react-native";
 import MapView, { Marker } from 'react-native-maps';
-import { useTheme } from "../hooks/useTheme";
+import { useTheme } from "../hooks/theme-hooks";
 import ImageSelectorButton from "./ImageSelectorButton";
 
 const PostInputsHandler = (props: { router: Router }) => {

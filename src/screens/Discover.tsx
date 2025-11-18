@@ -1,22 +1,22 @@
 import DATA from "@/assets/databases/data";
 import Post from "@/src/components/Post";
-import { useTheme } from "@/src/hooks/useTheme";
+import { useTheme } from "@/src/hooks/theme-hooks";
 import { FontAwesome } from "@expo/vector-icons";
 import { Theme } from "@react-navigation/native";
 import { BlurView } from 'expo-blur';
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useRef, useState } from "react";
 import {
-	Animated,
-	Dimensions,
-	FlatList,
-	Image, Linking, Modal,
-	Platform,
-	Pressable,
-	StyleSheet,
-	Text,
-	View,
-	useWindowDimensions
+    Animated,
+    Dimensions,
+    FlatList,
+    Image, Linking, Modal,
+    Platform,
+    Pressable,
+    StyleSheet,
+    Text,
+    View,
+    useWindowDimensions
 } from "react-native";
 
 export default function Discover() {

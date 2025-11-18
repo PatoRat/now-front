@@ -1,13 +1,13 @@
 import { PostType } from "@/scripts/types";
-import { useTheme } from "@/src/hooks/useTheme";
+import { useTheme } from "@/src/hooks/theme-hooks";
 import { FontAwesome } from "@expo/vector-icons";
 import { Theme } from "@react-navigation/native";
 import {
-	Image,
-	StyleSheet,
-	Text,
-	useWindowDimensions,
-	View
+    Image,
+    StyleSheet,
+    Text,
+    useWindowDimensions,
+    View
 } from "react-native";
 
 const Post = ({ titulo, descripcion, imagenes, fechaInicio, fechaFin, direccion }: Omit<PostType, "id"> & { direccion?: string }) => {

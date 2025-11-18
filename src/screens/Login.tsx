@@ -1,16 +1,16 @@
-import { useAuth } from "@/src/hooks/useAuth";
-import { useTheme } from "@/src/hooks/useTheme";
+import { useAuth } from "@/src/hooks/auth-hooks";
+import { useTheme } from "@/src/hooks/theme-hooks";
 import { Theme } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-	Image,
-	Pressable,
-	StyleSheet,
-	Text,
-	TextInput,
-	useWindowDimensions,
-	View,
+    Image,
+    Pressable,
+    StyleSheet,
+    Text,
+    TextInput,
+    useWindowDimensions,
+    View,
 } from "react-native";
 
 const Login = () => {

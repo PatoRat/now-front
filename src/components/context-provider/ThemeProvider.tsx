@@ -1,29 +1,52 @@
-import { BamvDark } from "@/scripts/themes";
+import { ThemeName } from "@/scripts/types";
+import { getThemeFromName, readTheme, writeTheme } from "@/src/hooks/theme-hooks";
 import { Theme } from "@react-navigation/native";
-import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { ReactNode } from "react";
 import { ThemeContext } from "./ThemeContext";
 
-const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
-    const [theme, setTheme] = useState<Theme>(BamvDark);
 
-    /*
-    Mi idea es que cuando abra la app, use la secure store de expo para
-    chequear las preferencias guardadas y que awaitee para que se setee automaticamente
-    como lo haya guardado, pero a la vez, que cada vez que cambie el Theme, actualice tanto
-    la pestaña como el secure store, basicamente hoy por hoy solo llamo a setTheme y le paso el
-    Theme, pero ahora quiero pasarle una funcion que haga el cambio en secure store y haga tambien el
-    setTheme.
+
+const ThemeProvider = ({ children }: { children: ReactNode }) => {
+    const queryClient = useQueryClient();
+
+
+    const { data: themeName = "dark" } = useQuery({
+        queryKey: ["themePreference"],
+        queryFn: readTheme,
+        initialData: "dark", // mientras busca de SecureStore
+        staleTime: Infinity,
+    });
+
+    const { mutate: guardarTheme } = useMutation({
+        mutationFn: writeTheme,
+        onError: (error) => {
+            console.warn("Error guardando theme en SecureStore:", error);
+        },
+    });
+
     
-    Eso no es lo que me parece dificil, lo que realmente no se si hacer con un useEffect, es al
-    iniciar el bundler, es decir al hacer el get del secureStore, no el set
-    */
+    const cambiarTheme = (theme: Theme) => {
+        const name: ThemeName = theme.dark ? "dark" : "light";
+        queryClient.setQueryData<ThemeName>(["themePreference"], name);
+
+        
+        guardarTheme(name);
+    };
+
+    const theme = getThemeFromName(themeName as ThemeName);
 
     return (
-        <ThemeContext.Provider value={{ theme, setTheme }}>
+        <ThemeContext.Provider
+            value={{
+                theme,
+                cambiarTheme,
+            }}
+        >
             {children}
         </ThemeContext.Provider>
     );
-}
+};
 
 export { ThemeProvider };
 

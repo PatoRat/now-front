@@ -1,5 +1,5 @@
 import { Drawer } from "@/src/components/animated/Drawer";
-import { useTheme } from "@/src/hooks/useTheme";
+import { useTheme } from "@/src/hooks/theme-hooks";
 import { FontAwesome } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import { Image, View } from "react-native";

@@ -11,14 +11,16 @@ export default function RootLayout() {
 	return (
 		<SafeAreaProvider>
 
-			<ThemeProvider>
-				<QueryClientProvider client={queryClient}>
+			<QueryClientProvider client={queryClient}>
+				<ThemeProvider>
+
 					<AuthProvider>
 						<StackPersonalizado />
 					</AuthProvider>
-				</QueryClientProvider>
-			</ThemeProvider>
 
+				</ThemeProvider>
+			</QueryClientProvider>
+			
 		</SafeAreaProvider>
 
 	);

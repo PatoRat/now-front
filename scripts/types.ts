@@ -24,6 +24,8 @@ type RegisterInput = {
 
 type LoginInput = Omit<RegisterInput, "nombre" | "numeroAvatar">;
 
+type ThemeName = "dark" | "light";
+
 type UserData = {
     id: number,
     nombre: string,
@@ -62,7 +64,6 @@ type ThemeColors = {
 }
 
 export {
-    Fav, LoginInput, PostType, RegisterInput, ThemeColors,
-    UserData
+    Fav, LoginInput, PostType, RegisterInput, ThemeColors, ThemeName, UserData
 };
 

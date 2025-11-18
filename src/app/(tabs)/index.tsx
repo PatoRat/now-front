@@ -1,5 +1,5 @@
 import { ThemeColors } from "@/scripts/types";
-import { useTheme } from "@/src/hooks/useTheme";
+import { useTheme } from "@/src/hooks/theme-hooks";
 import Discover from "@/src/screens/Discover";
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";

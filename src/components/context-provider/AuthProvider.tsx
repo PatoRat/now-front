@@ -68,6 +68,8 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
 
         if (usuarioQuery) {
+            // console.log("UsuarioQuery: ", usuarioQuery);
+
             setLogged(true);
             setUsuario(usuarioQuery);
         }

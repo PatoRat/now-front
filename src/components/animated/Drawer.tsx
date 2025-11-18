@@ -1,7 +1,7 @@
 import { BamvDark, BamvLight } from "@/scripts/themes";
 import { ThemeColors } from "@/scripts/types";
-import { useAuth } from "@/src/hooks/useAuth";
-import { useTheme } from "@/src/hooks/useTheme";
+import { useAuth } from "@/src/hooks/auth-hooks";
+import { useTheme } from "@/src/hooks/theme-hooks";
 import { FontAwesome } from "@expo/vector-icons";
 import { useState } from "react";
 import {
@@ -22,7 +22,7 @@ export const Drawer = () => {
     const insets = useSafeAreaInsets();
     const drawerWidth = Math.min(420, width - insets.left - 8);
 
-    const { theme, setTheme } = useTheme();
+    const { theme, cambiarTheme } = useTheme();
     const { destruir_sesion } = useAuth();
     const [slideAnim] = useState(() => new Animated.Value(0));
     const backgroundColor = theme.colors.card;
@@ -54,7 +54,7 @@ export const Drawer = () => {
     });
 
     //  Función para cambiar tema
-    const toggleTheme = () => setTheme(theme.dark ? BamvLight : BamvDark);
+    const toggleTheme = () => cambiarTheme(theme.dark ? BamvLight : BamvDark);
 
     return (
         <View
