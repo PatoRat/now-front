@@ -1,4 +1,4 @@
-import PostInputsHandler from "@/src/components/PostInputsHandler";
+import PostInputsHandler from "@/src/components/PostInputComponents/PostInputsHandler";
 import { useRouter } from "expo-router";
 import {
     Dimensions,
