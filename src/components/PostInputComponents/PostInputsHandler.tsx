@@ -1,9 +1,7 @@
-import React, { useRef, useEffect } from "react";
-import { View, useWindowDimensions } from "react-native";
+import { useTheme } from "@/src/hooks/theme-hooks";
 import { Router } from "expo-router";
-import { useTheme } from "@/src/hooks/useTheme";
-import DATA from "@/assets/databases/data";
-import * as Location from 'expo-location';
+import React, { useRef } from "react";
+import { View, useWindowDimensions } from "react-native";
 import MapView from 'react-native-maps';
 import PostFormContent, { stylesFn } from "./PostFormContent";
 
