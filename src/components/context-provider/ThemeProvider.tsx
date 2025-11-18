@@ -15,7 +15,6 @@ const ThemeProvider = ({ children }: { children: ReactNode }) => {
         queryKey: ["themePreference"],
         queryFn: readTheme,
         initialData: "dark", // mientras busca de SecureStore
-        staleTime: Infinity,
     });
 
     const { mutate: guardarTheme } = useMutation({
@@ -25,12 +24,12 @@ const ThemeProvider = ({ children }: { children: ReactNode }) => {
         },
     });
 
-    
+
     const cambiarTheme = (theme: Theme) => {
         const name: ThemeName = theme.dark ? "dark" : "light";
         queryClient.setQueryData<ThemeName>(["themePreference"], name);
 
-        
+
         guardarTheme(name);
     };
 

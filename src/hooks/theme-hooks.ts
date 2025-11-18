@@ -7,7 +7,7 @@ import { ThemeContext } from "../components/context-provider/ThemeContext";
 const useTheme = () => useContext(ThemeContext);
 
 const getThemeFromName = (name: ThemeName) => {
-    console.log("entro al get, con name: ", name);
+    // console.log("entro al get, con name: ", name);
     return name === "light" ? BamvLight : BamvDark;
 }
 
@@ -24,7 +24,7 @@ const readTheme = async () => {
 };
 
 const writeTheme = async (name: ThemeName) => {
-    console.log("entro aca?? ", name);
+    // console.log("entro aca?? ", name);
     await SecureStore.setItemAsync("theme", name).catch(() => { });
 };
 
