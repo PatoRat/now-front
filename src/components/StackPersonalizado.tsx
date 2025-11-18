@@ -1,7 +1,7 @@
 import { Stack } from "expo-router";
 import { Image } from "react-native";
-import { useAuth } from "../hooks/useAuth";
-import { useTheme } from "../hooks/useTheme";
+import { useAuth } from "../hooks/auth-hooks";
+import { useTheme } from "../hooks/theme-hooks";
 
 const StackPersonalizado = () => {
 	const { isLogged, isFetching } = useAuth();

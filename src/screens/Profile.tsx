@@ -1,5 +1,5 @@
 import { ThemeColors } from "@/scripts/types";
-import { useTheme } from "@/src/hooks/useTheme";
+import { useTheme } from "@/src/hooks/theme-hooks";
 import { StyleSheet, Text } from "react-native";
 
 export default function Profile() {

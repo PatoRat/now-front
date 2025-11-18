@@ -1,16 +1,16 @@
+import { Theme } from "@react-navigation/native";
+import * as Location from "expo-location";
 import React, { useRef, useState } from "react";
 import { Modal, Pressable, Text, TextInput, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
-import * as Location from "expo-location";
-import { Theme } from "@react-navigation/native";
 
-interface Props {
+type Props = {
   theme: Theme;
   value?: { latitude: number; longitude: number } | null;
   direccion?: string | null;
   onSelect: (coord: { latitude: number; longitude: number }, direccion: string) => void;
   onClose: () => void;
-}
+};
 
 const MapModal = ({ theme, value, direccion, onSelect, onClose }: Props) => {
   const [inputDireccion, setInputDireccion] = useState(direccion || "");

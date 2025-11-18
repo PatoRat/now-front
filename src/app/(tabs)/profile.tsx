@@ -1,15 +1,15 @@
 import { ThemeColors } from "@/scripts/types";
-import { useTheme } from "@/src/hooks/useTheme";
+import { useTheme } from "@/src/hooks/theme-hooks";
 import { useState } from "react";
 import {
-	FlatList,
-	Image,
-	Modal,
-	Pressable,
-	ScrollView,
-	StyleSheet,
-	Text,
-	View,
+    FlatList,
+    Image,
+    Modal,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 

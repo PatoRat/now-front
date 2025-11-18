@@ -1,14 +1,14 @@
-import { useAuth } from "@/src/hooks/useAuth";
-import { useTheme } from "@/src/hooks/useTheme";
+import { useAuth } from "@/src/hooks/auth-hooks";
+import { useTheme } from "@/src/hooks/theme-hooks";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
-	Pressable,
-	StyleSheet,
-	Text,
-	TextInput,
-	View,
-	useWindowDimensions,
+    Pressable,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
+    useWindowDimensions,
 } from "react-native";
 
 const Register = () => {

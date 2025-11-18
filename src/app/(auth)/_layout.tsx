@@ -1,4 +1,4 @@
-import { useTheme } from "@/src/hooks/useTheme";
+import { useTheme } from "@/src/hooks/theme-hooks";
 import { FontAwesome } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import { Image } from "react-native";
