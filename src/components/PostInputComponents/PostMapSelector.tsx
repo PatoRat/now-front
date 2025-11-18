@@ -3,11 +3,11 @@ import React, { useState } from "react";
 import { Pressable, Text } from "react-native";
 import MapModal from "./MapModal";
 
-interface Props {
+type Props = {
   value?: { latitude: number; longitude: number } | null;
   direccion?: string | null;
   onChange: (coord: { latitude: number; longitude: number }, direccion: string) => void;
-}
+};
 
 const PostMapSelector = ({ value, direccion, onChange }: Props) => {
   const { theme } = useTheme();

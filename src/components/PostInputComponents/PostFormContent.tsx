@@ -1,12 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, Pressable, Platform } from "react-native";
-import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
-import { DateTimePickerAndroid } from "@react-native-community/datetimepicker";
-import PostMapSelector from "./PostMapSelector";
-import ImageSelectorButton from "./ImageSelectorButton";
 import DATA from "@/assets/databases/data";
-import { Router } from "expo-router";
-import { Picker } from "@react-native-picker/picker";
+import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
+import React, { useEffect, useState } from "react";
+import { Pressable, Text, TextInput, View } from "react-native";
+import ImageSelectorButton from "./ImageSelectorButton";
+import PostMapSelector from "./PostMapSelector";
 
 
 const PostFormContent = ({ theme, styles, router }: any) => {
@@ -20,7 +17,7 @@ const PostFormContent = ({ theme, styles, router }: any) => {
   const [ubicacion, setUbicacion] = useState<{ latitude: number; longitude: number } | null>(null);
   const [direccion, setDireccion] = useState<string | null>(null);
   const [imagenes, setImagenes] = useState<any[]>([]);
-    const [mostrarPickerDuracion, setMostrarPickerDuracion] = useState(false);
+  const [mostrarPickerDuracion, setMostrarPickerDuracion] = useState(false);
   // 🔹 Calculamos fechaFin automáticamente cuando cambian fechaInicio o duración
   useEffect(() => {
     if (fechaInicio && duracion) {
@@ -51,7 +48,7 @@ const PostFormContent = ({ theme, styles, router }: any) => {
         longitud: ubicacion.longitude,
         direccion,
       },
-      creador : 'Mateo Villanueva',
+      creador: 'Mateo Villanueva',
     });
 
     router.back();
@@ -84,63 +81,63 @@ const PostFormContent = ({ theme, styles, router }: any) => {
       </View>
 
       {/* Fecha de inicio */}
-        <View style={styles.section}>
-          <Pressable style={styles.input} onPress={() => setMostrarPicker(true)}>
-            <Text style={{ color: theme.colors.text }}>
-              {fechaInicio
-                ? fechaInicio.toLocaleDateString("es-AR")
-                : "Seleccionar fecha de inicio"}
-            </Text>
-          </Pressable>
+      <View style={styles.section}>
+        <Pressable style={styles.input} onPress={() => setMostrarPicker(true)}>
+          <Text style={{ color: theme.colors.text }}>
+            {fechaInicio
+              ? fechaInicio.toLocaleDateString("es-AR")
+              : "Seleccionar fecha de inicio"}
+          </Text>
+        </Pressable>
 
-          {mostrarPicker && (
-            <DateTimePicker
-              value={fechaInicio}
-              mode="date"
-              display="calendar"
-              onChange={(event: DateTimePickerEvent, selectedDate?: Date) => {
-                setMostrarPicker(false); // cerramos siempre
-                if (event.type === "set" && selectedDate) {
-                  const nuevaFecha = new Date(fechaInicio);
-                  nuevaFecha.setFullYear(selectedDate.getFullYear());
-                  nuevaFecha.setMonth(selectedDate.getMonth());
-                  nuevaFecha.setDate(selectedDate.getDate());
-                  setFechaInicio(nuevaFecha);
-                }
-              }}
-            />
-          )}
-        </View>
+        {mostrarPicker && (
+          <DateTimePicker
+            value={fechaInicio}
+            mode="date"
+            display="calendar"
+            onChange={(event: DateTimePickerEvent, selectedDate?: Date) => {
+              setMostrarPicker(false); // cerramos siempre
+              if (event.type === "set" && selectedDate) {
+                const nuevaFecha = new Date(fechaInicio);
+                nuevaFecha.setFullYear(selectedDate.getFullYear());
+                nuevaFecha.setMonth(selectedDate.getMonth());
+                nuevaFecha.setDate(selectedDate.getDate());
+                setFechaInicio(nuevaFecha);
+              }
+            }}
+          />
+        )}
+      </View>
 
-        {/* Hora de inicio */}
-        <View style={styles.section}>
-          <Pressable style={styles.input} onPress={() => setMostrarHoraPicker(true)}>
-            <Text style={{ color: theme.colors.text }}>
-              {fechaInicio
-                ? fechaInicio.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" })
-                : "Seleccionar hora de inicio"}
-            </Text>
-          </Pressable>
+      {/* Hora de inicio */}
+      <View style={styles.section}>
+        <Pressable style={styles.input} onPress={() => setMostrarHoraPicker(true)}>
+          <Text style={{ color: theme.colors.text }}>
+            {fechaInicio
+              ? fechaInicio.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" })
+              : "Seleccionar hora de inicio"}
+          </Text>
+        </Pressable>
 
-          {mostrarHoraPicker && (
-            <DateTimePicker
-              value={fechaInicio}
-              mode="time"
-              is24Hour={true}
-              display="spinner"
-              onChange={(event: DateTimePickerEvent, selectedTime?: Date) => {
-                setMostrarHoraPicker(false); // cerramos siempre
-                if (event.type === "set" && selectedTime) {
-                  const nuevaFecha = new Date(fechaInicio);
-                  nuevaFecha.setHours(selectedTime.getHours());
-                  nuevaFecha.setMinutes(selectedTime.getMinutes());
-                  nuevaFecha.setSeconds(selectedTime.getSeconds());
-                  setFechaInicio(nuevaFecha);
-                }
-              }}
-            />
-          )}
-        </View>
+        {mostrarHoraPicker && (
+          <DateTimePicker
+            value={fechaInicio}
+            mode="time"
+            is24Hour={true}
+            display="spinner"
+            onChange={(event: DateTimePickerEvent, selectedTime?: Date) => {
+              setMostrarHoraPicker(false); // cerramos siempre
+              if (event.type === "set" && selectedTime) {
+                const nuevaFecha = new Date(fechaInicio);
+                nuevaFecha.setHours(selectedTime.getHours());
+                nuevaFecha.setMinutes(selectedTime.getMinutes());
+                nuevaFecha.setSeconds(selectedTime.getSeconds());
+                setFechaInicio(nuevaFecha);
+              }
+            }}
+          />
+        )}
+      </View>
       {/* Duración */}
       <View style={styles.section}>
         <Text style={styles.labelText}>Duración (horas)</Text>
