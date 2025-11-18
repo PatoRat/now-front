@@ -51,6 +51,7 @@ const PostFormContent = ({ theme, styles, router }: any) => {
         longitud: ubicacion.longitude,
         direccion,
       },
+      creador : 'Mateo Villanueva',
     });
 
     router.back();

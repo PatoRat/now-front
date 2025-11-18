@@ -1,4 +1,4 @@
-export const URL_BACKEND = "http://localhost:3000";
+export const URL_BACKEND = "http://192.168.68.105:3000";
 
 /*
 Tengo activado la herramienta de desarrollador en Android y hago la conexion por USB primero, para

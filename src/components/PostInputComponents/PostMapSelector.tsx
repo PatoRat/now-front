@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Pressable, Text } from "react-native";
-import { useTheme } from "@/src/components/context-provider/Theme";
 import MapModal from "./MapModal";
+import { useTheme } from "@/src/hooks/useTheme";
 
 interface Props {
   value?: { latitude: number; longitude: number } | null;

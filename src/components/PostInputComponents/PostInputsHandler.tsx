@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import { View, useWindowDimensions } from "react-native";
 import { Router } from "expo-router";
-import { useTheme } from "@/src/components/context-provider/Theme";
+import { useTheme } from "@/src/hooks/useTheme";
 import DATA from "@/assets/databases/data";
 import * as Location from 'expo-location';
 import MapView from 'react-native-maps';
