@@ -1,24 +1,21 @@
+import { useTheme } from "@/src/hooks/theme-hooks";
 import DATA from "@/assets/databases/data";
 import Post from "@/src/components/Post";
-import { useTheme } from "@/src/hooks/theme-hooks";
-import { FontAwesome } from "@expo/vector-icons";
 import { Theme } from "@react-navigation/native";
-import { BlurView } from 'expo-blur';
 import { useRef, useState } from "react";
 import {
-	Animated,
-	Dimensions,
-	FlatList,
-	Image, Linking, Modal,
-	Platform,
-	Pressable,
-	ScrollView,
-	StyleSheet,
-	Text,
-	View,
-	useWindowDimensions
+    Animated,
+    Dimensions,
+    FlatList,
+    Image, Modal,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
+    useWindowDimensions
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import PostPopUp from "../components/PostPopUp/PostPopUp";
 
 
 export default function ProfileGamified() {
@@ -76,25 +73,6 @@ export default function ProfileGamified() {
 	const [selectedPost, setSelectedPost] = useState<null | (typeof DATA[number])>(null);
 	const fadeAnim = useRef(new Animated.Value(0)).current;
 
-	const formatoFecha = (fecha: Date) => {
-		if (!fecha) return "";
-		const date = new Date(fecha);
-		return date.toLocaleDateString("es-AR", {
-			day: "2-digit",
-			month: "short",
-			year: "numeric",
-		});
-	};
-	// Para abrir el maps con el link y coordenadas (para cualquier app)
-	const abrirEnMaps = (lat: number, lng: number) => {
-		const url = Platform.select({
-			ios: `maps:0,0?q=${lat},${lng}`,
-			android: `geo:${lat},${lng}?q=${lat},${lng}`,
-			default: `https://www.google.com/maps?q=${lat},${lng}`,
-		});
-		Linking.openURL(url!);
-	};
-	const [currentIndex, setCurrentIndex] = useState(0);
 
 	const closePopup = () => {
 		Animated.timing(fadeAnim, {
@@ -142,8 +120,8 @@ export default function ProfileGamified() {
 	};
 
 	return (
-		<SafeAreaView style={styles.container}>
-			<ScrollView contentContainerStyle={styles.scrollContainer}>
+		<View style={styles.container}>
+			<ScrollView >
 				{/* Info del usuario con avatar */}
 				<View style={styles.userRow}>
 					<Pressable
@@ -163,202 +141,51 @@ export default function ProfileGamified() {
 				</View>
 
 				{/* Trofeos */}
-				<View style={styles.gamification}>
+
+				{/* <View style={styles.gamification}>
 					<Text style={styles.sectionTitle}>Trofeos de Organizador</Text>
 					<View style={styles.badgesRow}>{renderBoxes(user.createdEvents, "organizador")}</View>
 
 					<Text style={styles.sectionTitle}>Trofeos de Asistencia</Text>
 					<View style={styles.badgesRow}>{renderBoxes(user.attendedEvents, "asistencia")}</View>
-				</View>
-				{/* Mis Publicaciones */}
-				<View ref={postsRef} style={{ marginTop: 30 }}>
-					<Text style={[styles.sectionTitle, { fontSize: 20 }]}>Tus Publicaciones</Text>
+				</View> */}
 
-					{/* Lista de posts*/}
-					<View style={{ flex: 1 }}>
-						<FlatList
-							data={posts}
-							keyExtractor={(item) => item.id}
-							renderItem={({ item }) => (
-								<Post
-									titulo={item.titulo}
-									descripcion={item.descripcion}
-									imagenes={item.imagenes}
-									fechaInicio={item.fechaInicio}
-									fechaFin={item.fechaFin}
-									ubicacion={item.ubicacion}
-									direccion={item.ubicacion?.direccion}
-									creador={item.creador}
-									onSingleTap={() => openPopup(item)}
-								/>
-							)}
+                {/* Mis Publicaciones */}
+                <View ref={postsRef} style={{ marginTop: 30 }}>
+                    <Text style={[styles.sectionTitle, { fontSize: 20 }]}>Tus Publicaciones</Text>
 
-							contentContainerStyle={styles.listaContenido}
-							showsVerticalScrollIndicator={false}
-						/>
+                    {/* Lista de posts*/}
+                    <View style={{ flex: 1 }}>
+                        <FlatList
+                            scrollEnabled={false}
+                            data={posts}
+                            keyExtractor={(item) => item.id}
+                            renderItem={({ item }) => (
+                                <Post
+                                    titulo={item.titulo}
+                                    descripcion={item.descripcion}
+                                    imagenes={item.imagenes}
+                                    fechaInicio={item.fechaInicio}
+                                    fechaFin={item.fechaFin}
+                                    ubicacion={item.ubicacion}
+                                    direccion={item.ubicacion?.direccion}
+                                    creador={item.creador}
+                                    onSingleTap={() => openPopup(item)}
+                                />
+                            )}
 
-						{/* Pop-up del post */}
-						<Modal
-							visible={!!selectedPost}
-							transparent
-							animationType="none"
-							onRequestClose={closePopup}
-						>
-							<BlurView intensity={80} style={StyleSheet.absoluteFill}>
-								<Pressable style={StyleSheet.absoluteFill} onPress={closePopup} />
-							</BlurView>
-							<Animated.View style={[styles.overlay, { opacity: fadeAnim }]}>
-								<Pressable style={styles.overlay} onPress={closePopup} />
-							</Animated.View>
+                            contentContainerStyle={styles.listaContenido}
+                            showsVerticalScrollIndicator={false}
+                        />
 
-							{selectedPost && (
-								<Animated.View
-									style={[
-										styles.popupContainer,
-										{
-											opacity: fadeAnim,
-											transform: [
-												{ translateY: fadeAnim.interpolate({ inputRange: [0, 1], outputRange: [50, 0] }) },
-												{ scale: fadeAnim.interpolate({ inputRange: [0, 1], outputRange: [0.8, 1] }) },
-												{ rotateY: fadeAnim.interpolate({ inputRange: [0, 1], outputRange: ['15deg', '0deg'] }) },
-											]
-
-										},
-									]}
-								>
-									{/* Carrusel de imágenes */}
-									{selectedPost.imagenes?.length > 0 && (
-										<>
-											<FlatList
-												data={selectedPost.imagenes}
-												horizontal
-												pagingEnabled
-												showsHorizontalScrollIndicator={false}
-												keyExtractor={(_, i) => i.toString()}
-												onScroll={(e) => {
-													const index = Math.round(
-														e.nativeEvent.contentOffset.x / (width * 0.85)
-													);
-													setCurrentIndex(index);
-												}}
-												scrollEventThrottle={16}
-												renderItem={({ item }) => (
-													<View
-														style={{
-															width: width * 0.85,
-															height: 200,
-															marginRight: 10,
-															borderRadius: 15,
-															overflow: "hidden",
-															shadowColor: "#000",
-															shadowOpacity: 0.3,
-															shadowRadius: 10,
-															elevation: 5,
-														}}
-													>
-														<Image
-															source={item}
-															style={{ width: "100%", height: "100%" }}
-															resizeMode="cover"
-														/>
-													</View>
-												)}
-												contentContainerStyle={{ paddingHorizontal: width * 0.075 / 2 }}
-											/>
-
-											{/* Dots de paginación */}
-											<View
-												style={{
-													flexDirection: "row",
-													justifyContent: "center",
-													marginTop: 10,
-													marginBottom: 5,
-												}}
-											>
-												{selectedPost.imagenes.map((_, i) => (
-													<View
-														key={i}
-														style={{
-															width: 8,
-															height: 8,
-															borderRadius: 4,
-															marginHorizontal: 4,
-															backgroundColor: i === currentIndex ? "#007AFF" : "#ccc",
-														}}
-													/>
-												))}
-											</View>
-										</>
-									)}
-
-									{/*  Título */}
-									<Text style={styles.popupTitle}>{selectedPost.titulo}</Text>
-
-									{/*  Descripción */}
-									{!!selectedPost.descripcion && (
-										<Text style={styles.popupDesc}>{selectedPost.descripcion}</Text>
-									)}
-
-									{/*  Fechas */}
-									<Text style={styles.fechaText}>
-										Inicio: {selectedPost.fechaInicio ? formatoFecha(selectedPost.fechaInicio) : ""}
-									</Text>
-									<Text style={styles.fechaText}>
-										Fin: {selectedPost.fechaFin ? formatoFecha(selectedPost.fechaFin) : ""}
-									</Text>
-									{/* Creador del post */}
-									<View style={{ alignItems: "center", marginTop: 10 }}>
-										<Text style={{ fontSize: 16, fontWeight: "bold", color: theme.colors.text }}>
-											Creado por: {selectedPost.creador}
-										</Text>
-									</View>
-
-
-									{/*  Ubicación */}
-									{selectedPost.ubicacion && (
-										<Pressable
-											onPress={() =>
-												abrirEnMaps(
-													selectedPost.ubicacion.latitud,
-													selectedPost.ubicacion.longitud
-												)
-											}
-											android_ripple={{ color: "rgba(255,255,255,0.2)" }}
-											style={({ pressed }) => [
-												styles.direccionContainer,
-												pressed && { opacity: 0.6 },
-											]}
-										>
-											<FontAwesome
-												style={styles.direccionIcon}
-												size={24}
-												name="map-marker"
-												color="red"
-											/>
-											<Text style={styles.direccionText}>
-												{selectedPost.ubicacion.direccion}
-											</Text>
-										</Pressable>
-
-									)}
-
-
-
-									{/* Botón cerrar */}
-									<Pressable onPress={closePopup} style={({ pressed }) => [
-										{ position: 'absolute', top: 10, right: 10, padding: 10, borderRadius: 20, backgroundColor: 'rgba(0,0,0,0.3)' },
-										pressed && { backgroundColor: 'rgba(0,0,0,0.6)' }
-									]}>
-
-										<FontAwesome name="close" size={20} color="white" />
-									</Pressable>
-
-								</Animated.View>
-							)}
-
-						</Modal>
-					</View>
-				</View>
+                        {/* Pop-up del post */}
+                                    <PostPopUp
+                                        visible={!!selectedPost}
+                                        post={selectedPost}
+                                        onClose={closePopup}
+                                    />
+                    </View>
+                </View>
 
 				{/* Modal de selección de avatar */}
 				<Modal
@@ -402,8 +229,9 @@ export default function ProfileGamified() {
 					</View>
 				</Modal>
 
-				{/* Modal de detalle de trofeo */}
-				{selectedBadge && (
+				{/*Modal de detalle de trofeo  */}
+
+				{/* {selectedBadge && (
 					<Modal
 						animationType="fade"
 						transparent={true}
@@ -459,9 +287,10 @@ export default function ProfileGamified() {
 							</View>
 						</View>
 					</Modal>
-				)}
+				)} */}
+                
 			</ScrollView>
-		</SafeAreaView>
+		</View>
 	);
 }
 
@@ -554,9 +383,15 @@ const stylesFn = (theme: Theme, width: number) =>
 			color: theme.colors.text,
 			flexShrink: 1,
 		},
-		container: { flex: 1, backgroundColor: theme.colors.background },
-		scrollContainer: { padding: 20 },
-		userRow: { flexDirection: "row", alignItems: "center", marginBottom: 30 },
+		container: {
+            flex: 1,
+            backgroundColor: theme.colors.background 
+        },
+		userRow: {
+            flexDirection: "row",
+            alignItems: "center",
+            marginBottom: 30 
+        },
 		avatarBox: {
 			width: 120,
 			height: 120,
@@ -567,12 +402,33 @@ const stylesFn = (theme: Theme, width: number) =>
 			alignItems: "center",
 			marginRight: 20,
 		},
-		avatarImage: { width: 100, height: 100, resizeMode: "contain" },
-		userInfo: { flex: 1 },
-		name: { fontSize: 24, fontWeight: "bold", color: theme.colors.text },
-		email: { fontSize: 16, color: theme.colors.text, marginTop: 5 },
-		gamification: { marginTop: 10 },
-		sectionTitle: { fontSize: 18, fontWeight: "bold", color: theme.colors.text, marginBottom: 10 },
+		avatarImage: {
+            width: 100,
+            height: 100,
+            resizeMode: "contain"
+        },
+		userInfo: {
+            flex: 1
+        },
+		name: {
+            fontSize: 24,
+            fontWeight: "bold",
+            color: theme.colors.text
+        },
+		email: {
+            fontSize: 16,
+            color: theme.colors.text,
+            marginTop: 5
+        },
+		gamification: { 
+            marginTop: 10
+        },
+		sectionTitle: {
+            fontSize: 18,
+            fontWeight: "bold",
+            color: theme.colors.text,
+            marginBottom: 10 
+        },
 		badgesRow: {
 			flexDirection: "row",
 			flexWrap: "wrap",
@@ -600,7 +456,12 @@ const stylesFn = (theme: Theme, width: number) =>
 			padding: 20,
 			alignItems: "center",
 		},
-		modalTitle: { fontSize: 20, fontWeight: "bold", color: theme.colors.text, marginBottom: 15 },
+		modalTitle: {
+            fontSize: 20,
+            fontWeight: "bold",
+            color: theme.colors.text,
+            marginBottom: 15 
+        },
 		modalAvatarBoxColumn: {
 			width: '48%',
 			height: 140,
@@ -609,8 +470,14 @@ const stylesFn = (theme: Theme, width: number) =>
 			backgroundColor: "#eee",
 			borderRadius: 12,
 		},
-		modalAvatarImageColumn: { width: 100, height: 100, resizeMode: "contain" },
-		closeButtonText: { fontWeight: "bold", textAlign: "center" },
+		modalAvatarImageColumn: {
+            width: 100, height: 100,
+            resizeMode: "contain" 
+        },
+		closeButtonText: {
+            fontWeight: "bold", 
+            textAlign: "center" 
+        },
 		detailModalContainer: {
 			width: "80%",
 			backgroundColor: theme.colors.background,

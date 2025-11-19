@@ -23,24 +23,27 @@ const Post = (
   const styles = stylesFn(theme, width);
 
   const doubleTapRef = useRef(null);
-
   const [showHeart, setShowHeart] = useState(false);
   const heartAnim = useRef(new Animated.Value(0)).current;
 
   const handleDoubleTap = () => {
-    setShowHeart(true);
-
-    Animated.timing(heartAnim, {
-      toValue: 1,
-      duration: 200,
-      useNativeDriver: true,
-    }).start(() => {
-      setTimeout(() => {
-        heartAnim.setValue(0);
-        setShowHeart(false);
-      }, 600);
-    });
-  };
+	if (!showHeart) {
+		// Mostrar corazón
+		setShowHeart(true);
+		Animated.timing(heartAnim, {
+		toValue: 1,
+		duration: 200,
+		useNativeDriver: true,
+		}).start();
+	} else {
+		// Ocultar corazón
+		Animated.timing(heartAnim, {
+		toValue: 0,
+		duration: 200,
+		useNativeDriver: true,
+		}).start(() => setShowHeart(false));
+	}
+	};
 
   const formatoFecha = (fecha: Date) =>
     fecha.toLocaleString("es-AR", { dateStyle: "short", timeStyle: "short" });

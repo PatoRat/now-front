@@ -7,9 +7,9 @@ import PostFormContent, { stylesFn } from "./PostFormContent";
 
 
 const PostInputsHandler = (props: { router: Router }) => {
-	const { theme } = useTheme();
-	const { width } = useWindowDimensions();
-	const styles = stylesFn(theme, width);
+  const { theme } = useTheme();
+  const { width } = useWindowDimensions();
+  const styles = stylesFn(theme, width);
 
 
 
