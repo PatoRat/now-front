@@ -33,6 +33,7 @@ export const getEvents = async () => {
 
 	
 export default function Discover() {
+	
     const { theme } = useTheme();
     const { width } = useWindowDimensions();
     const styles = stylesFn(theme, width);
@@ -138,50 +139,77 @@ export default function Discover() {
     const onRefresh = () => cargarEventos();
 
     return (
-        <View style={{ flex: 1 }}>
-            <FlatList
+		<View style={{ flex: 1 }}>
+			<FlatList
 				data={posts}
 				keyExtractor={item => item.id.toString()}
-				renderItem={({ item }) => (
-					<Post
-					titulo={item.titulo ?? ""}
-					descripcion={item.descripcion ?? ""}
-					imagenes={item.imagenes?.length ? item.imagenes.map((i: string) => ({ uri: i })) : []}
-					fechaInicio={item.fechaInicio ? new Date(item.fechaInicio) : new Date()}
-					fechaFin={item.fechaFin ? new Date(item.fechaFin) : new Date()}
-					ubicacion={item.ubicacion ?? null}
-					direccion={item.ubicacion?.direccion ?? ""}
-					creador={item.creador ?? "Anónimo"}
-					onSingleTap={() => openPopup(item)}
-					/>
-				)}
+				renderItem={({ item }) => {
+
+					// PARA VER EN EL LOG LO QUE SE RECIBE
+					// console.log("Evento:", item);
+					// console.log(
+					// 	"Imagenes del evento:",
+					// 	item.imagenes?.map((img: { id: number; eventId: number; url: string }) => img.url)
+					// );
+
+					const imagenesMapeadas = item.imagenes?.map((img: { url: string }) => {
+						if (!img.url) return null;
+
+						let uri = img.url;
+
+						// Caso 1: empieza con http
+						if (uri.startsWith("http")) {
+							// Reemplazamos localhost si lo contiene
+							uri = uri.replace("localhost", URL_BACKEND.replace(/^https?:\/\//, ""));
+							return { uri };
+						}
+
+						// Caso 2: ruta relativa o nombre de archivo
+						uri = uri.startsWith("/") ? `${URL_BACKEND}${uri}` : `${URL_BACKEND}/uploads/${uri}`;
+						return { uri };
+					}).filter(Boolean); // elimina nulls
+
+					return (
+						<Post
+							titulo={item.titulo ?? ""}
+							descripcion={item.descripcion ?? ""}
+							imagenes={imagenesMapeadas}
+							fechaInicio={item.fechaInicio ? new Date(item.fechaInicio) : new Date()}
+							fechaFin={item.fechaFin ? new Date(item.fechaFin) : new Date()}
+							ubicacion={item.ubicacion ?? null}
+							direccion={item.ubicacion?.direccion ?? ""}
+							creador={item.creador ?? "Anónimo"}
+							onSingleTap={() => openPopup(item)}
+						/>
+					);
+				}}
 				contentContainerStyle={styles.listaContenido}
 				showsVerticalScrollIndicator={false}
 				refreshControl={
 					<RefreshControl
-					refreshing={refreshing}
-					onRefresh={onRefresh}
-					tintColor="#52E4F5"
-					colors={["#52E4F5"]}
-					progressBackgroundColor="#ffffff00"
+						refreshing={refreshing}
+						onRefresh={onRefresh}
+						tintColor="#52E4F5"
+						colors={["#52E4F5"]}
+						progressBackgroundColor="#ffffff00"
 					/>
 				}
 			/>
 
+			<View style={styles.botonContainer}>
+				<Pressable onPress={nuevoPost}>
+					<Image
+						source={require("@/assets/images/new-post.png")}
+						style={styles.nuevoPosteo}
+						resizeMode="contain"
+					/>
+				</Pressable>
+			</View>
 
-            <View style={styles.botonContainer}>
-                <Pressable onPress={nuevoPost}>
-                    <Image
-                        source={require("@/assets/images/new-post.png")}
-                        style={styles.nuevoPosteo}
-                        resizeMode="contain"
-                    />
-                </Pressable>
-            </View>
+			<PostPopUp visible={!!selectedPost} post={selectedPost} onClose={closePopup} />
+		</View>
+	);
 
-            <PostPopUp visible={!!selectedPost} post={selectedPost} onClose={closePopup} />
-        </View>
-    );
 }
 
 const stylesFn = (theme: Theme, width: number) =>
