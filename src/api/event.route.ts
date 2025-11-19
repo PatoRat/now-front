@@ -1,17 +1,18 @@
-import { Ubicacion } from "@/scripts/types";
+import { Filtros } from "@/scripts/types";
 import { URL_BACKEND } from "@/src/config";
 import { ImageSourcePropType } from "react-native";
 
 const EVENT_PATH = URL_BACKEND + "/events";
 
 const eventGet = async (
-    ubicacion: Ubicacion | null,
+    filtros: Filtros,
     tokenAuth: string | null
 ) => {
 
-    if (!ubicacion) {
+    if (!filtros) {
         throw new Error("Sin ubicación");
     }
+
     const res = await fetch(`${EVENT_PATH}/`, {
         method: "POST",
         headers: {
@@ -20,8 +21,8 @@ const eventGet = async (
         },
         body: JSON.stringify({
             coordenadasUsuario: {
-                latitud: ubicacion.latitud,
-                longitud: ubicacion.longitud,
+                latitud: filtros.ubicacion?.latitud,
+                longitud: filtros.ubicacion?.longitud,
             }
         }),
     });

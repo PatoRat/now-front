@@ -56,21 +56,6 @@ const PostFormContent = ({ theme, styles, router }: any) => {
 			await guardarImagenes(imagenes, eventId, token);
 		}
 
-		// DATA.unshift({
-		//   id: (DATA.length + 1).toString(),// vuela
-		//   titulo,
-		//   descripcion,
-		//   imagenes,
-		//   fechaInicio,
-		//   fechaFin,
-		//   ubicacion: {
-		//     latitud: ubicacion.latitude,
-		//     longitud: ubicacion.longitude,
-		//     direccion,
-		//   },
-		//   creador: 'Mateo Villanueva',
-		// });
-
 		router.back();
 	};
 

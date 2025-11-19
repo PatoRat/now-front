@@ -11,6 +11,10 @@ type PostType = {
     creador: string,
 };
 
+type Filtros = {
+    ubicacion: Omit<Ubicacion, "direccion"> | null
+};
+
 type Ubicacion = {
     latitud: number,
     longitud: number,
@@ -67,6 +71,7 @@ type ThemeColors = {
 
 export {
     Fav,
+    Filtros,
     LoginInput,
     PostType,
     RegisterInput,

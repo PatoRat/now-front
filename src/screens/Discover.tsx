@@ -2,30 +2,36 @@ import DATA from "@/assets/databases/data";
 import Post from "@/src/components/Post";
 import { useTheme } from "@/src/hooks/theme-hooks";
 import { Theme } from "@react-navigation/native";
-import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "expo-router";
+import { useEffect, useRef, useState } from "react";
 import {
-    Animated,
-    Dimensions,
-    FlatList,
-    Image,
-    Pressable,
-    StyleSheet,
-    View,
-    useWindowDimensions
+	Animated,
+	Dimensions,
+	FlatList,
+	Image,
+	Pressable,
+	RefreshControl,
+	StyleSheet,
+	View,
+	useWindowDimensions
 } from "react-native";
 import PostPopUp from "../components/PostPopUp/PostPopUp";
-import { RefreshControl } from "react-native";
-import * as Location from "expo-location";
 
+import { Filtros, Ubicacion } from "@/scripts/types";
+import { useQuery } from "@tanstack/react-query";
+import * as Location from "expo-location";
+import { eventGet } from "../api/event.route";
+import { useAuth } from "../hooks/auth-hooks";
 
 export default function Discover() {
 	const { theme } = useTheme();
 	const { width } = useWindowDimensions();
 	const styles = stylesFn(theme, width);
 	const router = useRouter();
-	const [posts, setPosts] = useState(DATA);
-	const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
+	const { token } = useAuth();
+	// const [posts, setPosts] = useState(DATA);
+	const [filtros, setFiltros] = useState<Filtros>({ ubicacion: null });
+	// const [userLocation, setUserLocation] = useState<Filtros>(null);
 
 	// Estado del pop-up
 	const [selectedPost, setSelectedPost] = useState<null | (typeof DATA[number])>(null);
@@ -34,32 +40,41 @@ export default function Discover() {
 	// Estado de refresco
 	const [refreshing, setRefreshing] = useState(false);
 
-	useFocusEffect(
-		useCallback(() => {
-			if (userLocation) {
-				ordenarPorCercania(userLocation);
-			} else {
-				setPosts([...DATA]); // fallback si no hay permisos aún
-			}
-		}, [userLocation])
-	);
+	const { data: posts, isLoading, isError } = useQuery({
+		queryKey: ["posts", filtros],
+		queryFn: () => eventGet(filtros, token)
+	});
 
+	const obtenerUbicacionActual = async (): Promise<Omit<Ubicacion, "direccion"> | null> => {
+		let { status } = await Location.requestForegroundPermissionsAsync();
+		if (status !== "granted") {
+			console.log("Permisos de ubicación denegados");
+			return null;
+		}
 
-	// Simula carga desde backend
-	const onRefresh = () => {
+		const location = await Location.getCurrentPositionAsync({});
+		const lat = location.coords.latitude;
+		const lon = location.coords.longitude;
+
+		return {
+			latitud: lat,
+			longitud: lon
+		};
+	}
+
+	const onRefresh = async () => {
 		setRefreshing(true);
+		try {
+			const ubicacion = await obtenerUbicacionActual();
 
-		setTimeout(() => {
-			if (userLocation) {
-				ordenarPorCercania(userLocation);
-			} else {
-				setPosts([...DATA]);
+			if (ubicacion) {
+				setFiltros((prev) => ({ ...prev, ubicacion }));
 			}
-
+		}
+		finally {
 			setRefreshing(false);
-		}, 800);
+		}
 	};
-
 
 	const nuevoPost = () => router.push({ pathname: "../postear" });
 
@@ -80,7 +95,7 @@ export default function Discover() {
 			useNativeDriver: true,
 		}).start(() => setSelectedPost(null));
 	};
-
+	///////////////////////////////////////////////////
 	//Funciones para FILTRAR POR CERCANIA
 	useEffect(() => {
 		(async () => {
@@ -100,6 +115,9 @@ export default function Discover() {
 			ordenarPorCercania({ lat, lon });
 		})();
 	}, []);
+	////////////////////////////////
+
+
 	const distancia = (lat1: number, lon1: number, lat2: number, lon2: number) => {
 		const R = 6371; // km
 		const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -108,9 +126,9 @@ export default function Discover() {
 		const a =
 			Math.sin(dLat / 2) * Math.sin(dLat / 2) +
 			Math.cos(lat1 * Math.PI / 180) *
-				Math.cos(lat2 * Math.PI / 180) *
-				Math.sin(dLon / 2) *
-				Math.sin(dLon / 2);
+			Math.cos(lat2 * Math.PI / 180) *
+			Math.sin(dLon / 2) *
+			Math.sin(dLon / 2);
 
 		const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 		return R * c; // distancia en km
@@ -169,7 +187,7 @@ export default function Discover() {
 						onRefresh={onRefresh}
 						tintColor="#52E4F5"      // iOS
 						colors={["#52E4F5"]}      // Android
-						progressBackgroundColor="#ffffff00"	
+						progressBackgroundColor="#ffffff00"
 					/>
 				}
 			/>
