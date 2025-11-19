@@ -46,7 +46,6 @@ const PostFormContent = ({ theme, styles, router }: any) => {
 		const eventId = await eventCreate(
 			titulo,
 			descripcion,
-			imagenes,
 			fechaInicio,
 			fechaFin,
 			ubicacionEvento,
