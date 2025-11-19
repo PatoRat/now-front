@@ -1,4 +1,4 @@
-import { eventCreate } from "@/src/api/event.route";
+import { eventCreate, guardarImagenes } from "@/src/api/event.route";
 import { useAuth } from "@/src/hooks/auth-hooks";
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import React, { useEffect, useState } from "react";
@@ -44,7 +44,7 @@ const PostFormContent = ({ theme, styles, router }: any) => {
 			direccion: direccion
 		};
 
-		await eventCreate(
+		const eventId = await eventCreate(
 			titulo,
 			descripcion,
 			imagenes,
@@ -53,6 +53,10 @@ const PostFormContent = ({ theme, styles, router }: any) => {
 			ubicacionEvento,
 			token
 		);
+
+		if (imagenes.length > 0){
+			await guardarImagenes(imagenes, eventId, token);
+		}
 
 		// DATA.unshift({
 		//   id: (DATA.length + 1).toString(),// vuela

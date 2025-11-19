@@ -37,7 +37,7 @@ const eventCreate = async (
     const evento = await response.json();
     console.log("Evento creado: ", evento);
 
-    await guardarImagenes(imagenes, evento.id, tokenAuth);
+    return evento.id;
 
 }
 
@@ -46,7 +46,50 @@ const guardarImagenes = async (
     eventId: number,
     tokenAuth: string | null
 ) => {
-    const response = await fetch(`${URL_BACKEND}/images/save-sin-archivos`, { // ver como hacer con archivos
+
+    const formData = new FormData();
+
+    formData.append("eventId", `${eventId}`);
+
+    imagenes.forEach(img => {
+
+        const uri: string = (img as { uri: string }).uri;
+        const extension = uri.split(".").pop() || "jpg";
+
+        const archivo = {
+            uri,
+            name: uri,
+            type: `image/${extension}`,
+        } as any;
+
+        formData.append("imagenes", archivo);
+    });
+
+    const response = await fetch(`${URL_BACKEND}/images/save`, {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${tokenAuth}`
+        },
+        body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data?.error ?? "Error al subir imágenes");
+    }
+
+    console.log("Imagenes guardadas: ", data);
+}
+
+/*
+// Solo de testeo
+const guardarImagenesSoloUri = async (
+    imagenes: ImageSourcePropType[],
+    eventId: number,
+    tokenAuth: string | null
+) => {
+    const response = await fetch(`${URL_BACKEND}/images/save-sin-archivos`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -65,6 +108,7 @@ const guardarImagenes = async (
 
     console.log("Imagen guardada: ", response.json());
 }
+*/
 
-export { eventCreate };
+export { eventCreate, guardarImagenes };
 
