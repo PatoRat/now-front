@@ -94,13 +94,14 @@ export const Drawer = () => {
                     </Text>
                 </Pressable>
 
-                <Pressable style={styles.drawerItem} onPress={() => {
-                        toggleDrawer();
-                        router.push("../../(tabs)/profile");//?section=posts
-                    }}>
-                    <Text style={styles.drawerText}>
-                        MIS EVENTOS
-                    </Text>
+                <Pressable
+                    style={styles.drawerItem}
+                    onPress={() => {
+                        toggleDrawer(); // cerrar drawer
+                        router.push("../(tabs)/profile"); // enviar parámetro
+                    }}
+                >
+                    <Text style={styles.drawerText}>MIS EVENTOS</Text>
                 </Pressable>
 
                 <Pressable style={styles.drawerItem} onPress={() => {
