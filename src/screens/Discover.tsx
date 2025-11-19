@@ -1,6 +1,8 @@
 import Post from "@/src/components/Post";
+import { URL_BACKEND } from "@/src/config";
 import { useTheme } from "@/src/hooks/theme-hooks";
 import { Theme } from "@react-navigation/native";
+import * as Location from "expo-location";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
@@ -9,33 +11,21 @@ import {
     FlatList,
     Image,
     Pressable,
+    RefreshControl,
     StyleSheet,
     View,
-    useWindowDimensions,
-    RefreshControl
+    useWindowDimensions
 } from "react-native";
+import { getAllEvents, getEvents } from "../api/event.route";
 import PostPopUp from "../components/PostPopUp/PostPopUp";
-import * as Location from "expo-location";
-import { useAuth } from "@/src/hooks/auth-hooks";
-import { URL_BACKEND } from "@/src/config";
-
-export const getEvents = async () => {
-	try {
-		const res = await fetch(`${URL_BACKEND}/events/all`);
-		if (!res.ok) throw new Error(`Error ${res.status}`);
-		const data = await res.json();
-		return data; // Array de eventos
-	} catch (error) {
-		console.error("Error fetching events:", error);
-		throw error;
-	}
-};
+import { useAuth } from "../hooks/auth-hooks";
 
 	
 export default function Discover() {
 	
     const { theme } = useTheme();
     const { width } = useWindowDimensions();
+    const { token } = useAuth();
     const styles = stylesFn(theme, width);
     const router = useRouter();
 	
@@ -99,10 +89,12 @@ export default function Discover() {
     const cargarEventos = async () => {
 		setRefreshing(true);
 		try {
-			const eventos = await getEvents();
 			if (userLocation) {
+                // console.log("llegue a userloc: ", userLocation);
+                const eventos = await getEvents(token, userLocation);
 				ordenarPorCercaniaConArray(eventos, userLocation);
 			} else {
+                const eventos = await getAllEvents(token);
 				setPosts(eventos);
 			}
 		} catch (error) {
