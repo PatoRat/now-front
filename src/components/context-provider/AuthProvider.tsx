@@ -25,7 +25,18 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     useEffect(() => {
         (async () => {
             try {
+                ///////////////////////////////////////////////////////////////
+                // let tokenPrevio = await SecureStore.getItemAsync("token");
+                // console.log("Token previo: ", tokenPrevio);
+                // await SecureStore.deleteItemAsync('token').catch(() => { });
+                // tokenPrevio = await SecureStore.getItemAsync("token");
+                // SOLO PARA LIMPIAR CACHE DEL DISPOSITIVO
+                // COMENTAR DURANTE USO NORMAL
+                /////////////////////////////////////////////////////////////// 
+
                 const tokenSaved = await SecureStore.getItemAsync("token");
+
+                // console.log("Token previo: ", tokenSaved);
 
                 if (tokenSaved) {
                     setToken(tokenSaved);

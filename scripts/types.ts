@@ -7,12 +7,14 @@ type PostType = {
     imagenes: ImageSourcePropType[]
     fechaInicio: Date
     fechaFin: Date
-    ubicacion: {
-        latitud: number,
-        longitud: number,
-        direccion: string
-    }
+    ubicacion: Ubicacion,
     creador: string,
+};
+
+type Ubicacion = {
+    latitud: number,
+    longitud: number,
+    direccion: string
 };
 
 type RegisterInput = {
@@ -64,6 +66,13 @@ type ThemeColors = {
 }
 
 export {
-    Fav, LoginInput, PostType, RegisterInput, ThemeColors, ThemeName, UserData
+    Fav,
+    LoginInput,
+    PostType,
+    RegisterInput,
+    ThemeColors,
+    ThemeName,
+    Ubicacion,
+    UserData
 };
 

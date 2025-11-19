@@ -8,22 +8,22 @@ import PostFormContent, { stylesFn } from "./PostFormContent";
 
 
 const PostInputsHandler = (props: { router: Router }) => {
-  const { theme } = useTheme();
-  const { width } = useWindowDimensions();
-  const styles = stylesFn(theme, width);
-  const mapRef = useRef<MapView | null>(null);
+	const { theme } = useTheme();
+	const { width } = useWindowDimensions();
+	const styles = stylesFn(theme, width);
+	const mapRef = useRef<MapView | null>(null); // que hace esto
 
-  
 
-  return (
-      <View style={styles.card}>
-        <PostFormContent
-          theme={theme}
-          styles={styles}
-          router={props.router}
-        />
-      </View>
-  );
+
+	return (
+		<View style={styles.card}>
+			<PostFormContent
+				theme={theme}
+				styles={styles}
+				router={props.router}
+			/>
+		</View>
+	);
 };
 
 export default PostInputsHandler;
