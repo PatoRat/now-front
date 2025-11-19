@@ -84,19 +84,19 @@ export default function Discover() {
 				data={posts}
 				keyExtractor={(item) => item.id}
 				renderItem={({ item }) => (
-					<Pressable onPress={() => openPopup(item)}>
-						<Post
-							titulo={item.titulo}
-							descripcion={item.descripcion}
-							imagenes={item.imagenes}
-							fechaInicio={item.fechaInicio}
-							fechaFin={item.fechaFin}
-							ubicacion={item.ubicacion}
-							direccion={item.ubicacion?.direccion}
-							creador={item.creador}
-						/>
-					</Pressable>
+					<Post
+						titulo={item.titulo}
+						descripcion={item.descripcion}
+						imagenes={item.imagenes}
+						fechaInicio={item.fechaInicio}
+						fechaFin={item.fechaFin}
+						ubicacion={item.ubicacion}
+						direccion={item.ubicacion?.direccion}
+						creador={item.creador}
+						onSingleTap={() => openPopup(item)}
+					/>
 				)}
+
 				contentContainerStyle={styles.listaContenido}
 				showsVerticalScrollIndicator={false}
 			/>
