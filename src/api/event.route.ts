@@ -4,11 +4,37 @@ import { ImageSourcePropType } from "react-native";
 
 const EVENT_PATH = URL_BACKEND + "/events";
 
+const eventGet = async (
+    ubicacion: Ubicacion | null,
+    tokenAuth: string | null
+) => {
+
+    if (!ubicacion) {
+        throw new Error("Sin ubicación");
+    }
+    const res = await fetch(`${EVENT_PATH}/`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${tokenAuth}`
+        },
+        body: JSON.stringify({
+            coordenadasUsuario: {
+                latitud: ubicacion.latitud,
+                longitud: ubicacion.longitud,
+            }
+        }),
+    });
+
+    if (!res.ok) throw new Error("Error al traer eventos filtrados");
+
+    return res.json();
+};
+
 
 const eventCreate = async (
     titulo: string,
     descripcion: string,
-    imagenes: ImageSourcePropType[],
     fechaInicio: Date,
     fechaFin: Date,
     ubicacion: Ubicacion,
@@ -123,5 +149,5 @@ const guardarImagenesSoloUri = async (
 }
 */
 
-export { eventCreate, guardarImagenes };
+export { eventCreate, eventGet, guardarImagenes };
 
