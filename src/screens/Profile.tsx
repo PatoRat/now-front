@@ -1,31 +1,29 @@
-import { ThemeColors } from "@/scripts/types";
-import { useTheme } from "@/src/hooks/theme-hooks";
-import { SafeAreaView } from "react-native-safe-area-context";
 import DATA from "@/assets/databases/data";
 import Post from "@/src/components/Post";
+import { useTheme } from "@/src/hooks/theme-hooks";
 import { FontAwesome } from "@expo/vector-icons";
 import { Theme } from "@react-navigation/native";
 import { BlurView } from 'expo-blur';
-import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
-    Animated,
-    Dimensions,
-    FlatList,
-    Image, Linking, Modal,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
-    useWindowDimensions
+	Animated,
+	Dimensions,
+	FlatList,
+	Image, Linking, Modal,
+	Platform,
+	Pressable,
+	ScrollView,
+	StyleSheet,
+	Text,
+	View,
+	useWindowDimensions
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 
 export default function ProfileGamified() {
-    //Referencia para que te lleve a un lugar directo de tu perfil
-    const postsRef = useRef<View>(null);
+	//Referencia para que te lleve a un lugar directo de tu perfil
+	const postsRef = useRef<View>(null);
 	// Array de rutas estáticas
 	const avatarImages = [
 		require("@/assets/images/avatars/Avatar-1.png"),
@@ -40,11 +38,10 @@ export default function ProfileGamified() {
 		require("@/assets/images/avatars/Avatar-10.png"),
 	];
 
-    const { theme } = useTheme();
+	const { theme } = useTheme();
 	const { width } = useWindowDimensions();
 	const styles = stylesFn(theme, width);
-	const router = useRouter();
-	const [posts, setPosts] = useState(DATA);
+	const [posts] = useState(DATA);
 
 	const [avatar, setAvatar] = useState(1); // Avatar actual
 	const [modalVisible, setModalVisible] = useState(false);
@@ -65,7 +62,7 @@ export default function ProfileGamified() {
 
 	const maxEvents = 5;
 
-    // Para abrir pop-up
+	// Para abrir pop-up
 	const openPopup = (item: typeof DATA[number]) => {
 		setSelectedPost(item);
 		Animated.timing(fadeAnim, {
@@ -173,195 +170,195 @@ export default function ProfileGamified() {
 					<Text style={styles.sectionTitle}>Trofeos de Asistencia</Text>
 					<View style={styles.badgesRow}>{renderBoxes(user.attendedEvents, "asistencia")}</View>
 				</View>
-                {/* Mis Publicaciones */}
-                <View ref={postsRef} style={{ marginTop: 30 }}>
-                    <Text style={[styles.sectionTitle, { fontSize: 20 }]}>Tus Publicaciones</Text>
+				{/* Mis Publicaciones */}
+				<View ref={postsRef} style={{ marginTop: 30 }}>
+					<Text style={[styles.sectionTitle, { fontSize: 20 }]}>Tus Publicaciones</Text>
 
-                    {/* Lista de posts*/}
-                    <View style={{ flex: 1 }}>
-                        <FlatList
-                            data={posts}
-                            keyExtractor={(item) => item.id}
-                            renderItem={({ item }) => (
-                                <Post
-                                    titulo={item.titulo}
-                                    descripcion={item.descripcion}
-                                    imagenes={item.imagenes}
-                                    fechaInicio={item.fechaInicio}
-                                    fechaFin={item.fechaFin}
-                                    ubicacion={item.ubicacion}
-                                    direccion={item.ubicacion?.direccion}
-                                    creador={item.creador}
-                                    onSingleTap={() => openPopup(item)}
-                                />
-                            )}
+					{/* Lista de posts*/}
+					<View style={{ flex: 1 }}>
+						<FlatList
+							data={posts}
+							keyExtractor={(item) => item.id}
+							renderItem={({ item }) => (
+								<Post
+									titulo={item.titulo}
+									descripcion={item.descripcion}
+									imagenes={item.imagenes}
+									fechaInicio={item.fechaInicio}
+									fechaFin={item.fechaFin}
+									ubicacion={item.ubicacion}
+									direccion={item.ubicacion?.direccion}
+									creador={item.creador}
+									onSingleTap={() => openPopup(item)}
+								/>
+							)}
 
-                            contentContainerStyle={styles.listaContenido}
-                            showsVerticalScrollIndicator={false}
-                        />
+							contentContainerStyle={styles.listaContenido}
+							showsVerticalScrollIndicator={false}
+						/>
 
-                        {/* Pop-up del post */}
-                        <Modal
-                            visible={!!selectedPost}
-                            transparent
-                            animationType="none"
-                            onRequestClose={closePopup}
-                        >
-                            <BlurView intensity={80} style={StyleSheet.absoluteFill}>
-                                <Pressable style={StyleSheet.absoluteFill} onPress={closePopup} />
-                            </BlurView>
-                            <Animated.View style={[styles.overlay, { opacity: fadeAnim }]}>
-                                <Pressable style={styles.overlay} onPress={closePopup} />
-                            </Animated.View>
+						{/* Pop-up del post */}
+						<Modal
+							visible={!!selectedPost}
+							transparent
+							animationType="none"
+							onRequestClose={closePopup}
+						>
+							<BlurView intensity={80} style={StyleSheet.absoluteFill}>
+								<Pressable style={StyleSheet.absoluteFill} onPress={closePopup} />
+							</BlurView>
+							<Animated.View style={[styles.overlay, { opacity: fadeAnim }]}>
+								<Pressable style={styles.overlay} onPress={closePopup} />
+							</Animated.View>
 
-                            {selectedPost && (
-                                <Animated.View
-                                    style={[
-                                        styles.popupContainer,
-                                        {
-                                            opacity: fadeAnim,
-                                            transform: [
-                                                { translateY: fadeAnim.interpolate({ inputRange: [0, 1], outputRange: [50, 0] }) },
-                                                { scale: fadeAnim.interpolate({ inputRange: [0, 1], outputRange: [0.8, 1] }) },
-                                                { rotateY: fadeAnim.interpolate({ inputRange: [0, 1], outputRange: ['15deg', '0deg'] }) },
-                                            ]
+							{selectedPost && (
+								<Animated.View
+									style={[
+										styles.popupContainer,
+										{
+											opacity: fadeAnim,
+											transform: [
+												{ translateY: fadeAnim.interpolate({ inputRange: [0, 1], outputRange: [50, 0] }) },
+												{ scale: fadeAnim.interpolate({ inputRange: [0, 1], outputRange: [0.8, 1] }) },
+												{ rotateY: fadeAnim.interpolate({ inputRange: [0, 1], outputRange: ['15deg', '0deg'] }) },
+											]
 
-                                        },
-                                    ]}
-                                >
-                                    {/* Carrusel de imágenes */}
-                                    {selectedPost.imagenes?.length > 0 && (
-                                        <>
-                                            <FlatList
-                                                data={selectedPost.imagenes}
-                                                horizontal
-                                                pagingEnabled
-                                                showsHorizontalScrollIndicator={false}
-                                                keyExtractor={(_, i) => i.toString()}
-                                                onScroll={(e) => {
-                                                    const index = Math.round(
-                                                        e.nativeEvent.contentOffset.x / (width * 0.85)
-                                                    );
-                                                    setCurrentIndex(index);
-                                                }}
-                                                scrollEventThrottle={16}
-                                                renderItem={({ item }) => (
-                                                    <View
-                                                        style={{
-                                                            width: width * 0.85,
-                                                            height: 200,
-                                                            marginRight: 10,
-                                                            borderRadius: 15,
-                                                            overflow: "hidden",
-                                                            shadowColor: "#000",
-                                                            shadowOpacity: 0.3,
-                                                            shadowRadius: 10,
-                                                            elevation: 5,
-                                                        }}
-                                                    >
-                                                        <Image
-                                                            source={item}
-                                                            style={{ width: "100%", height: "100%" }}
-                                                            resizeMode="cover"
-                                                        />
-                                                    </View>
-                                                )}
-                                                contentContainerStyle={{ paddingHorizontal: width * 0.075 / 2 }}
-                                            />
+										},
+									]}
+								>
+									{/* Carrusel de imágenes */}
+									{selectedPost.imagenes?.length > 0 && (
+										<>
+											<FlatList
+												data={selectedPost.imagenes}
+												horizontal
+												pagingEnabled
+												showsHorizontalScrollIndicator={false}
+												keyExtractor={(_, i) => i.toString()}
+												onScroll={(e) => {
+													const index = Math.round(
+														e.nativeEvent.contentOffset.x / (width * 0.85)
+													);
+													setCurrentIndex(index);
+												}}
+												scrollEventThrottle={16}
+												renderItem={({ item }) => (
+													<View
+														style={{
+															width: width * 0.85,
+															height: 200,
+															marginRight: 10,
+															borderRadius: 15,
+															overflow: "hidden",
+															shadowColor: "#000",
+															shadowOpacity: 0.3,
+															shadowRadius: 10,
+															elevation: 5,
+														}}
+													>
+														<Image
+															source={item}
+															style={{ width: "100%", height: "100%" }}
+															resizeMode="cover"
+														/>
+													</View>
+												)}
+												contentContainerStyle={{ paddingHorizontal: width * 0.075 / 2 }}
+											/>
 
-                                            {/* Dots de paginación */}
-                                            <View
-                                                style={{
-                                                    flexDirection: "row",
-                                                    justifyContent: "center",
-                                                    marginTop: 10,
-                                                    marginBottom: 5,
-                                                }}
-                                            >
-                                                {selectedPost.imagenes.map((_, i) => (
-                                                    <View
-                                                        key={i}
-                                                        style={{
-                                                            width: 8,
-                                                            height: 8,
-                                                            borderRadius: 4,
-                                                            marginHorizontal: 4,
-                                                            backgroundColor: i === currentIndex ? "#007AFF" : "#ccc",
-                                                        }}
-                                                    />
-                                                ))}
-                                            </View>
-                                        </>
-                                    )}
+											{/* Dots de paginación */}
+											<View
+												style={{
+													flexDirection: "row",
+													justifyContent: "center",
+													marginTop: 10,
+													marginBottom: 5,
+												}}
+											>
+												{selectedPost.imagenes.map((_, i) => (
+													<View
+														key={i}
+														style={{
+															width: 8,
+															height: 8,
+															borderRadius: 4,
+															marginHorizontal: 4,
+															backgroundColor: i === currentIndex ? "#007AFF" : "#ccc",
+														}}
+													/>
+												))}
+											</View>
+										</>
+									)}
 
-                                    {/*  Título */}
-                                    <Text style={styles.popupTitle}>{selectedPost.titulo}</Text>
+									{/*  Título */}
+									<Text style={styles.popupTitle}>{selectedPost.titulo}</Text>
 
-                                    {/*  Descripción */}
-                                    {!!selectedPost.descripcion && (
-                                        <Text style={styles.popupDesc}>{selectedPost.descripcion}</Text>
-                                    )}
+									{/*  Descripción */}
+									{!!selectedPost.descripcion && (
+										<Text style={styles.popupDesc}>{selectedPost.descripcion}</Text>
+									)}
 
-                                    {/*  Fechas */}
-                                    <Text style={styles.fechaText}>
-                                        Inicio: {selectedPost.fechaInicio ? formatoFecha(selectedPost.fechaInicio) : ""}
-                                    </Text>
-                                    <Text style={styles.fechaText}>
-                                        Fin: {selectedPost.fechaFin ? formatoFecha(selectedPost.fechaFin) : ""}
-                                    </Text>
-                                    {/* Creador del post */}
-                                    <View style={{ alignItems: "center", marginTop: 10 }}>
-                                        <Text style={{ fontSize: 16, fontWeight: "bold", color: theme.colors.text }}>
-                                            Creado por: {selectedPost.creador}
-                                        </Text>
-                                    </View>
-
-
-                                    {/*  Ubicación */}
-                                    {selectedPost.ubicacion && (
-                                        <Pressable
-                                            onPress={() =>
-                                                abrirEnMaps(
-                                                    selectedPost.ubicacion.latitud,
-                                                    selectedPost.ubicacion.longitud
-                                                )
-                                            }
-                                            android_ripple={{ color: "rgba(255,255,255,0.2)" }}
-                                            style={({ pressed }) => [
-                                                styles.direccionContainer,
-                                                pressed && { opacity: 0.6 },
-                                            ]}
-                                        >
-                                            <FontAwesome
-                                                style={styles.direccionIcon}
-                                                size={24}
-                                                name="map-marker"
-                                                color="red"
-                                            />
-                                            <Text style={styles.direccionText}>
-                                                {selectedPost.ubicacion.direccion}
-                                            </Text>
-                                        </Pressable>
-
-                                    )}
+									{/*  Fechas */}
+									<Text style={styles.fechaText}>
+										Inicio: {selectedPost.fechaInicio ? formatoFecha(selectedPost.fechaInicio) : ""}
+									</Text>
+									<Text style={styles.fechaText}>
+										Fin: {selectedPost.fechaFin ? formatoFecha(selectedPost.fechaFin) : ""}
+									</Text>
+									{/* Creador del post */}
+									<View style={{ alignItems: "center", marginTop: 10 }}>
+										<Text style={{ fontSize: 16, fontWeight: "bold", color: theme.colors.text }}>
+											Creado por: {selectedPost.creador}
+										</Text>
+									</View>
 
 
+									{/*  Ubicación */}
+									{selectedPost.ubicacion && (
+										<Pressable
+											onPress={() =>
+												abrirEnMaps(
+													selectedPost.ubicacion.latitud,
+													selectedPost.ubicacion.longitud
+												)
+											}
+											android_ripple={{ color: "rgba(255,255,255,0.2)" }}
+											style={({ pressed }) => [
+												styles.direccionContainer,
+												pressed && { opacity: 0.6 },
+											]}
+										>
+											<FontAwesome
+												style={styles.direccionIcon}
+												size={24}
+												name="map-marker"
+												color="red"
+											/>
+											<Text style={styles.direccionText}>
+												{selectedPost.ubicacion.direccion}
+											</Text>
+										</Pressable>
 
-                                    {/* Botón cerrar */}
-                                    <Pressable onPress={closePopup} style={({ pressed }) => [
-                                        { position: 'absolute', top: 10, right: 10, padding: 10, borderRadius: 20, backgroundColor: 'rgba(0,0,0,0.3)' },
-                                        pressed && { backgroundColor: 'rgba(0,0,0,0.6)' }
-                                    ]}>
+									)}
 
-                                        <FontAwesome name="close" size={20} color="white" />
-                                    </Pressable>
 
-                                </Animated.View>
-                            )}
 
-                        </Modal>
-                    </View>
-                </View>
+									{/* Botón cerrar */}
+									<Pressable onPress={closePopup} style={({ pressed }) => [
+										{ position: 'absolute', top: 10, right: 10, padding: 10, borderRadius: 20, backgroundColor: 'rgba(0,0,0,0.3)' },
+										pressed && { backgroundColor: 'rgba(0,0,0,0.6)' }
+									]}>
+
+										<FontAwesome name="close" size={20} color="white" />
+									</Pressable>
+
+								</Animated.View>
+							)}
+
+						</Modal>
+					</View>
+				</View>
 
 				{/* Modal de selección de avatar */}
 				<Modal
