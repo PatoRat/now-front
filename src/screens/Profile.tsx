@@ -19,8 +19,8 @@ import PostPopUp from "../components/PostPopUp/PostPopUp";
 
 
 export default function ProfileGamified() {
-    //Referencia para que te lleve a un lugar directo de tu perfil
-    const postsRef = useRef<View>(null);
+	//Referencia para que te lleve a un lugar directo de tu perfil
+	const postsRef = useRef<View>(null);
 	// Array de rutas estáticas
 	const avatarImages = [
 		require("@/assets/images/avatars/Avatar-1.png"),
@@ -35,7 +35,7 @@ export default function ProfileGamified() {
 		require("@/assets/images/avatars/Avatar-10.png"),
 	];
 
-    const { theme } = useTheme();
+	const { theme } = useTheme();
 	const { width } = useWindowDimensions();
 	const styles = stylesFn(theme, width);
 	const [posts] = useState(DATA);
@@ -59,7 +59,7 @@ export default function ProfileGamified() {
 
 	const maxEvents = 5;
 
-    // Para abrir pop-up
+	// Para abrir pop-up
 	const openPopup = (item: typeof DATA[number]) => {
 		setSelectedPost(item);
 		Animated.timing(fadeAnim, {

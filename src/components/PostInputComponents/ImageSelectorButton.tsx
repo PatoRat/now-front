@@ -16,7 +16,8 @@ const ImageSelectorButton = ({ onSelect }: ImageSelectorButtonProps) => {
 
         if (!result.canceled && result.assets) {
             const uris = result.assets.map((asset) => ({ uri: asset.uri }));
-            onSelect(uris);
+            
+            onSelect((prev) => [...prev, ...uris]);
         }
     };
 
