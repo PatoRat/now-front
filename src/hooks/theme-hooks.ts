@@ -14,7 +14,7 @@ const getThemeFromName = (name: ThemeName) => {
 const readTheme = async () => {
     const stored = await SecureStore.getItemAsync("theme");
 
-    console.log("Tema guardado", stored);
+    // console.log("Tema guardado", stored);
 
     if (stored === "light" || stored === "dark") {
         return stored;
