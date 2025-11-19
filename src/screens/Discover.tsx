@@ -3,7 +3,7 @@ import Post from "@/src/components/Post";
 import { useTheme } from "@/src/hooks/theme-hooks";
 import { Theme } from "@react-navigation/native";
 import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
     Animated,
     Dimensions,
@@ -15,6 +15,9 @@ import {
     useWindowDimensions
 } from "react-native";
 import PostPopUp from "../components/PostPopUp/PostPopUp";
+import { RefreshControl } from "react-native";
+import * as Location from "expo-location";
+
 
 export default function Discover() {
 	const { theme } = useTheme();
@@ -22,20 +25,45 @@ export default function Discover() {
 	const styles = stylesFn(theme, width);
 	const router = useRouter();
 	const [posts, setPosts] = useState(DATA);
+	const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
 
 	// Estado del pop-up
 	const [selectedPost, setSelectedPost] = useState<null | (typeof DATA[number])>(null);
 	const fadeAnim = useRef(new Animated.Value(0)).current;
 
+	// Estado de refresco
+	const [refreshing, setRefreshing] = useState(false);
 
 	useFocusEffect(
 		useCallback(() => {
-			setPosts([...DATA]);
-		}, [])
+			if (userLocation) {
+				ordenarPorCercania(userLocation);
+			} else {
+				setPosts([...DATA]); // fallback si no hay permisos aún
+			}
+		}, [userLocation])
 	);
 
+
+	// Simula carga desde backend
+	const onRefresh = () => {
+		setRefreshing(true);
+
+		setTimeout(() => {
+			if (userLocation) {
+				ordenarPorCercania(userLocation);
+			} else {
+				setPosts([...DATA]);
+			}
+
+			setRefreshing(false);
+		}, 800);
+	};
+
+
 	const nuevoPost = () => router.push({ pathname: "../postear" });
-	// Para abrir pop-up
+
+	//Abrir y cerrar Pop Up
 	const openPopup = (item: typeof DATA[number]) => {
 		setSelectedPost(item);
 		Animated.timing(fadeAnim, {
@@ -45,7 +73,6 @@ export default function Discover() {
 		}).start();
 	};
 
-
 	const closePopup = () => {
 		Animated.timing(fadeAnim, {
 			toValue: 0,
@@ -53,6 +80,65 @@ export default function Discover() {
 			useNativeDriver: true,
 		}).start(() => setSelectedPost(null));
 	};
+
+	//Funciones para FILTRAR POR CERCANIA
+	useEffect(() => {
+		(async () => {
+			let { status } = await Location.requestForegroundPermissionsAsync();
+			if (status !== "granted") {
+				console.log("Permisos de ubicación denegados");
+				return;
+			}
+
+			const location = await Location.getCurrentPositionAsync({});
+			const lat = location.coords.latitude;
+			const lon = location.coords.longitude;
+
+			setUserLocation({ lat, lon });
+
+			// Orden inicial
+			ordenarPorCercania({ lat, lon });
+		})();
+	}, []);
+	const distancia = (lat1: number, lon1: number, lat2: number, lon2: number) => {
+		const R = 6371; // km
+		const dLat = ((lat2 - lat1) * Math.PI) / 180;
+		const dLon = ((lon2 - lon1) * Math.PI) / 180;
+
+		const a =
+			Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+			Math.cos(lat1 * Math.PI / 180) *
+				Math.cos(lat2 * Math.PI / 180) *
+				Math.sin(dLon / 2) *
+				Math.sin(dLon / 2);
+
+		const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+		return R * c; // distancia en km
+	};
+	const ordenarPorCercania = (pos: { lat: number; lon: number }) => {
+		const ordenados = [...DATA].sort((a, b) => {
+			const distA = distancia(
+				pos.lat,
+				pos.lon,
+				a.ubicacion?.latitud ?? 0,
+				a.ubicacion?.longitud ?? 0
+			);
+
+			const distB = distancia(
+				pos.lat,
+				pos.lon,
+				b.ubicacion?.latitud ?? 0,
+				b.ubicacion?.longitud ?? 0
+			);
+
+			return distA - distB;
+		});
+
+		setPosts(ordenados);
+	};
+
+
+
 
 	return (
 		<View style={{ flex: 1 }}>
@@ -75,9 +161,20 @@ export default function Discover() {
 
 				contentContainerStyle={styles.listaContenido}
 				showsVerticalScrollIndicator={false}
+
+				// RefreshControl personalizado
+				refreshControl={
+					<RefreshControl
+						refreshing={refreshing}
+						onRefresh={onRefresh}
+						tintColor="#52E4F5"      // iOS
+						colors={["#52E4F5"]}      // Android
+						progressBackgroundColor="#ffffff00"	
+					/>
+				}
 			/>
 
-			{/* Botón de nuevo post */}
+			{/* Botón nuevo post */}
 			<View style={styles.botonContainer}>
 				<Pressable onPress={nuevoPost}>
 					<Image
@@ -88,7 +185,6 @@ export default function Discover() {
 				</Pressable>
 			</View>
 
-			{/* Pop-up del post */}
 			<PostPopUp
 				visible={!!selectedPost}
 				post={selectedPost}
@@ -97,6 +193,7 @@ export default function Discover() {
 		</View>
 	);
 }
+
 
 const stylesFn = (theme: Theme, width: number) =>
 	StyleSheet.create({

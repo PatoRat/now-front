@@ -44,7 +44,7 @@ export default function Favs() {
 			<ScrollView >
 
                 {/* Publicaciones */}
-                    <Text style={[styles.sectionTitle, { fontSize: 20 }]}>FAVORITES</Text>
+                    {/* <Text style={[styles.sectionTitle, { fontSize: 20 }]}>FAVORITES</Text> */}
 
                     {/* Lista de posts*/}
                     <View style={{ flex: 1 }}>
