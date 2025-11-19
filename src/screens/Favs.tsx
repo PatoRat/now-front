@@ -1,18 +1,16 @@
-import { ThemeColors } from "@/scripts/types";
 import { useTheme } from "@/src/hooks/theme-hooks";
 import { Theme } from "@react-navigation/native";
 import React, { useCallback, useRef, useState } from "react";
 import { Animated, FlatList, ScrollView, StyleSheet, Text, useWindowDimensions, View } from "react-native";
 import PostPopUp from "../components/PostPopUp/PostPopUp";
 import Post from "../components/Post";
-import { useFocusEffect, useRouter } from "expo-router";
+import { useFocusEffect } from "expo-router";
 import DATA from "@/assets/databases/data";
 
 export default function Favs() {
     const {theme} = useTheme();
     const { width } = useWindowDimensions();
 	const styles = stylesFn(theme, width);
-    const router = useRouter();
 	const [posts, setPosts] = useState(DATA);
 	const [selectedPost, setSelectedPost] = useState<null | (typeof DATA[number])>(null);
     const fadeAnim = useRef(new Animated.Value(0)).current;

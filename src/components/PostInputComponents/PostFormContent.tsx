@@ -17,7 +17,6 @@ const PostFormContent = ({ theme, styles, router }: any) => {
   const [ubicacion, setUbicacion] = useState<{ latitude: number; longitude: number } | null>(null);
   const [direccion, setDireccion] = useState<string | null>(null);
   const [imagenes, setImagenes] = useState<any[]>([]);
-  const [mostrarPickerDuracion, setMostrarPickerDuracion] = useState(false);
   // 🔹 Calculamos fechaFin automáticamente cuando cambian fechaInicio o duración
   useEffect(() => {
     if (fechaInicio && duracion) {

@@ -1,19 +1,13 @@
-import { ThemeColors } from "@/scripts/types";
 import { useTheme } from "@/src/hooks/theme-hooks";
-import { SafeAreaView } from "react-native-safe-area-context";
 import DATA from "@/assets/databases/data";
 import Post from "@/src/components/Post";
-import { FontAwesome } from "@expo/vector-icons";
 import { Theme } from "@react-navigation/native";
-import { BlurView } from 'expo-blur';
-import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
     Animated,
     Dimensions,
     FlatList,
-    Image, Linking, Modal,
-    Platform,
+    Image, Modal,
     Pressable,
     ScrollView,
     StyleSheet,
@@ -44,8 +38,7 @@ export default function ProfileGamified() {
     const { theme } = useTheme();
 	const { width } = useWindowDimensions();
 	const styles = stylesFn(theme, width);
-	const router = useRouter();
-	const [posts, setPosts] = useState(DATA);
+	const [posts] = useState(DATA);
 
 	const [avatar, setAvatar] = useState(1); // Avatar actual
 	const [modalVisible, setModalVisible] = useState(false);
@@ -80,25 +73,6 @@ export default function ProfileGamified() {
 	const [selectedPost, setSelectedPost] = useState<null | (typeof DATA[number])>(null);
 	const fadeAnim = useRef(new Animated.Value(0)).current;
 
-	const formatoFecha = (fecha: Date) => {
-		if (!fecha) return "";
-		const date = new Date(fecha);
-		return date.toLocaleDateString("es-AR", {
-			day: "2-digit",
-			month: "short",
-			year: "numeric",
-		});
-	};
-	// Para abrir el maps con el link y coordenadas (para cualquier app)
-	const abrirEnMaps = (lat: number, lng: number) => {
-		const url = Platform.select({
-			ios: `maps:0,0?q=${lat},${lng}`,
-			android: `geo:${lat},${lng}?q=${lat},${lng}`,
-			default: `https://www.google.com/maps?q=${lat},${lng}`,
-		});
-		Linking.openURL(url!);
-	};
-	const [currentIndex, setCurrentIndex] = useState(0);
 
 	const closePopup = () => {
 		Animated.timing(fadeAnim, {
