@@ -51,19 +51,32 @@ const guardarImagenes = async (
 
     formData.append("eventId", `${eventId}`);
 
-    imagenes.forEach(img => {
+    /* Hecho por IA, no daba más de pelear con la forma para guardar archivos
+    en el back */
+    imagenes.forEach((img, index) => {
+        const fuente = img as { uri: string };
+        const uri = fuente.uri;
 
-        const uri: string = (img as { uri: string }).uri;
-        const extension = uri.split(".").pop() || "jpg";
+        const match = /\.(\w+)$/.exec(uri);
+        const extension = match ? match[1] : "jpg";
 
-        const archivo = {
+        const mimeType =
+            extension === "png"
+                ? "image/png"
+                : extension === "jpg" || extension === "jpeg"
+                    ? "image/jpeg"
+                    : "application/octet-stream";
+
+        const archivo: any = {
             uri,
-            name: uri,
-            type: `image/${extension}`,
-        } as any;
+            name: `imagen-${index}.${extension}`, // <- nombre limpio
+            type: mimeType,
+        };
 
         formData.append("imagenes", archivo);
     });
+    /* Hasta acá */
+
 
     const response = await fetch(`${URL_BACKEND}/images/save`, {
         method: "POST",
