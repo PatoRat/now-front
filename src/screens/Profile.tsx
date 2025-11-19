@@ -1,18 +1,25 @@
 import { ThemeColors } from "@/scripts/types";
 import { useTheme } from "@/src/hooks/theme-hooks";
-import { StyleSheet, Text } from "react-native";
+import { StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Profile from "../app/(tabs)/profile";
 
-export default function Profile() {
-    const {theme} = useTheme();
-    const styles = stylesFn(theme.colors);
-    
-    return (<Text style={styles.texto}>Este va a ser el Profile.</Text>);
+export default function DiscoverIndex() {
+	const { theme } = useTheme();
+	const styles = stylesFn(theme.colors);
+
+	return (
+		<SafeAreaView style={styles.pestaña}>
+			<Profile />
+		</SafeAreaView>
+	);
 }
 
 const stylesFn = (colors: ThemeColors) => StyleSheet.create({
-    texto: {
-        color: colors.text,
-        alignSelf: "center",
-        marginBottom: 8,
-    },
+	pestaña: {
+		flex: 1,
+		backgroundColor: colors.background,
+		justifyContent: "center",
+		alignItems: "center",
+	}
 });

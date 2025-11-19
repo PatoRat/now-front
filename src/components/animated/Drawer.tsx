@@ -14,8 +14,11 @@ import {
     View
 } from "react-native";
 import { EdgeInsets, useSafeAreaInsets } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
+
 
 export const Drawer = () => {
+    const router = useRouter();
 
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const { width } = useWindowDimensions();
@@ -91,7 +94,10 @@ export const Drawer = () => {
                     </Text>
                 </Pressable>
 
-                <Pressable style={styles.drawerItem} onPress={toggleDrawer}>
+                <Pressable style={styles.drawerItem} onPress={() => {
+                        toggleDrawer();
+                        router.push("../../(tabs)/profile");//?section=posts
+                    }}>
                     <Text style={styles.drawerText}>
                         MIS EVENTOS
                     </Text>
