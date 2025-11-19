@@ -1,17 +1,16 @@
 import { ThemeColors } from "@/scripts/types";
 import { useTheme } from "@/src/hooks/theme-hooks";
 import Favs from "@/src/screens/Favs";
-import { StyleSheet } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { StyleSheet, View } from "react-native";
 
 export default function FavsIndex() {
 	const { theme } = useTheme();
 	const styles = stylesFn(theme.colors);
 
 	return (
-		<SafeAreaView style={styles.pestaña}>
+		<View style={styles.pestaña}>
 			<Favs />
-		</SafeAreaView>
+		</View>
 	);
 }
 

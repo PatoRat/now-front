@@ -15,6 +15,8 @@ import {
     useWindowDimensions
 } from "react-native";
 import PostPopUp from "../components/PostPopUp/PostPopUp";
+import { RefreshControl } from "react-native";
+
 
 export default function Discover() {
 	const { theme } = useTheme();
@@ -27,6 +29,8 @@ export default function Discover() {
 	const [selectedPost, setSelectedPost] = useState<null | (typeof DATA[number])>(null);
 	const fadeAnim = useRef(new Animated.Value(0)).current;
 
+	// Estado de refresco
+	const [refreshing, setRefreshing] = useState(false);
 
 	useFocusEffect(
 		useCallback(() => {
@@ -34,8 +38,18 @@ export default function Discover() {
 		}, [])
 	);
 
+	// Simula carga desde backend
+	const onRefresh = () => {
+		setRefreshing(true);
+
+		setTimeout(() => {
+			setPosts([...DATA]); // acá pedir datos al backend
+			setRefreshing(false);
+		}, 800);
+	};
+
 	const nuevoPost = () => router.push({ pathname: "../postear" });
-	// Para abrir pop-up
+
 	const openPopup = (item: typeof DATA[number]) => {
 		setSelectedPost(item);
 		Animated.timing(fadeAnim, {
@@ -44,7 +58,6 @@ export default function Discover() {
 			useNativeDriver: true,
 		}).start();
 	};
-
 
 	const closePopup = () => {
 		Animated.timing(fadeAnim, {
@@ -75,9 +88,20 @@ export default function Discover() {
 
 				contentContainerStyle={styles.listaContenido}
 				showsVerticalScrollIndicator={false}
+
+				// RefreshControl personalizado
+				refreshControl={
+					<RefreshControl
+						refreshing={refreshing}
+						onRefresh={onRefresh}
+						tintColor="#52E4F5"      // iOS
+						colors={["#52E4F5"]}      // Android
+						progressBackgroundColor="#ffffff00"	
+					/>
+				}
 			/>
 
-			{/* Botón de nuevo post */}
+			{/* Botón nuevo post */}
 			<View style={styles.botonContainer}>
 				<Pressable onPress={nuevoPost}>
 					<Image
@@ -88,7 +112,6 @@ export default function Discover() {
 				</Pressable>
 			</View>
 
-			{/* Pop-up del post */}
 			<PostPopUp
 				visible={!!selectedPost}
 				post={selectedPost}
@@ -97,6 +120,7 @@ export default function Discover() {
 		</View>
 	);
 }
+
 
 const stylesFn = (theme: Theme, width: number) =>
 	StyleSheet.create({
