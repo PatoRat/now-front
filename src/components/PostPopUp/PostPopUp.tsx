@@ -1,5 +1,7 @@
-import { BlurView } from "expo-blur";
+import { useTheme } from "@/src/hooks/theme-hooks";
 import { FontAwesome } from "@expo/vector-icons";
+import { Theme } from "@react-navigation/native";
+import { BlurView } from "expo-blur";
 import React, { useEffect, useRef, useState } from "react";
 import {
     Animated,
@@ -14,13 +16,11 @@ import {
     Text,
     View,
 } from "react-native";
-import { Theme } from "@react-navigation/native";
-import { useTheme } from "@/src/hooks/theme-hooks";
 
-interface PostPopUpProps {
-    visible: boolean;
-    post: any;
-    onClose: () => void;
+type PostPopUpProps = {
+    visible: boolean,
+    post: any,
+    onClose: () => void
 }
 
 export default function PostPopUp({ visible, post, onClose}: PostPopUpProps) {
@@ -145,7 +145,7 @@ export default function PostPopUp({ visible, post, onClose}: PostPopUpProps) {
 
                 <View style={{ alignItems: "center", marginTop: 10 }}>
                     <Text style={{ fontSize: 16, fontWeight: "bold", color: theme.colors.text }}>
-                        Creado por: {post.creador}
+                        Creado por: {post.creador.nombre}
                     </Text>
                 </View>
 

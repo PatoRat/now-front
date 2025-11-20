@@ -1,12 +1,11 @@
 import { useTheme } from "@/src/hooks/theme-hooks";
 import { Theme } from "@react-navigation/native";
-import React, { useCallback, useRef, useState, useContext } from "react";
-import { Animated, FlatList, ScrollView, StyleSheet, Text, useWindowDimensions, View, ActivityIndicator, RefreshControl } from "react-native";
-import PostPopUp from "../components/PostPopUp/PostPopUp";
-import Post from "../components/Post";
 import { useFocusEffect } from "expo-router";
-import { AuthContext } from "../components/context-provider/AuthContext";
+import React, { useCallback, useContext, useRef, useState } from "react";
+import { Animated, FlatList, StyleSheet, useWindowDimensions, View } from "react-native";
 import { getFavs } from "../api/event.route";
+import { AuthContext } from "../components/context-provider/AuthContext";
+import Post from "../components/Post";
 import { URL_BACKEND } from "../config";
 
 export default function Favs() {

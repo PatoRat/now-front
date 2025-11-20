@@ -1,19 +1,19 @@
-import { Theme } from "@react-navigation/native";
 import { PostType } from "@/scripts/types";
-import React, { useEffect, useRef, useState } from "react";
-import {
-	View,
-	Text,
-	Image,
-	Animated,
-	StyleSheet,
-	useWindowDimensions
-} from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import { TapGestureHandler, GestureHandlerRootView } from "react-native-gesture-handler";
-import { useTheme } from "../hooks/theme-hooks";
-import { agregarFavs, getLike, quitarFavs } from "../api/event.route";
+import { Theme } from "@react-navigation/native";
+import React, { useEffect, useRef } from "react";
+import {
+	Animated,
+	Image,
+	StyleSheet,
+	Text,
+	useWindowDimensions,
+	View
+} from "react-native";
+import { GestureHandlerRootView, TapGestureHandler } from "react-native-gesture-handler";
+import { agregarFavs, quitarFavs } from "../api/event.route";
 import { useAuth } from "../hooks/auth-hooks";
+import { useTheme } from "../hooks/theme-hooks";
 import { useLikes } from "./context-provider/LikeContext";
 
 const Post = (

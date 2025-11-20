@@ -1,12 +1,12 @@
 import {
-    ActivityIndicator,
+    Image,
     StyleSheet,
     useWindowDimensions
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Image } from "react-native";
-import { useTheme } from "../hooks/theme-hooks";
+
 import { Theme } from "@react-navigation/native";
+import { useTheme } from "../hooks/theme-hooks";
 
 export default function WaitScreen() {
     const { width } = useWindowDimensions();

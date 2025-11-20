@@ -1,6 +1,6 @@
-import { useTheme } from "@/src/hooks/theme-hooks";
 import DATA from "@/assets/databases/data";
 import Post from "@/src/components/Post";
+import { useTheme } from "@/src/hooks/theme-hooks";
 import { Theme, useFocusEffect } from "@react-navigation/native";
 import { useCallback, useRef, useState } from "react";
 import {
@@ -9,16 +9,14 @@ import {
 	FlatList,
 	Image, Modal,
 	Pressable,
-	RefreshControl,
-	ScrollView,
 	StyleSheet,
 	Text,
 	View,
 	useWindowDimensions
 } from "react-native";
+import { getMyEvents } from "../api/event.route";
 import PostPopUp from "../components/PostPopUp/PostPopUp";
 import { URL_BACKEND } from "../config";
-import { getMyEvents } from "../api/event.route";
 import { useAuth } from "../hooks/auth-hooks";
 
 
@@ -43,7 +41,7 @@ export default function ProfileGamified() {
 	const { width } = useWindowDimensions();
 	const styles = stylesFn(theme, width);
 	const [imagenes, setImagenes] = useState<string[]>([]);
-	const { token } = useAuth();
+	const { token, usuario } = useAuth();
 
 	const [posts, setPosts] = useState<any[]>([]);
 
@@ -155,14 +153,14 @@ export default function ProfileGamified() {
 					style={styles.avatarBox}
 				>
 					<Image
-						source={avatarImages[avatar - 1]}
+						source={avatarImages[usuario.numeroAvatar - 1]}
 						style={styles.avatarImage}
 					/>
 				</Pressable>
 
 				<View style={styles.userInfo}>
-					<Text style={styles.name}>CAMBIAR</Text>
-					<Text style={styles.email}>CAMBIAR</Text>
+					<Text style={styles.name}>{usuario.nombre}</Text>
+					<Text style={styles.email}>{usuario.email}</Text>
 				</View>
 			</View>
 

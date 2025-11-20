@@ -7,8 +7,9 @@ import { AuthContext } from "./AuthContext";
 
 const USUARIO_DEFAULT = {
     id: 0,
+    email: "",
     nombre: "guest",
-    numeroAvatar: 0,
+    numeroAvatar: 1,
     favs: {} as Fav[]
 };
 
