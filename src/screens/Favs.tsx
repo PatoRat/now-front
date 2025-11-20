@@ -56,14 +56,6 @@ export default function Favs() {
         }).start();
     };
 
-    const closePopup = () => {
-        Animated.timing(fadeAnim, {
-            toValue: 0,
-            duration: 200,
-            useNativeDriver: true,
-        }).start(() => setSelectedPost(null));
-    };
-
     return (
         <View style={{ flex: 1 }}>
             <FlatList

@@ -66,6 +66,63 @@ const agregarFavs = async (tokenAuth: string | null, id : string) => {
     }
 };
 
+
+const quitarFavs = async (tokenAuth: string | null, id : string) => {
+
+    try {
+        const res = await fetch(`${EVENT_PATH}/rem-fav`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${tokenAuth}`,
+            },
+            body: JSON.stringify({
+                eventId: Number(id),
+            })
+        });
+
+
+        if (!res.ok) {
+            console.error("Error al borrar favoritos:", res.status);
+            throw new Error(`Error ${res.status}: `);
+        }
+
+        const favs = await res.json();
+
+        return favs; // Array de eventos favoritos
+
+    } catch (error) {
+        console.error("Error al borrar favoritos:", error);
+        throw error;
+    }
+};
+
+const getLike = async (tokenAuth: string | null, id : string)=> {
+
+    try {
+        const res = await fetch(`${EVENT_PATH}/check-like/${id}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${tokenAuth}`,
+            },
+        });
+
+
+        if (!res.ok) {
+            console.error("Error al buscar like:", res.status);
+            throw new Error(`Error ${res.status}: `);
+        }
+
+        const isLiked = await res.json();
+
+        return isLiked; // Array de eventos favoritos
+
+    } catch (error) {
+        console.error("Error al buscar like:", error);
+        throw error;
+    }
+};
+
 const getFavs = async (tokenAuth: string | null) => {
 
     try {
@@ -229,5 +286,5 @@ const guardarImagenesSoloUri = async (
 }
 */
 
-export { eventCreate, getAllEvents, getEvents, guardarImagenes, getFavs, agregarFavs };
+export { eventCreate, getAllEvents, getEvents, guardarImagenes, getFavs, agregarFavs, quitarFavs, getLike };
 

@@ -1,124 +1,131 @@
 import { Theme } from "@react-navigation/native";
 import { PostType } from "@/scripts/types";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
-  View,
-  Text,
-  Image,
-  Animated,
-  StyleSheet,
-  useWindowDimensions
+	View,
+	Text,
+	Image,
+	Animated,
+	StyleSheet,
+	useWindowDimensions
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { TapGestureHandler, GestureHandlerRootView } from "react-native-gesture-handler";
 import { useTheme } from "../hooks/theme-hooks";
-import { agregarFavs } from "../api/event.route";
+import { agregarFavs, getLike, quitarFavs } from "../api/event.route";
 import { useAuth } from "../hooks/auth-hooks";
+import { useLikes } from "./context-provider/LikeContext";
 
 const Post = (
-  { id ,titulo, descripcion, imagenes, fechaInicio, fechaFin, direccion, onSingleTap }:
-  PostType & { direccion?: string, onSingleTap?: () => void }
+	{ id, titulo, descripcion, imagenes, fechaInicio, fechaFin, direccion, onSingleTap }:
+		PostType & { direccion?: string, onSingleTap?: () => void }
 ) => {
 
-  const { theme } = useTheme();
-  const { width } = useWindowDimensions();
-  const styles = stylesFn(theme, width);
+	const { theme } = useTheme();
+	const { width } = useWindowDimensions();
+	const styles = stylesFn(theme, width);
+	const { token } = useAuth();
 
-  const doubleTapRef = useRef(null);
-  const [showHeart, setShowHeart] = useState(false);
-  const heartAnim = useRef(new Animated.Value(0)).current;
-  const { token } = useAuth();
+	const doubleTapRef = useRef(null);
+	const heartAnim = useRef(new Animated.Value(0)).current;
 
-  const handleDoubleTap = () => {
-	if (!showHeart) {
-		// Mostrar corazón
-        agregarFavs(token,id);
-		setShowHeart(true);
+	const { likes, toggleLike } = useLikes();
+	const showHeart = likes[Number(id)] || false;
+
+	const handleDoubleTap = async () => {
+		if (!showHeart) {
+			await agregarFavs(token, id);
+			toggleLike(Number(id), true);
+		} else {
+			await quitarFavs(token, id);
+			toggleLike(Number(id), false);
+		}
+
 		Animated.timing(heartAnim, {
-		toValue: 1,
-		duration: 200,
-		useNativeDriver: true,
+			toValue: showHeart ? 0 : 1,
+			duration: 200,
+			useNativeDriver: true,
 		}).start();
-	} else {
-		// Ocultar corazón
-        //quitarFavs(token,id);
-		Animated.timing(heartAnim, {
-		toValue: 0,
-		duration: 200,
-		useNativeDriver: true,
-		}).start(() => setShowHeart(false));
-	}
 	};
 
-  const formatoFecha = (fecha: Date) =>
-    fecha.toLocaleString("es-AR", { dateStyle: "short", timeStyle: "short" });
 
-  return (
-    <GestureHandlerRootView>
-      <TapGestureHandler
-        ref={doubleTapRef}
-        numberOfTaps={2}
-        onActivated={handleDoubleTap}
-      >
-        <TapGestureHandler
-          waitFor={doubleTapRef}
-          onActivated={() => {
-            if (onSingleTap) onSingleTap();
-          }}
-        >
-          <Animated.View style={{ position: "relative" }}>
+	const formatoFecha = (fecha: Date) =>
+		fecha.toLocaleString("es-AR", { dateStyle: "short", timeStyle: "short" });
+	
+	useEffect(() => {
+		Animated.timing(heartAnim, {
+			toValue: showHeart ? 1 : 0,
+			duration: 0, // sin animación, solo para sincronizar
+			useNativeDriver: true,
+		}).start();
+	}, [showHeart]);
 
-            {/* Corazón animado */}
-            {showHeart && (
-              <Animated.View
-                style={{
-                  position: "absolute",
-                  top: 10,
-                  left: 10,
-                  transform: [{ scale: heartAnim }],
-                  zIndex: 20,
-                }}
-              >
-                <FontAwesome name="heart" size={32} color="red" />
-              </Animated.View>
-            )}
+	return (
+		<GestureHandlerRootView>
+			<TapGestureHandler
+				ref={doubleTapRef}
+				numberOfTaps={2}
+				onActivated={handleDoubleTap}
+			>
+				<TapGestureHandler
+					waitFor={doubleTapRef}
+					onActivated={() => {
+						if (onSingleTap) onSingleTap();
+					}}
+				>
+					<Animated.View style={{ position: "relative" }}>
 
-            <View style={styles.postContainer}>
+						{/* Corazón animado */}
+						{showHeart && (
+							<Animated.View
+								style={{
+									position: "absolute",
+									top: 10,
+									left: 10,
+									transform: [{ scale: heartAnim }],
+									zIndex: 20,
+								}}
+							>
+								<FontAwesome name="heart" size={32} color="red" />
+							</Animated.View>
+						)}
 
-              <Text style={styles.titulo}>{titulo}</Text>
+						<View style={styles.postContainer}>
 
-              {imagenes?.length > 0 && (
-                <View style={styles.imagenContainer}>
-                  <Image source={imagenes[0]} style={styles.imagen} resizeMode="cover" />
-                  {imagenes.length > 1 && (
-                    <View style={styles.overlay}>
-                      <Text style={styles.overlayText}>+{imagenes.length - 1}</Text>
-                    </View>
-                  )}
-                </View>
-              )}
+							<Text style={styles.titulo}>{titulo}</Text>
 
-              {!!descripcion && <Text style={styles.descripcion}>{descripcion}</Text>}
+							{imagenes?.length > 0 && (
+								<View style={styles.imagenContainer}>
+									<Image source={imagenes[0]} style={styles.imagen} resizeMode="cover" />
+									{imagenes.length > 1 && (
+										<View style={styles.overlay}>
+											<Text style={styles.overlayText}>+{imagenes.length - 1}</Text>
+										</View>
+									)}
+								</View>
+							)}
 
-              {direccion && (
-                <View style={styles.direccionContainer}>
-                  <FontAwesome style={styles.direccionIcon} size={24} name="map-marker" color="red" />
-                  <Text style={styles.direccionText}>{direccion}</Text>
-                </View>
-              )}
+							{!!descripcion && <Text style={styles.descripcion}>{descripcion}</Text>}
 
-              <View style={styles.fechasContainer}>
-                <Text style={styles.fechaText}>Inicio: {formatoFecha(fechaInicio)}</Text>
-                <Text style={styles.fechaText}>Fin: {formatoFecha(fechaFin)}</Text>
-              </View>
+							{direccion && (
+								<View style={styles.direccionContainer}>
+									<FontAwesome style={styles.direccionIcon} size={24} name="map-marker" color="red" />
+									<Text style={styles.direccionText}>{direccion}</Text>
+								</View>
+							)}
 
-            </View>
+							<View style={styles.fechasContainer}>
+								<Text style={styles.fechaText}>Inicio: {formatoFecha(fechaInicio)}</Text>
+								<Text style={styles.fechaText}>Fin: {formatoFecha(fechaFin)}</Text>
+							</View>
 
-          </Animated.View>
-        </TapGestureHandler>
-      </TapGestureHandler>
-    </GestureHandlerRootView>
-  );
+						</View>
+
+					</Animated.View>
+				</TapGestureHandler>
+			</TapGestureHandler>
+		</GestureHandlerRootView>
+	);
 };
 
 export default Post;
