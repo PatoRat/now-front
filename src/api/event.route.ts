@@ -4,33 +4,59 @@ import { ImageSourcePropType } from "react-native";
 
 const EVENT_PATH = URL_BACKEND + "/events";
 
-const eventGet = async (
-    ubicacion: Ubicacion | null,
-    tokenAuth: string | null
-) => {
-
-    if (!ubicacion) {
-        throw new Error("Sin ubicación");
+const getEvents = async (
+    tokenAuth: string | null,
+    userLocation: {
+        lat: number,
+        lon: number
     }
-    const res = await fetch(`${EVENT_PATH}/`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${tokenAuth}`
-        },
-        body: JSON.stringify({
-            coordenadasUsuario: {
-                latitud: ubicacion.latitud,
-                longitud: ubicacion.longitud,
-            }
-        }),
-    });
-
-    if (!res.ok) throw new Error("Error al traer eventos filtrados");
-
-    return res.json();
+) => {
+    try {
+        // console.log("llegue al getEvents del front");
+        const ubicacion = {
+            latitud: userLocation.lat,
+            longitud: userLocation.lon
+        }
+        // console.log("a ver la ubi: ", ubicacion);
+        const res = await fetch(`${EVENT_PATH}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${tokenAuth}`,
+            },
+            body: JSON.stringify({
+                coordenadasUsuario: ubicacion
+            })
+        });
+        if (!res.ok) throw new Error(`Error ${res.status}`);
+        const data = await res.json();
+        return data; // Array de eventos
+    } catch (error) {
+        console.error("Error fetching events:", error);
+        throw error;
+    }
 };
 
+const getAllEvents = async (
+    tokenAuth: string | null
+) => {
+    try {
+        
+        // console.log("Entraal getALlEvents del front???");
+        const res = await fetch(`${EVENT_PATH}/all`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${tokenAuth}`,
+            },
+        });
+        if (!res.ok) throw new Error(`Error ${res.status}`);
+        const data = await res.json();
+        return data; // Array de eventos
+    } catch (error) {
+        console.error("Error fetching events:", error);
+        throw error;
+    }
+};
 
 const eventCreate = async (
     titulo: string,
@@ -149,5 +175,5 @@ const guardarImagenesSoloUri = async (
 }
 */
 
-export { eventCreate, eventGet, guardarImagenes };
+export { eventCreate, getAllEvents, getEvents, guardarImagenes };
 
