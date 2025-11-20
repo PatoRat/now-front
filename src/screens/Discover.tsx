@@ -187,6 +187,7 @@ export default function Discover() {
 
 					return (
 						<Post
+                            id={item.id}
 							titulo={item.titulo ?? ""}
 							descripcion={item.descripcion ?? ""}
 							imagenes={imagenesMapeadas}
@@ -241,7 +242,7 @@ const stylesFn = (theme: Theme, width: number) =>
         },
         nuevoPosteo: {
             width: width * 0.16,
-            height: width * 0.16,
+            height: width * 0.16,   
         },
         overlay: {
             ...StyleSheet.absoluteFillObject,

@@ -36,7 +36,61 @@ const getEvents = async (
         throw error;
     }
 };
+const agregarFavs = async (tokenAuth: string | null, id : string) => {
 
+    try {
+        const res = await fetch(`${EVENT_PATH}/add-fav`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${tokenAuth}`,
+            },
+            body: JSON.stringify({
+                eventId: Number(id),
+            })
+        });
+
+
+        if (!res.ok) {
+            console.error("Error al crear favoritos:", res.status);
+            throw new Error(`Error ${res.status}: `);
+        }
+
+        const favs = await res.json();
+
+        return favs; // Array de eventos favoritos
+
+    } catch (error) {
+        console.error("Error creating favoritos:", error);
+        throw error;
+    }
+};
+
+const getFavs = async (tokenAuth: string | null) => {
+
+    try {
+        const res = await fetch(`${EVENT_PATH}/favs`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${tokenAuth}`,
+            }
+        });
+
+
+        if (!res.ok) {
+            console.error("Error al cargar favoritos:", res.status);
+            throw new Error(`Error ${res.status}: `);
+        }
+
+        const favs = await res.json();
+
+        return favs; // Array de eventos favoritos
+
+    } catch (error) {
+        console.error("Error fetching favoritos:", error);
+        throw error;
+    }
+};
 const getAllEvents = async (
     tokenAuth: string | null
 ) => {
@@ -175,5 +229,5 @@ const guardarImagenesSoloUri = async (
 }
 */
 
-export { eventCreate, getAllEvents, getEvents, guardarImagenes };
+export { eventCreate, getAllEvents, getEvents, guardarImagenes, getFavs, agregarFavs };
 

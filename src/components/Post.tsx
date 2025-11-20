@@ -12,10 +12,12 @@ import {
 import { FontAwesome } from "@expo/vector-icons";
 import { TapGestureHandler, GestureHandlerRootView } from "react-native-gesture-handler";
 import { useTheme } from "../hooks/theme-hooks";
+import { agregarFavs } from "../api/event.route";
+import { useAuth } from "../hooks/auth-hooks";
 
 const Post = (
-  { titulo, descripcion, imagenes, fechaInicio, fechaFin, direccion, onSingleTap }:
-  Omit<PostType, "id"> & { direccion?: string, onSingleTap?: () => void }
+  { id ,titulo, descripcion, imagenes, fechaInicio, fechaFin, direccion, onSingleTap }:
+  PostType & { direccion?: string, onSingleTap?: () => void }
 ) => {
 
   const { theme } = useTheme();
@@ -25,10 +27,12 @@ const Post = (
   const doubleTapRef = useRef(null);
   const [showHeart, setShowHeart] = useState(false);
   const heartAnim = useRef(new Animated.Value(0)).current;
+  const { token } = useAuth();
 
   const handleDoubleTap = () => {
 	if (!showHeart) {
 		// Mostrar corazón
+        agregarFavs(token,id);
 		setShowHeart(true);
 		Animated.timing(heartAnim, {
 		toValue: 1,
@@ -37,6 +41,7 @@ const Post = (
 		}).start();
 	} else {
 		// Ocultar corazón
+        //quitarFavs(token,id);
 		Animated.timing(heartAnim, {
 		toValue: 0,
 		duration: 200,

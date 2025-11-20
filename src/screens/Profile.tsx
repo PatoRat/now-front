@@ -162,6 +162,7 @@ export default function ProfileGamified() {
                             keyExtractor={(item) => item.id}
                             renderItem={({ item }) => (
                                 <Post
+                            		id={item.id}
                                     titulo={item.titulo}
                                     descripcion={item.descripcion}
                                     imagenes={item.imagenes}
