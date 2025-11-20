@@ -148,6 +148,7 @@ const getFavs = async (tokenAuth: string | null) => {
         throw error;
     }
 };
+
 const getAllEvents = async (
     tokenAuth: string | null
 ) => {
@@ -168,6 +169,29 @@ const getAllEvents = async (
         throw error;
     }
 };
+
+
+
+const getMyEvents = async (
+    tokenAuth: string | null
+) => {
+    try {
+        
+        const res = await fetch(`${EVENT_PATH}/created-by-authorized-user`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${tokenAuth}`,
+            },
+        });
+        if (!res.ok) throw new Error(`Error ${res.status}`);
+        const data = await res.json();
+        return data; // Array de eventos
+    } catch (error) {
+        console.error("Error fetching events:", error);
+        throw error;
+    }
+};
+
 
 const eventCreate = async (
     titulo: string,
@@ -286,5 +310,5 @@ const guardarImagenesSoloUri = async (
 }
 */
 
-export { eventCreate, getAllEvents, getEvents, guardarImagenes, getFavs, agregarFavs, quitarFavs, getLike };
+export { eventCreate, getAllEvents, getEvents, guardarImagenes, getFavs, agregarFavs, quitarFavs, getLike, getMyEvents };
 

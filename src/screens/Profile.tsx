@@ -1,21 +1,25 @@
 import { useTheme } from "@/src/hooks/theme-hooks";
 import DATA from "@/assets/databases/data";
 import Post from "@/src/components/Post";
-import { Theme } from "@react-navigation/native";
-import { useRef, useState } from "react";
+import { Theme, useFocusEffect } from "@react-navigation/native";
+import { useCallback, useRef, useState } from "react";
 import {
-    Animated,
-    Dimensions,
-    FlatList,
-    Image, Modal,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
-    useWindowDimensions
+	Animated,
+	Dimensions,
+	FlatList,
+	Image, Modal,
+	Pressable,
+	RefreshControl,
+	ScrollView,
+	StyleSheet,
+	Text,
+	View,
+	useWindowDimensions
 } from "react-native";
 import PostPopUp from "../components/PostPopUp/PostPopUp";
+import { URL_BACKEND } from "../config";
+import { getMyEvents } from "../api/event.route";
+import { useAuth } from "../hooks/auth-hooks";
 
 
 export default function ProfileGamified() {
@@ -38,10 +42,14 @@ export default function ProfileGamified() {
 	const { theme } = useTheme();
 	const { width } = useWindowDimensions();
 	const styles = stylesFn(theme, width);
-	const [posts] = useState(DATA);
+	const [imagenes, setImagenes] = useState<string[]>([]);
+	const { token } = useAuth();
+
+	const [posts, setPosts] = useState<any[]>([]);
 
 	const [avatar, setAvatar] = useState(1); // Avatar actual
 	const [modalVisible, setModalVisible] = useState(false);
+	const [refreshing, setRefreshing] = useState(false);
 
 	// Modal de detalle de trofeo
 	const [selectedBadge, setSelectedBadge] = useState<{
@@ -73,6 +81,19 @@ export default function ProfileGamified() {
 	const [selectedPost, setSelectedPost] = useState<null | (typeof DATA[number])>(null);
 	const fadeAnim = useRef(new Animated.Value(0)).current;
 
+
+	const cargarEventos = async () => {
+		setRefreshing(true);
+		try {
+			// console.log("llegue a userloc: ", userLocation);
+			const eventos = await getMyEvents(token);
+			setPosts(eventos);
+		} catch (error) {
+			console.log("Error al traer eventos:", error);
+		} finally {
+			setRefreshing(false);
+		}
+	};
 
 	const closePopup = () => {
 		Animated.timing(fadeAnim, {
@@ -118,31 +139,36 @@ export default function ProfileGamified() {
 		}
 		return boxes;
 	};
+	
+	useFocusEffect(
+		useCallback(() => {
+			cargarEventos(); // ejecuta la función al entrar en foco
+		}, []) // vacío porque no depende de ninguna variable
+	);
 
 	return (
 		<View style={styles.container}>
-			<ScrollView >
-				{/* Info del usuario con avatar */}
-				<View style={styles.userRow}>
-					<Pressable
-						onPress={() => setModalVisible(true)}
-						style={styles.avatarBox}
-					>
-						<Image
-							source={avatarImages[avatar - 1]}
-							style={styles.avatarImage}
-						/>
-					</Pressable>
+			{/* Info del usuario con avatar */}
+			<View style={styles.userRow}>
+				<Pressable
+					onPress={() => setModalVisible(true)}
+					style={styles.avatarBox}
+				>
+					<Image
+						source={avatarImages[avatar - 1]}
+						style={styles.avatarImage}
+					/>
+				</Pressable>
 
-					<View style={styles.userInfo}>
-						<Text style={styles.name}>{user.name}</Text>
-						<Text style={styles.email}>{user.email}</Text>
-					</View>
+				<View style={styles.userInfo}>
+					<Text style={styles.name}>CAMBIAR</Text>
+					<Text style={styles.email}>CAMBIAR</Text>
 				</View>
+			</View>
 
-				{/* Trofeos */}
+			{/* Trofeos */}
 
-				{/* <View style={styles.gamification}>
+			{/* <View style={styles.gamification}>
 					<Text style={styles.sectionTitle}>Trofeos de Organizador</Text>
 					<View style={styles.badgesRow}>{renderBoxes(user.createdEvents, "organizador")}</View>
 
@@ -150,89 +176,104 @@ export default function ProfileGamified() {
 					<View style={styles.badgesRow}>{renderBoxes(user.attendedEvents, "asistencia")}</View>
 				</View> */}
 
-                {/* Mis Publicaciones */}
-                <View ref={postsRef} style={{ marginTop: 30 }}>
-                    <Text style={[styles.sectionTitle, { fontSize: 20 }]}>Tus Publicaciones</Text>
+			{/* Mis Publicaciones */}
+			<Text style={styles.name}>Mis Publicaciones</Text>
+			<FlatList
+				data={posts}
+				keyExtractor={item => item.id.toString()}
+				renderItem={({ item }) => {
 
-                    {/* Lista de posts*/}
-                    <View style={{ flex: 1 }}>
-                        <FlatList
-                            scrollEnabled={false}
-                            data={posts}
-                            keyExtractor={(item) => item.id}
-                            renderItem={({ item }) => (
-                                <Post
-                            		id={item.id}
-                                    titulo={item.titulo}
-                                    descripcion={item.descripcion}
-                                    imagenes={item.imagenes}
-                                    fechaInicio={item.fechaInicio}
-                                    fechaFin={item.fechaFin}
-                                    ubicacion={item.ubicacion}
-                                    direccion={item.ubicacion?.direccion}
-                                    creador={item.creador}
-                                    onSingleTap={() => openPopup(item)}
-                                />
-                            )}
+					// PARA VER EN EL LOG LO QUE SE RECIBE
+					// console.log("Evento:", item);
+					// console.log(
+					// 	"Imagenes del evento:",
+					// 	item.imagenes?.map((img: { id: number; eventId: number; url: string }) => img.url)
+					// );
 
-                            contentContainerStyle={styles.listaContenido}
-                            showsVerticalScrollIndicator={false}
-                        />
+					const imagenesMapeadas = item.imagenes?.map((img: { url: string }) => {
+						if (!img.url) return null;
 
-                        {/* Pop-up del post */}
-                                    <PostPopUp
-                                        visible={!!selectedPost}
-                                        post={selectedPost}
-                                        onClose={closePopup}
-                                    />
-                    </View>
-                </View>
+						let uri = img.url;
 
-				{/* Modal de selección de avatar */}
-				<Modal
-					animationType="slide"
-					transparent={true}
-					visible={modalVisible}
-					onRequestClose={() => setModalVisible(false)}
-				>
-					<View style={styles.modalBackground}>
-						<View style={styles.modalContainer}>
-							<Text style={styles.modalTitle}>Selecciona tu avatar</Text>
+						// Caso 1: empieza con http
+						if (uri.startsWith("http")) {
+							// Reemplazamos localhost si lo contiene
+							uri = uri.replace("localhost", URL_BACKEND.replace(/^https?:\/\//, ""));
+							return { uri };
+						}
 
-							<View style={{ maxHeight: 400, width: '100%' }}>
-								<FlatList
-									data={avatarImages}
-									keyExtractor={(_, index) => index.toString()}
-									numColumns={2}
-									columnWrapperStyle={{ justifyContent: 'space-between', marginBottom: 15 }}
-									contentContainerStyle={{ paddingVertical: 10 }}
-									renderItem={({ item, index }) => (
-										<Pressable
-											onPress={() => {
-												setAvatar(index + 1);
-												setModalVisible(false);
-											}}
-											style={styles.modalAvatarBoxColumn}
-										>
-											<Image source={item} style={styles.modalAvatarImageColumn} />
-										</Pressable>
-									)}
-								/>
-							</View>
+						// Caso 2: ruta relativa o nombre de archivo
+						uri = uri.startsWith("/") ? `${URL_BACKEND}${uri}` : `${URL_BACKEND}/uploads/${uri}`;
+						return { uri };
+					}).filter(Boolean); // elimina nulls
 
-							<Pressable
-								style={[styles.closeButton, { backgroundColor: "#52e4f5ff" }]}
-								onPress={() => setModalVisible(false)}
-							>
-								<Text style={styles.closeButtonText}>Cerrar</Text>
-							</Pressable>
+					return (
+						<Post
+							id={item.id}
+							titulo={item.titulo ?? ""}
+							descripcion={item.descripcion ?? ""}
+							imagenes={imagenesMapeadas}
+							fechaInicio={item.fechaInicio ? new Date(item.fechaInicio) : new Date()}
+							fechaFin={item.fechaFin ? new Date(item.fechaFin) : new Date()}
+							ubicacion={item.ubicacion ?? null}
+							direccion={item.ubicacion?.direccion ?? ""}
+							creador={item.creador ?? "Anónimo"}
+							onSingleTap={() => openPopup(item)}
+						/>
+					);
+				}}
+				contentContainerStyle={styles.listaContenido}
+				showsVerticalScrollIndicator={false}
+			/>
+
+
+			<PostPopUp visible={!!selectedPost} post={selectedPost} onClose={closePopup} />
+
+			{/* Modal de selección de avatar */}
+			<Modal
+				animationType="slide"
+				transparent={true}
+				visible={modalVisible}
+				onRequestClose={() => setModalVisible(false)}
+			>
+				<View style={styles.modalBackground}>
+					<View style={styles.modalContainer}>
+						<Text style={styles.modalTitle}>Selecciona tu avatar</Text>
+
+						<View style={{ maxHeight: 400, width: '100%' }}>
+							<FlatList
+								data={avatarImages}
+								keyExtractor={(_, index) => index.toString()}
+								numColumns={2}
+								columnWrapperStyle={{ justifyContent: 'space-between', marginBottom: 15 }}
+								contentContainerStyle={{ paddingVertical: 10 }}
+								renderItem={({ item, index }) => (
+									<Pressable
+										onPress={() => {
+											setAvatar(index + 1);
+											setModalVisible(false);
+										}}
+										style={styles.modalAvatarBoxColumn}
+									>
+										<Image source={item} style={styles.modalAvatarImageColumn} />
+									</Pressable>
+								)}
+							/>
 						</View>
+
+						<Pressable
+							style={[styles.closeButton, { backgroundColor: "#52e4f5ff" }]}
+							onPress={() => setModalVisible(false)}
+						>
+							<Text style={styles.closeButtonText}>Cerrar</Text>
+						</Pressable>
 					</View>
-				</Modal>
+				</View>
+			</Modal>
 
-				{/*Modal de detalle de trofeo  */}
+			{/*Modal de detalle de trofeo  */}
 
-				{/* {selectedBadge && (
+			{/* {selectedBadge && (
 					<Modal
 						animationType="fade"
 						transparent={true}
@@ -289,8 +330,7 @@ export default function ProfileGamified() {
 						</View>
 					</Modal>
 				)} */}
-                
-			</ScrollView>
+
 		</View>
 	);
 }
@@ -385,14 +425,18 @@ const stylesFn = (theme: Theme, width: number) =>
 			flexShrink: 1,
 		},
 		container: {
-            flex: 1,
-            backgroundColor: theme.colors.background 
-        },
+			flex: 1,
+			top: 50,
+			backgroundColor: theme.colors.background
+		},
 		userRow: {
-            flexDirection: "row",
-            alignItems: "center",
-            marginBottom: 30 
-        },
+			flexDirection: "row",
+			alignItems: "center",
+			marginBottom: 30,
+			marginHorizontal: 0, // se pega a los lados
+			paddingHorizontal: 0, // si había padding heredado
+		},
+
 		avatarBox: {
 			width: 120,
 			height: 120,
@@ -404,32 +448,32 @@ const stylesFn = (theme: Theme, width: number) =>
 			marginRight: 20,
 		},
 		avatarImage: {
-            width: 100,
-            height: 100,
-            resizeMode: "contain"
-        },
+			width: 100,
+			height: 100,
+			resizeMode: "contain"
+		},
 		userInfo: {
-            flex: 1
-        },
+			flex: 1
+		},
 		name: {
-            fontSize: 24,
-            fontWeight: "bold",
-            color: theme.colors.text
-        },
+			fontSize: 24,
+			fontWeight: "bold",
+			color: theme.colors.text
+		},
 		email: {
-            fontSize: 16,
-            color: theme.colors.text,
-            marginTop: 5
-        },
-		gamification: { 
-            marginTop: 10
-        },
+			fontSize: 16,
+			color: theme.colors.text,
+			marginTop: 5
+		},
+		gamification: {
+			marginTop: 10
+		},
 		sectionTitle: {
-            fontSize: 18,
-            fontWeight: "bold",
-            color: theme.colors.text,
-            marginBottom: 10 
-        },
+			fontSize: 18,
+			fontWeight: "bold",
+			color: theme.colors.text,
+			marginBottom: 10
+		},
 		badgesRow: {
 			flexDirection: "row",
 			flexWrap: "wrap",
@@ -458,11 +502,11 @@ const stylesFn = (theme: Theme, width: number) =>
 			alignItems: "center",
 		},
 		modalTitle: {
-            fontSize: 20,
-            fontWeight: "bold",
-            color: theme.colors.text,
-            marginBottom: 15 
-        },
+			fontSize: 20,
+			fontWeight: "bold",
+			color: theme.colors.text,
+			marginBottom: 15
+		},
 		modalAvatarBoxColumn: {
 			width: '48%',
 			height: 140,
@@ -472,13 +516,13 @@ const stylesFn = (theme: Theme, width: number) =>
 			borderRadius: 12,
 		},
 		modalAvatarImageColumn: {
-            width: 100, height: 100,
-            resizeMode: "contain" 
-        },
+			width: 100, height: 100,
+			resizeMode: "center",
+		},
 		closeButtonText: {
-            fontWeight: "bold", 
-            textAlign: "center" 
-        },
+			fontWeight: "bold",
+			textAlign: "center"
+		},
 		detailModalContainer: {
 			width: "80%",
 			backgroundColor: theme.colors.background,
@@ -492,3 +536,4 @@ const stylesFn = (theme: Theme, width: number) =>
 		progressBarBackground: { width: "100%", height: 15, backgroundColor: "#ddd", borderRadius: 8, overflow: "hidden" },
 		progressBarFill: { height: "100%", backgroundColor: "#52e4f5ff", borderRadius: 8 },
 	});
+
