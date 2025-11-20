@@ -2,27 +2,14 @@ import { Stack } from "expo-router";
 import { Image } from "react-native";
 import { useAuth } from "../hooks/auth-hooks";
 import { useTheme } from "../hooks/theme-hooks";
+import Esperar from "../app/esperar";
 
 const StackPersonalizado = () => {
 	const { isLogged, isFetching } = useAuth();
 	const { theme } = useTheme();
 
 	if (isFetching) {
-		return (
-			<Stack screenOptions={{
-				headerShown: false,
-				statusBarStyle: "light",
-				contentStyle: { backgroundColor: theme.colors.background },
-			}}>
-				<Stack.Screen
-					name="esperar"
-					options={{
-						headerShown: false,
-						animation: "slide_from_bottom",
-					}}
-				/>
-			</Stack>
-		);
+		return <Esperar />;
 	}
 
 	// console.log("Estas logged?:", isLogged);
