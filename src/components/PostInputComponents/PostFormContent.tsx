@@ -6,6 +6,7 @@ import { ImageSourcePropType, Pressable, Text, TextInput, View, StyleSheet, useW
 import ImageSelectorButton from "./ImageSelectorButton";
 import PostMapSelector from "./PostMapSelector";
 import { Theme } from "@react-navigation/native";
+import CustomAlert from "../Alert";
 
 
 const PostFormContent = ({ theme, router }: any) => {
@@ -22,7 +23,12 @@ const PostFormContent = ({ theme, router }: any) => {
 	const [direccion, setDireccion] = useState<string | null>(null);
 	const [imagenes, setImagenes] = useState<ImageSourcePropType[]>([]);
 	const styles = stylesFn(theme, width, height);
-	
+	//ALERTS
+	const [alertVisible, setAlertVisible] = useState(false);
+	const [alertMessage, setAlertMessage] = useState("");
+	const [alertType, setAlertType] = useState<'success' | 'error'>('success');
+
+
 	useEffect(() => {
 		if (fechaInicio && duracion) {
 			const fin = new Date(fechaInicio);
@@ -36,7 +42,9 @@ const PostFormContent = ({ theme, router }: any) => {
 	// 🔹 Función para publicar
 	const publicarPosteo = async () => {
 		if (!fechaInicio || !fechaFin || !ubicacion || !direccion) {
-			alert("Por favor completa todos los campos, incluyendo la ubicación.");
+			setAlertMessage("Por favor completa todos los campos, incluyendo la ubicación.");
+			setAlertType("error");
+			setAlertVisible(true);
 			return;
 		}
 
@@ -55,9 +63,12 @@ const PostFormContent = ({ theme, router }: any) => {
 			token
 		);
 
-		if (imagenes.length > 0){
+		if (imagenes.length > 0) {
 			await guardarImagenes(imagenes, eventId, token);
 		}
+		setAlertMessage("Publicacion exitosa");
+		setAlertType("success");
+		setAlertVisible(true);
 
 		// DATA.unshift({
 		//   id: (DATA.length + 1).toString(),// vuela
@@ -204,117 +215,126 @@ const PostFormContent = ({ theme, router }: any) => {
 					<Text style={styles.primaryBtnText}>Publicar</Text>
 				</Pressable>
 			</View>
+
+			{/* Alert */}
+			<CustomAlert
+				visible={alertVisible}
+				message={alertMessage}
+				type={alertType} // 'success' | 'error'
+				onClose={() => setAlertVisible(false)}
+			/>
+
 		</>
 	);
 };
 
 const stylesFn = (theme: Theme, width: number, height: number) =>
-  StyleSheet.create({
-    // Contenedor de la tarjeta principal
-    card: {
-      backgroundColor: theme.colors.card,
-      borderRadius: 12,
-      top: 100,
-      padding: 12, // reducido
-      gap: 8,      // reducido
-      shadowColor: "#000",
-      shadowOpacity: 0.2,
-      shadowRadius: 4,
-      shadowOffset: { width: 0, height: 2 },
-      elevation: 3,
-    },
+	StyleSheet.create({
+		// Contenedor de la tarjeta principal
+		card: {
+			backgroundColor: theme.colors.card,
+			borderRadius: 12,
+			top: 100,
+			padding: 12, // reducido
+			gap: 8,      // reducido
+			shadowColor: "#000",
+			shadowOpacity: 0.2,
+			shadowRadius: 4,
+			shadowOffset: { width: 0, height: 2 },
+			elevation: 3,
+		},
 
-    // Secciones internas
-    section: {
-      gap: 3,          // reducido
-    },
+		// Secciones internas
+		section: {
+			gap: 3,          // reducido
+		},
 
-    // Inputs generales
-    input: {
-      backgroundColor: theme.colors.background,
-      borderColor: theme.colors.border,
-      borderWidth: 1,
-      borderRadius: 8,      // un poco más compacto
-      paddingHorizontal: 10, 
-      paddingVertical: 8, 
-      color: "#8a8a8a",
-      fontSize: 14,
-      minHeight: 40, // reducido
-    },
-    inputMultiline: {
-      minHeight: 100, // reducido
-      lineHeight: 18,
-      textAlignVertical: "top",
-      color: "#8a8a8a",
-    },
+		// Inputs generales
+		input: {
+			backgroundColor: theme.colors.background,
+			borderColor: theme.colors.border,
+			borderWidth: 1,
+			borderRadius: 8,      // un poco más compacto
+			paddingHorizontal: 10,
+			paddingVertical: 8,
+			color: "#8a8a8a",
+			fontSize: 14,
+			minHeight: 40, // reducido
+		},
+		inputMultiline: {
+			minHeight: 100, // reducido
+			lineHeight: 18,
+			textAlignVertical: "top",
+			color: "#8a8a8a",
+		},
 
-    // Labels
-    labelText: {
-      color: theme.colors.text,
-      fontSize: 14,
-	  left: '2%',
-      fontWeight: "500",
-    },
+		// Labels
+		labelText: {
+			color: theme.colors.text,
+			fontSize: 14,
+			left: '2%',
+			fontWeight: "500",
+		},
 
-    // Botones
-    buttonsRow: {
-      flexDirection: "row",
-      gap: 8,        // reducido
-      justifyContent: "center",
-      alignItems: "center",
-      marginTop: 4,
-    },
-    primaryBtn: {
-      backgroundColor: "#3B82F6",
-      borderRadius: 10, // reducido
-      paddingHorizontal: 12,
-      paddingVertical: 8, // reducido
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    primaryBtnText: {
-      color: "#fff",
-      fontWeight: "700",
-      letterSpacing: 0.2,
-      fontSize: 14,
-    },
+		// Botones
+		buttonsRow: {
+			flexDirection: "row",
+			gap: 8,        // reducido
+			justifyContent: "center",
+			alignItems: "center",
+			marginTop: 4,
+		},
+		primaryBtn: {
+			backgroundColor: "#3B82F6",
+			borderRadius: 10, // reducido
+			paddingHorizontal: 12,
+			paddingVertical: 8, // reducido
+			alignItems: "center",
+			justifyContent: "center",
+		},
+		primaryBtnText: {
+			color: "#fff",
+			fontWeight: "700",
+			letterSpacing: 0.2,
+			fontSize: 14,
+		},
 
-    // Pressables interactivos (fecha, hora, ubicación)
-    pressableInput: {
-      backgroundColor: theme.colors.background,
-      borderColor: theme.colors.border,
-      borderWidth: 1,
-      borderRadius: 8,
-      paddingHorizontal: 10,
-      paddingVertical: 8,
-      justifyContent: "center",
-    },
-    pressableText: {
-      color: "#3B82F6",
-      fontSize: 14,
-    },
+		// Pressables interactivos (fecha, hora, ubicación)
+		pressableInput: {
+			backgroundColor: theme.colors.background,
+			borderColor: theme.colors.border,
+			borderWidth: 1,
+			borderRadius: 8,
+			paddingHorizontal: 10,
+			paddingVertical: 8,
+			justifyContent: "center",
+		},
+		pressableText: {
+			color: "#3B82F6",
+			fontSize: 14,
+		},
 
-    // Contenedor de imágenes
-    imageContainer: {
-      flexDirection: "row",
-      flexWrap: "wrap",
-      gap: 6, // reducido
-    },
+		// Contenedor de imágenes
+		imageContainer: {
+			flexDirection: "row",
+			flexWrap: "wrap",
+			gap: 6, // reducido
+		},
 
-    // Map selector
-    mapContainer: {
-      height: 180, // un poco más compacto
-      borderRadius: 8,
-      overflow: "hidden",
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-    },
+		// Map selector
+		mapContainer: {
+			height: 180, // un poco más compacto
+			borderRadius: 8,
+			overflow: "hidden",
+			borderWidth: 1,
+			borderColor: theme.colors.border,
+		},
 
-    // Placeholder (inputs vacíos)
-    placeholderText: {
-      color: "#8a8a8a",
-    },
-  });
+		// Placeholder (inputs vacíos)
+		placeholderText: {
+			color: "#8a8a8a",
+		},
+	});
 
 
 

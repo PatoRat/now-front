@@ -4,6 +4,10 @@ import { useTheme } from "@/src/hooks/theme-hooks";
 import { Theme, useFocusEffect } from "@react-navigation/native";
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useRef, useState } from "react";
+import CustomAlert from "../components/Alert";
+
+
+
 import {
 	Animated,
 	FlatList,
@@ -41,8 +45,12 @@ export default function ProfileGamified() {
 	const { theme } = useTheme();
 	const { width, height } = useWindowDimensions();
 	const styles = stylesFn(theme, width, height);
-	const [imagenes, setImagenes] = useState<string[]>([]);
 	const { token, usuario } = useAuth();
+	const [alertVisible, setAlertVisible] = useState(false);
+	const [alertMessage, setAlertMessage] = useState("");
+	const [alertType, setAlertType] = useState<'success' | 'error'>('success');
+
+
 
 	const [posts, setPosts] = useState<any[]>([]);
 
@@ -64,11 +72,17 @@ export default function ProfileGamified() {
 
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+			setAlertMessage("¡Avatar cambiado correctamente!");
+			setAlertType("success");
+			setAlertVisible(true);
 
 		},
 
 		onError: (error) => {
 			console.error("Error al cambiar el avatar:", error);
+			setAlertMessage("Error al cambiar el avatar");
+			setAlertType("error");
+			setAlertVisible(true);
 		}
 	});
 
@@ -344,6 +358,14 @@ export default function ProfileGamified() {
 					</Modal>
 				)} */}
 
+			<CustomAlert
+				visible={alertVisible}
+				message={alertMessage}
+				type={alertType} // success | error
+				onClose={() => setAlertVisible(false)}
+			/>
+
+
 		</View>
 	);
 }
@@ -370,17 +392,17 @@ const stylesFn = (theme: Theme, width: number, height: number) => {
 		avatarBox: {
 			width: 130 * scale,
 			height: 130 * scale,
-			borderRadius: 12 * scale, 
+			borderRadius: 12 * scale,
 			backgroundColor: "#eee",
-			overflow: "hidden",       
+			overflow: "hidden",
 			marginRight: 20 * scale,
-			borderWidth: 3,           
+			borderWidth: 3,
 			borderColor: "#bbb",
 		},
 
 		avatarImage: {
-			width: "120%",            
-			height: "110%",           
+			width: "120%",
+			height: "110%",
 			position: 'absolute',
 			resizeMode: "cover",
 			top: -10,

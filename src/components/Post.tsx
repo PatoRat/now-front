@@ -51,7 +51,7 @@ const Post = (
 
 	const formatoFecha = (fecha: Date) =>
 		fecha.toLocaleString("es-AR", { dateStyle: "short", timeStyle: "short" });
-	
+
 	useEffect(() => {
 		Animated.timing(heartAnim, {
 			toValue: showHeart ? 1 : 0,
@@ -76,19 +76,27 @@ const Post = (
 					<Animated.View style={{ position: "relative" }}>
 
 						{/* Corazón animado */}
-						{showHeart && (
+						<Animated.View style={{ position: "absolute", top: 10, left: 10, zIndex: 20 }}>
+							{/* Corazón que siempre se ve: vacío si no likeado, rojo si likeado */}
+							<FontAwesome
+								name={showHeart ? "heart" : "heart-o"}
+								size={32}
+								color={showHeart ? "red" : theme.colors.text}
+							/>
+
+							{/* Corazón animado solo al hacer doble tap */}
 							<Animated.View
 								style={{
 									position: "absolute",
-									top: 10,
-									left: 10,
+									top: 0,
+									left: 0,
 									transform: [{ scale: heartAnim }],
-									zIndex: 20,
 								}}
 							>
 								<FontAwesome name="heart" size={32} color="red" />
 							</Animated.View>
-						)}
+						</Animated.View>
+
 
 						<View style={styles.postContainer}>
 

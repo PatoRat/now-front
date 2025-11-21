@@ -31,7 +31,6 @@ const userRegister = async (
 
 
 const cambiarAvatar = async (tokenAuth: string | null, index: number) => {
-    console.log(index);
     const response = await fetch(`${USER_PATH}/cambiar-avatar/${index}`, {
         method: 'PUT',
         headers: {
