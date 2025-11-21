@@ -1,1 +1,1 @@
-export const URL_BACKEND = "http://10.0.0.221:3000";
+export const URL_BACKEND = "http://TU-IP:3000";

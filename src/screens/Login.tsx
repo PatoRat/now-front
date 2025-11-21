@@ -1,6 +1,5 @@
 import { useAuth } from "@/src/hooks/auth-hooks";
 import { useTheme } from "@/src/hooks/theme-hooks";
-import { Theme } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {

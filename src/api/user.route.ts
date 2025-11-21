@@ -32,7 +32,7 @@ const userRegister = async (
 
 const cambiarAvatar = async (tokenAuth: string | null, index: number) => {
     console.log(index);
-    const response = await fetch(`${USER_PATH}/cambiarAvatar/${index}`, {
+    const response = await fetch(`${USER_PATH}/cambiar-avatar/${index}`, {
         method: 'PUT',
         headers: {
             'Authorization': `Bearer ${tokenAuth}`,
@@ -82,5 +82,5 @@ const userGet = async (tokenAuth: string) => {
     return await response.json();
 }
 
-export { userGet, userLogin, userRegister, cambiarAvatar };
+export { cambiarAvatar, userGet, userLogin, userRegister };
 
