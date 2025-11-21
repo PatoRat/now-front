@@ -1,22 +1,24 @@
 import * as ImagePicker from "expo-image-picker";
-import { ImageSourcePropType, Pressable, StyleSheet, Text } from "react-native";
+import { ImageSourcePropType, Pressable, StyleSheet, Text, View } from "react-native";
+import React, { useState } from "react";
 
 type ImageSelectorButtonProps = {
     onSelect: React.Dispatch<React.SetStateAction<ImageSourcePropType[]>>;
 };
 
 const ImageSelectorButton = ({ onSelect }: ImageSelectorButtonProps) => {
+    const [count, setCount] = useState(0); // contador de imágenes seleccionadas
 
     const seleccionarImagen = async () => {
         const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ["images", "videos"],
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
             allowsMultipleSelection: true,
             quality: 1,
         });
 
         if (!result.canceled && result.assets) {
             const uris = result.assets.map((asset) => ({ uri: asset.uri }));
-            
+            setCount((prev) => prev + uris.length); // actualizar contador
             onSelect((prev) => [...prev, ...uris]);
         }
     };
@@ -31,7 +33,14 @@ const ImageSelectorButton = ({ onSelect }: ImageSelectorButtonProps) => {
             android_ripple={{ color: "rgba(59,130,246,0.15)", borderless: false }}
             hitSlop={8}
         >
-            <Text style={styles.outlinedBtnText}>Seleccionar Imagen</Text>
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                <Text style={styles.outlinedBtnText}>Seleccionar Imagen</Text>
+                {count > 0 && (
+                    <Text style={[styles.outlinedBtnText, { fontWeight: "500" }]}>
+                        ({count})
+                    </Text>
+                )}
+            </View>
         </Pressable>
     );
 };
@@ -54,5 +63,6 @@ const styles = StyleSheet.create({
         color: "#3B82F6",
         fontWeight: "700",
         letterSpacing: 0.2,
+        textAlign: "center",
     },
 });

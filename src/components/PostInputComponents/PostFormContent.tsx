@@ -2,13 +2,15 @@ import { eventCreate, guardarImagenes } from "@/src/api/event.route";
 import { useAuth } from "@/src/hooks/auth-hooks";
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import React, { useEffect, useState } from "react";
-import { ImageSourcePropType, Pressable, Text, TextInput, View } from "react-native";
+import { ImageSourcePropType, Pressable, Text, TextInput, View, StyleSheet, useWindowDimensions } from "react-native";
 import ImageSelectorButton from "./ImageSelectorButton";
 import PostMapSelector from "./PostMapSelector";
+import { Theme } from "@react-navigation/native";
 
 
-const PostFormContent = ({ theme, styles, router }: any) => {
+const PostFormContent = ({ theme, router }: any) => {
 	const [titulo, setTitulo] = useState("");
+	const { width, height } = useWindowDimensions();
 	const [descripcion, setDescripcion] = useState("");
 	const [fechaInicio, setFechaInicio] = useState(new Date());
 	const [fechaFin, setFechaFin] = useState<Date | null>(null);
@@ -19,6 +21,7 @@ const PostFormContent = ({ theme, styles, router }: any) => {
 	const [ubicacion, setUbicacion] = useState<{ latitude: number; longitude: number } | null>(null);
 	const [direccion, setDireccion] = useState<string | null>(null);
 	const [imagenes, setImagenes] = useState<ImageSourcePropType[]>([]);
+	const styles = stylesFn(theme, width, height);
 	
 	useEffect(() => {
 		if (fechaInicio && duracion) {
@@ -78,6 +81,7 @@ const PostFormContent = ({ theme, styles, router }: any) => {
 		<>
 			{/* Título */}
 			<View style={styles.section}>
+				<Text style={styles.labelText}>Título</Text>
 				<TextInput
 					style={[styles.input, { color: theme.colors.text }]}
 					placeholder="Título"
@@ -89,6 +93,7 @@ const PostFormContent = ({ theme, styles, router }: any) => {
 
 			{/* Descripción */}
 			<View style={styles.section}>
+				<Text style={styles.labelText}>Descripción</Text>
 				<TextInput
 					style={[styles.input, styles.inputMultiline, { color: theme.colors.text }]}
 					placeholder="Descripción"
@@ -102,8 +107,9 @@ const PostFormContent = ({ theme, styles, router }: any) => {
 
 			{/* Fecha de inicio */}
 			<View style={styles.section}>
+				<Text style={styles.labelText}>Fecha de inicio</Text>
 				<Pressable style={styles.input} onPress={() => setMostrarPicker(true)}>
-					<Text style={{ color: theme.colors.text }}>
+					<Text style={{ color: "#8a8a8a" }}>
 						{fechaInicio
 							? fechaInicio.toLocaleDateString("es-AR")
 							: "Seleccionar fecha de inicio"}
@@ -131,8 +137,9 @@ const PostFormContent = ({ theme, styles, router }: any) => {
 
 			{/* Hora de inicio */}
 			<View style={styles.section}>
+				<Text style={styles.labelText}>Hora de inicio</Text>
 				<Pressable style={styles.input} onPress={() => setMostrarHoraPicker(true)}>
-					<Text style={{ color: theme.colors.text }}>
+					<Text style={{ color: "#8a8a8a" }}>
 						{fechaInicio
 							? fechaInicio.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" })
 							: "Seleccionar hora de inicio"}
@@ -157,6 +164,7 @@ const PostFormContent = ({ theme, styles, router }: any) => {
 						}}
 					/>
 				)}
+
 			</View>
 			{/* Duración */}
 			<View style={styles.section}>
@@ -200,35 +208,114 @@ const PostFormContent = ({ theme, styles, router }: any) => {
 	);
 };
 
-export const stylesFn = (theme: any, width: number) => ({
-	card: {
-		backgroundColor: theme.colors.card,
-		borderRadius: 12,
-		top: 100,
-		padding: 16,
-		gap: 12,
-		shadowColor: "#000",
-		shadowOpacity: 0.2,
-		shadowRadius: 4,
-		shadowOffset: { width: 0, height: 2 },
-		elevation: 3,
-	},
-	section: { gap: 6 },
-	input: {
-		backgroundColor: theme.colors.background,
-		borderColor: theme.colors.border,
-		borderWidth: 1,
-		borderRadius: 10,
-		paddingHorizontal: 14,
-		paddingVertical: 12,
-		color: theme.colors.text,
-		fontSize: 14,
-	},
-	inputMultiline: { minHeight: 110, lineHeight: 20 },
-	buttonsRow: { flexDirection: "row", gap: 12, justifyContent: "flex-end", alignItems: "center", marginTop: 4 },
-	primaryBtn: { backgroundColor: "#3B82F6", borderRadius: 12, paddingHorizontal: 16, paddingVertical: 10 },
-	primaryBtnText: { color: "#fff", fontWeight: "700", letterSpacing: 0.2 },
-	labelText: { color: theme.colors.text, fontSize: 14 },
-});
+const stylesFn = (theme: Theme, width: number, height: number) =>
+  StyleSheet.create({
+    // Contenedor de la tarjeta principal
+    card: {
+      backgroundColor: theme.colors.card,
+      borderRadius: 12,
+      top: 100,
+      padding: 12, // reducido
+      gap: 8,      // reducido
+      shadowColor: "#000",
+      shadowOpacity: 0.2,
+      shadowRadius: 4,
+      shadowOffset: { width: 0, height: 2 },
+      elevation: 3,
+    },
+
+    // Secciones internas
+    section: {
+      gap: 3,          // reducido
+    },
+
+    // Inputs generales
+    input: {
+      backgroundColor: theme.colors.background,
+      borderColor: theme.colors.border,
+      borderWidth: 1,
+      borderRadius: 8,      // un poco más compacto
+      paddingHorizontal: 10, 
+      paddingVertical: 8, 
+      color: "#8a8a8a",
+      fontSize: 14,
+      minHeight: 40, // reducido
+    },
+    inputMultiline: {
+      minHeight: 100, // reducido
+      lineHeight: 18,
+      textAlignVertical: "top",
+      color: "#8a8a8a",
+    },
+
+    // Labels
+    labelText: {
+      color: theme.colors.text,
+      fontSize: 14,
+	  left: '2%',
+      fontWeight: "500",
+    },
+
+    // Botones
+    buttonsRow: {
+      flexDirection: "row",
+      gap: 8,        // reducido
+      justifyContent: "center",
+      alignItems: "center",
+      marginTop: 4,
+    },
+    primaryBtn: {
+      backgroundColor: "#3B82F6",
+      borderRadius: 10, // reducido
+      paddingHorizontal: 12,
+      paddingVertical: 8, // reducido
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    primaryBtnText: {
+      color: "#fff",
+      fontWeight: "700",
+      letterSpacing: 0.2,
+      fontSize: 14,
+    },
+
+    // Pressables interactivos (fecha, hora, ubicación)
+    pressableInput: {
+      backgroundColor: theme.colors.background,
+      borderColor: theme.colors.border,
+      borderWidth: 1,
+      borderRadius: 8,
+      paddingHorizontal: 10,
+      paddingVertical: 8,
+      justifyContent: "center",
+    },
+    pressableText: {
+      color: "#3B82F6",
+      fontSize: 14,
+    },
+
+    // Contenedor de imágenes
+    imageContainer: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      gap: 6, // reducido
+    },
+
+    // Map selector
+    mapContainer: {
+      height: 180, // un poco más compacto
+      borderRadius: 8,
+      overflow: "hidden",
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+    },
+
+    // Placeholder (inputs vacíos)
+    placeholderText: {
+      color: "#8a8a8a",
+    },
+  });
+
+
 
 export default PostFormContent;
