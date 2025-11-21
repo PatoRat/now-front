@@ -40,8 +40,8 @@ export default function ProfileGamified() {
 	];
 
 	const { theme } = useTheme();
-	const { width } = useWindowDimensions();
-	const styles = stylesFn(theme, width);
+	const { width, height } = useWindowDimensions();
+	const styles = stylesFn(theme, width, height);
 	const [imagenes, setImagenes] = useState<string[]>([]);
 	const { token, usuario } = useAuth();
 
@@ -59,30 +59,30 @@ export default function ProfileGamified() {
 
 	const queryClient = useQueryClient();
 
-    const { mutate: cambiarNumeroAvatarMute } = useMutation({
-        mutationFn: (newAvatarIndex: number) => {
-            return cambiarAvatar(token, newAvatarIndex); 
-        },
+	const { mutate: cambiarNumeroAvatarMute } = useMutation({
+		mutationFn: (newAvatarIndex: number) => {
+			return cambiarAvatar(token, newAvatarIndex);
+		},
 
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
 
-        },
+		},
 
-        onError: (error) => {
-             console.error("Error al cambiar el avatar:", error);
-        }
-    });
+		onError: (error) => {
+			console.error("Error al cambiar el avatar:", error);
+		}
+	});
 
-    const cambiarNumeroAvatar = (index : number) => {
+	const cambiarNumeroAvatar = (index: number) => {
 
-		const newAvatarIndex = index+1;
-        cambiarNumeroAvatarMute(newAvatarIndex, {
-            onSuccess: () => {
-                setAvatar(newAvatarIndex); 
-            }
-        });
-    };
+		const newAvatarIndex = index + 1;
+		cambiarNumeroAvatarMute(newAvatarIndex, {
+			onSuccess: () => {
+				setAvatar(newAvatarIndex);
+			}
+		});
+	};
 
 	// Datos del usuario (simulados)
 	const user = {
@@ -166,7 +166,7 @@ export default function ProfileGamified() {
 		}
 		return boxes;
 	};
-	
+
 	useFocusEffect(
 		useCallback(() => {
 			cargarEventos(); // ejecuta la función al entrar en foco
@@ -362,205 +362,200 @@ export default function ProfileGamified() {
 	);
 }
 
-const stylesFn = (theme: Theme, width: number) =>
-	StyleSheet.create({
-		listaContenido: {
-			paddingBottom: 100,
-		},
-		botonContainer: {
-			position: "absolute",
-			bottom: 20,
-			right: 20,
-		},
-		nuevoPosteo: {
-			width: Dimensions.get("window").width * 0.16,
-			height: Dimensions.get("window").width * 0.16,
-		},
-		overlay: {
-			...StyleSheet.absoluteFillObject,
-			backgroundColor: "rgba(0,0,0,0.5)",
-		},
-		popupContainer: {
-			position: "absolute",
-			bottom: Dimensions.get("window").height * 0.25,
-			alignSelf: "center",
-			width: "85%",
-			backgroundColor: theme.colors.background,
-			borderRadius: 20,
-			padding: 20,
-			shadowColor: "#000",
-			shadowOpacity: 0.4,
-			shadowRadius: 10,
-			elevation: 8,
-		},
+const stylesFn = (theme: Theme, width: number, height: number) => {
+	const scale = Math.min(width / 400, 1.3);
 
-		popupTitle: {
-			fontSize: 20,
-			fontWeight: "bold",
-			color: theme.colors.text,
-			marginBottom: 10,
-			textAlign: "center",
-		},
-		popupDesc: {
-			color: theme.colors.text,
-			fontSize: 15,
-			marginBottom: 15,
-			textAlign: "center",
-		},
-		closeButton: {
-			alignSelf: "flex-end",
-			backgroundColor: "#007AFF",
-			paddingVertical: 8,
-			paddingHorizontal: 15,
-			borderRadius: 10,
-		},
-		carousel: {
-			width: "100%",
-			height: 200,
-			marginBottom: 15,
-		},
-		popupImage: {
-			width: Dimensions.get("window").width * 0.85,
-			height: 200,
-			borderRadius: 15,
-			marginRight: 5,
-		},
-		direccionContainer: {
-			flexDirection: "row",
-			alignItems: "center",
-			justifyContent: "center",
-			marginBottom: 10,
-		},
-		fechasContainer: {
-			marginTop: 10,
-		},
-		fechaText: {
-			color: theme.colors.text,
-			fontSize: 14,
-			textAlign: "center",
-			marginBottom: 10,
-		},
-
-		direccionIcon: {
-			marginRight: 6,
-			fontSize: 16,
-		},
-
-		direccionText: {
-			fontSize: 14,
-			color: theme.colors.text,
-			flexShrink: 1,
-		},
+	return StyleSheet.create({
 		container: {
 			flex: 1,
-			top: 50,
-			backgroundColor: theme.colors.background
+			backgroundColor: theme.colors.background,
+			alignItems: "center",
+			paddingTop: 40 * scale,
+			paddingHorizontal: 20 * scale,
 		},
+
 		userRow: {
 			flexDirection: "row",
 			alignItems: "center",
-			marginBottom: 30,
-			marginHorizontal: 0, // se pega a los lados
-			paddingHorizontal: 0, // si había padding heredado
+			marginBottom: 30 * scale,
+			width: "100%",
 		},
 
 		avatarBox: {
-			width: 120,
-			height: 120,
-			backgroundColor: "#ccc",
-			borderWidth: 4,
-			borderColor: "#888",
-			justifyContent: "center",
-			alignItems: "center",
-			marginRight: 20,
+			width: 130 * scale,
+			height: 130 * scale,
+			borderRadius: 12 * scale, 
+			backgroundColor: "#eee",
+			overflow: "hidden",       
+			marginRight: 20 * scale,
+			borderWidth: 3,           
+			borderColor: "#bbb",
 		},
+
 		avatarImage: {
-			width: 100,
-			height: 100,
-			resizeMode: "contain"
+			width: "120%",            
+			height: "110%",           
+			position: 'absolute',
+			resizeMode: "cover",
+			top: -10,
+			left: -10,
 		},
+
+
+
 		userInfo: {
-			flex: 1
+			flex: 1,
 		},
+
 		name: {
-			fontSize: 24,
+			fontSize: 26 * scale,
 			fontWeight: "bold",
-			color: theme.colors.text
+			color: theme.colors.text,
 		},
+
 		email: {
-			fontSize: 16,
-			color: theme.colors.text,
-			marginTop: 5
+			fontSize: 16 * scale,
+			color: "#666",
+			marginTop: 4 * scale,
 		},
+
+		// Trofeos
 		gamification: {
-			marginTop: 10
+			marginVertical: 20 * scale,
+			width: "100%",
 		},
+
 		sectionTitle: {
-			fontSize: 18,
+			fontSize: 18 * scale,
 			fontWeight: "bold",
 			color: theme.colors.text,
-			marginBottom: 10
+			marginBottom: 10 * scale,
 		},
+
 		badgesRow: {
 			flexDirection: "row",
 			flexWrap: "wrap",
-			marginBottom: 20,
+			justifyContent: "space-between",
+			marginBottom: 20 * scale,
 		},
+
 		badgeBox: {
 			width: "30%",
-			height: 90,
-			borderRadius: 12,
+			height: 90 * scale,
+			borderRadius: 12 * scale,
 			justifyContent: "center",
 			alignItems: "center",
-			margin: 5,
+			marginBottom: 10 * scale,
+			backgroundColor: "#f5f5f5",
 		},
-		badgeImage: { width: 80, height: 80, resizeMode: "contain" },
+
+		badgeImage: {
+			width: 80 * scale,
+			height: 80 * scale,
+			resizeMode: "contain",
+		},
+
+		// Lista de posts
+		listaContenido: {
+			paddingBottom: 120 * scale,
+			width: "100%",
+		},
+
+		// Modal general
 		modalBackground: {
 			flex: 1,
-			backgroundColor: "rgba(0,0,0,0.5)",
+			backgroundColor: "rgba(0,0,0,0.6)",
 			justifyContent: "center",
 			alignItems: "center",
+			padding: 20 * scale,
 		},
+
 		modalContainer: {
 			width: "90%",
-			backgroundColor: theme.colors.background,
-			borderRadius: 12,
-			padding: 20,
+			backgroundColor: theme.colors.card,
+			borderRadius: 20 * scale,
+			padding: 20 * scale,
 			alignItems: "center",
 		},
+
 		modalTitle: {
-			fontSize: 20,
+			fontSize: 22 * scale,
 			fontWeight: "bold",
 			color: theme.colors.text,
-			marginBottom: 15
+			marginBottom: 15 * scale,
+			textAlign: "center",
 		},
+
 		modalAvatarBoxColumn: {
-			width: '48%',
-			height: 140,
+			width: "48%",
+			height: 140 * scale,
 			justifyContent: "center",
 			alignItems: "center",
 			backgroundColor: "#eee",
-			borderRadius: 12,
+			borderRadius: 12 * scale,
+			marginBottom: 15 * scale,
 		},
+
 		modalAvatarImageColumn: {
-			width: 100, height: 100,
-			resizeMode: "center",
+			width: 120 * scale,
+			height: 120 * scale,
+			resizeMode: "contain",
+			borderRadius: 10 * scale, // bordes suavizados
 		},
+
+		closeButton: {
+			marginTop: 15 * scale,
+			backgroundColor: "#3B82F6",
+			paddingVertical: 10 * scale,
+			paddingHorizontal: 25 * scale,
+			borderRadius: 12 * scale,
+			alignSelf: "center",
+		},
+
 		closeButtonText: {
+			color: "#fff",
 			fontWeight: "bold",
-			textAlign: "center"
+			fontSize: 16 * scale,
+			textAlign: "center",
 		},
+
+		// Detalle de trofeo
 		detailModalContainer: {
 			width: "80%",
-			backgroundColor: theme.colors.background,
-			borderRadius: 12,
-			padding: 20,
+			backgroundColor: theme.colors.card,
+			borderRadius: 20 * scale,
+			padding: 20 * scale,
 			alignItems: "center",
 		},
-		detailTitle: { fontSize: 22, fontWeight: "bold", color: theme.colors.text, marginBottom: 15, textAlign: "center" },
-		detailImage: { width: 150, height: 150, resizeMode: "contain", marginBottom: 15 },
-		detailSubtitle: { fontSize: 16, color: theme.colors.text, marginBottom: 15, textAlign: "center" },
-		progressBarBackground: { width: "100%", height: 15, backgroundColor: "#ddd", borderRadius: 8, overflow: "hidden" },
-		progressBarFill: { height: "100%", backgroundColor: "#52e4f5ff", borderRadius: 8 },
-	});
 
+		detailTitle: {
+			fontSize: 22 * scale,
+			fontWeight: "bold",
+			color: theme.colors.text,
+			marginBottom: 15 * scale,
+			textAlign: "center",
+		},
+
+		detailImage: {
+			width: 150 * scale,
+			height: 150 * scale,
+			resizeMode: "contain",
+			marginBottom: 15 * scale,
+		},
+
+		progressBarBackground: {
+			width: "100%",
+			height: 15 * scale,
+			backgroundColor: "#ddd",
+			borderRadius: 8 * scale,
+			overflow: "hidden",
+			marginBottom: 15 * scale,
+		},
+
+		progressBarFill: {
+			height: "100%",
+			backgroundColor: "#52e4f5ff",
+			borderRadius: 8 * scale,
+		},
+	});
+};
