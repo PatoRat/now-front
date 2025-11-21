@@ -29,6 +29,24 @@ const userRegister = async (
     return await response.json();
 };
 
+
+const cambiarAvatar = async (tokenAuth: string | null, index: number) => {
+    console.log(index);
+    const response = await fetch(`${USER_PATH}/cambiarAvatar/${index}`, {
+        method: 'PUT',
+        headers: {
+            'Authorization': `Bearer ${tokenAuth}`,
+        },
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error);
+    }
+
+    return await response.json();
+};
+
 const userLogin = async (email: string, password: string) => {
     const response = await fetch(`${USER_PATH}/login`, {
         method: 'POST',
@@ -64,5 +82,5 @@ const userGet = async (tokenAuth: string) => {
     return await response.json();
 }
 
-export { userGet, userLogin, userRegister };
+export { userGet, userLogin, userRegister, cambiarAvatar };
 

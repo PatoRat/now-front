@@ -18,6 +18,8 @@ import { getMyEvents } from "../api/event.route";
 import PostPopUp from "../components/PostPopUp/PostPopUp";
 import { URL_BACKEND } from "../config";
 import { useAuth } from "../hooks/auth-hooks";
+import { cambiarAvatar } from "../api/user.route";
+import { useQueryClient, useMutation } from '@tanstack/react-query';
 
 
 export default function ProfileGamified() {
@@ -54,6 +56,33 @@ export default function ProfileGamified() {
 		type: "asistencia" | "organizador";
 		index: number;
 	} | null>(null);
+
+	const queryClient = useQueryClient();
+
+    const { mutate: cambiarNumeroAvatarMute } = useMutation({
+        mutationFn: (newAvatarIndex: number) => {
+            return cambiarAvatar(token, newAvatarIndex); 
+        },
+
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+
+        },
+
+        onError: (error) => {
+             console.error("Error al cambiar el avatar:", error);
+        }
+    });
+
+    const cambiarNumeroAvatar = (index : number) => {
+
+		const newAvatarIndex = index+1;
+        cambiarNumeroAvatarMute(newAvatarIndex, {
+            onSuccess: () => {
+                setAvatar(newAvatarIndex); 
+            }
+        });
+    };
 
 	// Datos del usuario (simulados)
 	const user = {
@@ -248,7 +277,7 @@ export default function ProfileGamified() {
 								renderItem={({ item, index }) => (
 									<Pressable
 										onPress={() => {
-											setAvatar(index + 1);
+											cambiarNumeroAvatar(index);
 											setModalVisible(false);
 										}}
 										style={styles.modalAvatarBoxColumn}
