@@ -3,12 +3,12 @@ import { useTheme } from "@/src/hooks/theme-hooks";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
-    Pressable,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
-    useWindowDimensions,
+	Pressable,
+	StyleSheet,
+	Text,
+	TextInput,
+	View,
+	useWindowDimensions,
 } from "react-native";
 
 const Register = () => {
@@ -22,7 +22,7 @@ const Register = () => {
 	const [email, setEmail] = useState("");
 	const [contrasenia, setContrasenia] = useState("");
 	const [confirmarPsw, setPswConfirm] = useState("");
-	const [numeroAvatar, setNumeroAvatar] = useState(1);
+	const [numeroAvatar] = useState(1);
 
 
 	const onRegister = async () => {
@@ -167,7 +167,7 @@ const stylesFn = (theme: any, width: number, height: number) => {
 			color: "#3B82F6",
 			fontWeight: "700",
 			fontSize: 18 * scale,
-    		textAlign: "center",
+			textAlign: "center",
 		},
 	});
 };

@@ -2,10 +2,10 @@ import DATA from "@/assets/databases/data";
 import Post from "@/src/components/Post";
 import { useTheme } from "@/src/hooks/theme-hooks";
 import { Theme, useFocusEffect } from "@react-navigation/native";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useRef, useState } from "react";
 import {
 	Animated,
-	Dimensions,
 	FlatList,
 	Image, Modal,
 	Pressable,
@@ -15,11 +15,10 @@ import {
 	useWindowDimensions
 } from "react-native";
 import { getMyEvents } from "../api/event.route";
+import { cambiarAvatar } from "../api/user.route";
 import PostPopUp from "../components/PostPopUp/PostPopUp";
 import { URL_BACKEND } from "../config";
 import { useAuth } from "../hooks/auth-hooks";
-import { cambiarAvatar } from "../api/user.route";
-import { useQueryClient, useMutation } from '@tanstack/react-query';
 
 
 export default function ProfileGamified() {
@@ -47,7 +46,6 @@ export default function ProfileGamified() {
 
 	const [posts, setPosts] = useState<any[]>([]);
 
-	const [avatar, setAvatar] = useState(1); // Avatar actual
 	const [modalVisible, setModalVisible] = useState(false);
 	const [refreshing, setRefreshing] = useState(false);
 
@@ -77,19 +75,7 @@ export default function ProfileGamified() {
 	const cambiarNumeroAvatar = (index: number) => {
 
 		const newAvatarIndex = index + 1;
-		cambiarNumeroAvatarMute(newAvatarIndex, {
-			onSuccess: () => {
-				setAvatar(newAvatarIndex);
-			}
-		});
-	};
-
-	// Datos del usuario (simulados)
-	const user = {
-		name: "Mateo Villanueva",
-		email: "mateo@email.com",
-		createdEvents: 3,
-		attendedEvents: 5,
+		cambiarNumeroAvatarMute(newAvatarIndex);
 	};
 
 	const maxEvents = 5;
