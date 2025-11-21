@@ -29,8 +29,6 @@ export default function Discover() {
     const { token } = useAuth();
     const styles = stylesFn(theme, width);
     const router = useRouter();
-	
-	const [imagenes, setImagenes] = useState<string[]>([]);
 
     const [posts, setPosts] = useState<any[]>([]);
     const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
