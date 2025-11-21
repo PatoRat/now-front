@@ -16,15 +16,15 @@ export default function Favs() {
     const { token } = useContext(AuthContext);
 
     const [posts, setPosts] = useState<any[]>([]);
-    const [selectedPost, setSelectedPost] = useState<null | any>(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [refreshing, setRefreshing] = useState(false);
+    // const [selectedPost, setSelectedPost] = useState<null | any>(null);
+    // const [loading, setLoading] = useState(false);
+    // const [error, setError] = useState<string | null>(null);
+    // const [refreshing, setRefreshing] = useState(false);
     const fadeAnim = useRef(new Animated.Value(0)).current;
 
     const cargarFavs = async () => {
-        setRefreshing(true);
-        setError(null);
+        // setRefreshing(true); // no se usa
+        // setError(null); // no se usa
         try {
             if (!token) throw new Error("No hay token de usuario");
 
@@ -33,21 +33,21 @@ export default function Favs() {
 
         } catch (err: any) {
             console.error("Error al traer favoritos:", err);
-            setError(err.message || "Error desconocido");
+            // setError(err.message || "Error desconocido"); // no se usa
         } finally {
-            setRefreshing(false);
+            // setRefreshing(false); // no se usa
         }
     };
 
     useFocusEffect(
         useCallback(() => {
-            setLoading(true);
-            cargarFavs().finally(() => setLoading(false));
+            // setLoading(true); // no se usa
+            cargarFavs()/*.finally(() => setLoading(false))*/; // no se usa
         }, [token])
     );
 
     const openPopup = (item: any) => {
-        setSelectedPost(item);
+        // setSelectedPost(item); // no se usa
         Animated.timing(fadeAnim, {
             toValue: 1,
             duration: 250,
