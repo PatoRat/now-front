@@ -36,6 +36,118 @@ const getEvents = async (
         throw error;
     }
 };
+const agregarFavs = async (tokenAuth: string | null, id : string) => {
+
+    try {
+        const res = await fetch(`${EVENT_PATH}/add-fav`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${tokenAuth}`,
+            },
+            body: JSON.stringify({
+                eventId: Number(id),
+            })
+        });
+
+
+        if (!res.ok) {
+            console.error("Error al crear favoritos:", res.status);
+            throw new Error(`Error ${res.status}: `);
+        }
+
+        const favs = await res.json();
+
+        return favs; // Array de eventos favoritos
+
+    } catch (error) {
+        console.error("Error creating favoritos:", error);
+        throw error;
+    }
+};
+
+
+const quitarFavs = async (tokenAuth: string | null, id : string) => {
+
+    try {
+        const res = await fetch(`${EVENT_PATH}/rem-fav`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${tokenAuth}`,
+            },
+            body: JSON.stringify({
+                eventId: Number(id),
+            })
+        });
+
+
+        if (!res.ok) {
+            console.error("Error al borrar favoritos:", res.status);
+            throw new Error(`Error ${res.status}: `);
+        }
+
+        const favs = await res.json();
+
+        return favs; // Array de eventos favoritos
+
+    } catch (error) {
+        console.error("Error al borrar favoritos:", error);
+        throw error;
+    }
+};
+
+const getLike = async (tokenAuth: string | null, id : string)=> {
+
+    try {
+        const res = await fetch(`${EVENT_PATH}/check-like/${id}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${tokenAuth}`,
+            },
+        });
+
+
+        if (!res.ok) {
+            console.error("Error al buscar like:", res.status);
+            throw new Error(`Error ${res.status}: `);
+        }
+
+        const isLiked = await res.json();
+
+        return isLiked; // Array de eventos favoritos
+
+    } catch (error) {
+        console.error("Error al buscar like:", error);
+        throw error;
+    }
+};
+
+const getFavs = async (tokenAuth: string | null) => {
+
+    try {
+        const res = await fetch(`${EVENT_PATH}/favs`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${tokenAuth}`,
+            }
+        });
+
+
+        if (!res.ok) {
+            console.error("Error al cargar favoritos:", res.status);
+            throw new Error(`Error ${res.status}: `);
+        }
+
+        const favs = await res.json();
+
+        return favs; // Array de eventos favoritos
+
+    } catch (error) {
+        console.error("Error fetching favoritos:", error);
+        throw error;
+    }
+};
 
 const getAllEvents = async (
     tokenAuth: string | null
@@ -57,6 +169,29 @@ const getAllEvents = async (
         throw error;
     }
 };
+
+
+
+const getMyEvents = async (
+    tokenAuth: string | null
+) => {
+    try {
+        
+        const res = await fetch(`${EVENT_PATH}/created-by-authorized-user`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${tokenAuth}`,
+            },
+        });
+        if (!res.ok) throw new Error(`Error ${res.status}`);
+        const data = await res.json();
+        return data; // Array de eventos
+    } catch (error) {
+        console.error("Error fetching events:", error);
+        throw error;
+    }
+};
+
 
 const eventCreate = async (
     titulo: string,
@@ -175,5 +310,5 @@ const guardarImagenesSoloUri = async (
 }
 */
 
-export { eventCreate, getAllEvents, getEvents, guardarImagenes };
+export { eventCreate, getAllEvents, getEvents, guardarImagenes, getFavs, agregarFavs, quitarFavs, getLike, getMyEvents };
 

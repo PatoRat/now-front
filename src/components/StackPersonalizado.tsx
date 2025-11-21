@@ -7,26 +7,6 @@ const StackPersonalizado = () => {
 	const { isLogged, isFetching } = useAuth();
 	const { theme } = useTheme();
 
-	if (isFetching) {
-		return (
-			<Stack screenOptions={{
-				headerShown: false,
-				statusBarStyle: "light",
-				contentStyle: { backgroundColor: theme.colors.background },
-			}}>
-				<Stack.Screen
-					name="esperar"
-					options={{
-						headerShown: false,
-						animation: "slide_from_bottom",
-					}}
-				/>
-			</Stack>
-		);
-	}
-
-	// console.log("Estas logged?:", isLogged);
-
 	return (
 		<Stack screenOptions={{
 			headerShown: false,
@@ -34,7 +14,29 @@ const StackPersonalizado = () => {
 			contentStyle: { backgroundColor: theme.colors.background },
 		}}>
 
-			<Stack.Protected guard={isLogged}>
+			<Stack.Protected guard={isFetching}>
+				<Stack.Screen
+					name="esperar"
+					options={{
+						headerStyle: { backgroundColor: theme.colors.card },
+						headerTintColor: "black",
+						headerTitleAlign: "center",
+						headerTitle: () => (
+							<Image
+								source={require("@/assets/images/NOW-LOGO.png")}
+								style={{
+									width: 120,
+									height: 110,
+									resizeMode: "contain",
+								}}
+							/>
+						),
+						animation: "slide_from_bottom",
+					}}
+				/>
+			</Stack.Protected>
+
+			<Stack.Protected guard={!isFetching && isLogged}>
 				<Stack.Screen
 					name="(tabs)"
 					options={{
@@ -64,7 +66,7 @@ const StackPersonalizado = () => {
 				/>
 			</Stack.Protected>
 
-			<Stack.Protected guard={!isLogged}>
+			<Stack.Protected guard={!isFetching && !isLogged}>
 				<Stack.Screen
 					name="(auth)"
 					options={{

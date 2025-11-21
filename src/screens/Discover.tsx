@@ -6,6 +6,7 @@ import * as Location from "expo-location";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
+    ActivityIndicator,
     Animated,
     Dimensions,
     FlatList,
@@ -28,8 +29,6 @@ export default function Discover() {
     const { token } = useAuth();
     const styles = stylesFn(theme, width);
     const router = useRouter();
-	
-	const [imagenes, setImagenes] = useState<string[]>([]);
 
     const [posts, setPosts] = useState<any[]>([]);
     const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
@@ -130,6 +129,29 @@ export default function Discover() {
 
     const onRefresh = () => cargarEventos();
 
+    if (!posts.length && !userLocation) {
+        return (
+            <View style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: theme.colors.background,
+            }}>
+            {/* Logo arriba */}
+            <Image
+                source={require("@/assets/images/NOW-LOGO.png")}
+                style={{ width: 150, height: 150, resizeMode: "contain", marginBottom: 50 }}
+            />
+
+            {/* Spinner abajo */}
+            <ActivityIndicator
+                size="large"
+                color="#52E4F5"
+                style={{ position: "absolute", bottom: 100}}
+            />
+            </View>
+        );
+    }
     return (
 		<View style={{ flex: 1 }}>
 			<FlatList
@@ -163,6 +185,7 @@ export default function Discover() {
 
 					return (
 						<Post
+                            id={item.id}
 							titulo={item.titulo ?? ""}
 							descripcion={item.descripcion ?? ""}
 							imagenes={imagenesMapeadas}
@@ -188,15 +211,14 @@ export default function Discover() {
 				}
 			/>
 
-			<View style={styles.botonContainer}>
-				<Pressable onPress={nuevoPost}>
-					<Image
-						source={require("@/assets/images/new-post.png")}
-						style={styles.nuevoPosteo}
-						resizeMode="contain"
-					/>
-				</Pressable>
-			</View>
+			<Pressable style={styles.botonContainer} onPress={nuevoPost}>
+                <Image
+                    source={require("@/assets/images/new-post.png")}
+                    style={styles.nuevoPosteo}
+                    resizeMode="contain"
+                />
+            </Pressable>
+
 
 			<PostPopUp visible={!!selectedPost} post={selectedPost} onClose={closePopup} />
 		</View>
@@ -213,10 +235,12 @@ const stylesFn = (theme: Theme, width: number) =>
             position: "absolute",
             bottom: 20,
             right: 20,
+            padding: 10,
+            borderRadius: 50,
         },
         nuevoPosteo: {
             width: width * 0.16,
-            height: width * 0.16,
+            height: width * 0.16,   
         },
         overlay: {
             ...StyleSheet.absoluteFillObject,

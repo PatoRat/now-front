@@ -1,24 +1,36 @@
 import {
-    ActivityIndicator,
-    StyleSheet
+    Image,
+    StyleSheet,
+    useWindowDimensions
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Theme } from "@react-navigation/native";
+import { useTheme } from "../hooks/theme-hooks";
+
 export default function WaitScreen() {
+    const { width } = useWindowDimensions();
+	const { theme } = useTheme();
+	const styles = stylesFn(theme, width);
 
     return (
         <SafeAreaView style={styles.pestaña}>
-            <ActivityIndicator />
+            <Image
+                source={require("@/assets/images/NOW-LOGO.png")}
+                style={{ width: 120, height: 110, resizeMode: "contain" }}
+            />
         </SafeAreaView>
     );
 }
 
 
-const styles = StyleSheet.create({
+const stylesFn = (theme: Theme, width: number) =>
+    StyleSheet.create({
     pestaña: {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
+        backgroundColor: theme.colors.background 
     },
     drawer: {
         top: 10,

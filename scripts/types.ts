@@ -30,6 +30,7 @@ type ThemeName = "dark" | "light";
 
 type UserData = {
     id: number,
+    email: string,
     nombre: string,
     numeroAvatar: number,
     favs: Fav[]

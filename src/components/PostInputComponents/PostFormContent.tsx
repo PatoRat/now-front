@@ -204,6 +204,7 @@ export const stylesFn = (theme: any, width: number) => ({
 	card: {
 		backgroundColor: theme.colors.card,
 		borderRadius: 12,
+		top: 100,
 		padding: 16,
 		gap: 12,
 		shadowColor: "#000",
@@ -220,7 +221,7 @@ export const stylesFn = (theme: any, width: number) => ({
 		borderRadius: 10,
 		paddingHorizontal: 14,
 		paddingVertical: 12,
-		color: theme.colors.card,
+		color: theme.colors.text,
 		fontSize: 14,
 	},
 	inputMultiline: { minHeight: 110, lineHeight: 20 },

@@ -1,24 +1,23 @@
 import { useAuth } from "@/src/hooks/auth-hooks";
 import { useTheme } from "@/src/hooks/theme-hooks";
-import { Theme } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-    Image,
-    Pressable,
-    StyleSheet,
-    Text,
-    TextInput,
-    useWindowDimensions,
-    View,
+	Image,
+	Pressable,
+	StyleSheet,
+	Text,
+	TextInput,
+	useWindowDimensions,
+	View,
 } from "react-native";
 
 const Login = () => {
 	const router = useRouter();
 	const { login } = useAuth();
 	const { theme } = useTheme();
-	const { width } = useWindowDimensions();
-	const styles = stylesFn(theme, width);
+	const { width, height } = useWindowDimensions();
+	const styles = stylesFn(theme, width, height);
 
 	const [email, setEmail] = useState("");
 	const [contrasenia, setContrasenia] = useState("");
@@ -87,78 +86,88 @@ const Login = () => {
 
 export { Login };
 
-const stylesFn = (theme: Theme, width: number) =>
-	StyleSheet.create({
+const stylesFn = (theme: any, width: number, height: number) => {
+	const scale = Math.min(width / 400, 1.3);
+
+	return StyleSheet.create({
 		container: {
 			flex: 1,
-			backgroundColor: theme.colors.background,
 			justifyContent: "center",
 			alignItems: "center",
-			paddingHorizontal: 20,
+			backgroundColor: theme.colors.background,
+			paddingHorizontal: 26 * scale,
 		},
+
 		logo: {
-			width: 180,
-			height: 80,
-			marginBottom: 20,
+			width: 240 * scale,
+			height: 110 * scale,
+			marginBottom: 30 * scale,
 			alignSelf: "center",
 		},
 
 		card: {
-			width: "100%",
-			maxWidth: 400,
+			width: width * 0.8,          // Igual que Register
+			height: height * 0.75,       // Igual que Register
 			backgroundColor: theme.colors.card,
-			borderRadius: 16,
-			padding: 24,
-			shadowColor: "#000",
-			shadowOpacity: 0.15,
-			shadowRadius: 6,
-			shadowOffset: { width: 0, height: 3 },
-			elevation: 5,
+			borderRadius: 26 * scale,
+			padding: 32 * scale,
+			elevation: 7,
+			marginTop: height * 0.025,   // Igual que Register
+			justifyContent: "center",
 		},
+
 		title: {
-			fontSize: 24,
-			fontWeight: "700",
+			fontSize: 32 * scale,
+			fontWeight: "800",
 			color: theme.colors.text,
-			marginBottom: 4,
 			textAlign: "center",
+			marginBottom: 10 * scale,
 		},
+
 		subtitle: {
-			fontSize: 14,
+			fontSize: 18 * scale,
 			color: "#888",
 			textAlign: "center",
-			marginBottom: 24,
+			marginBottom: 28 * scale,
 		},
+
 		input: {
+			borderWidth: 1,
 			backgroundColor: theme.colors.background,
 			borderColor: theme.colors.border,
-			borderWidth: 1,
-			borderRadius: 10,
-			paddingHorizontal: 14,
-			paddingVertical: 12,
+			borderRadius: 16 * scale,
+			paddingVertical: 14 * scale,
+			paddingHorizontal: 18 * scale,
+			fontSize: 20 * scale,
 			color: theme.colors.text,
-			fontSize: 15,
-			marginBottom: 14,
+			marginBottom: 16 * scale,
 		},
+
 		btnPrimary: {
 			backgroundColor: "#3B82F6",
-			borderRadius: 10,
-			paddingVertical: 14,
+			borderRadius: 16 * scale,
+			paddingVertical: 16 * scale,
 			alignItems: "center",
-			marginTop: 4,
-			marginBottom: 10,
+			marginTop: 11 * scale,
+			marginBottom: 14 * scale,
 		},
+
 		btnPrimaryText: {
 			color: "#fff",
-			fontWeight: "700",
-			fontSize: 16,
-			letterSpacing: 0.4,
+			fontSize: 20 * scale,
+			fontWeight: "bold",
 		},
+
 		registerLink: {
-			alignItems: "center",
-			marginTop: 8,
+			width: "100%",
+			marginTop: 11 * scale,
 		},
+
 		registerHighlight: {
 			color: "#3B82F6",
 			fontWeight: "700",
+			fontSize: 18 * scale,
+    		textAlign: "center",
 		},
 	});
+};
