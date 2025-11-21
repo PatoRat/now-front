@@ -21,6 +21,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [token, setToken] = useState<string | null>(null);
     const [isLogged, setLogged] = useState(false);
     const [usuario, setUsuario] = useState<UserData>(USUARIO_DEFAULT);
+    const [isInitializing, setInitializing] = useState(true);
 
 
     useEffect(() => {
@@ -39,9 +40,8 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
                 // console.log("Token previo: ", tokenSaved);
 
-                if (tokenSaved) {
-                    setToken(tokenSaved);
-                }
+                if (tokenSaved) setToken(tokenSaved);
+                setInitializing(false);
 
             } catch (e) {
                 console.error(e);
@@ -136,7 +136,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return (
         <AuthContext.Provider value={{
             isLogged,
-            isFetching: checkedStore && !!token && isLoading,
+            isFetching: isInitializing || (checkedStore && !!token && isLoading),
             usuario,
             token,
             login,

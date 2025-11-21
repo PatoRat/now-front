@@ -36,7 +36,7 @@ const StackPersonalizado = () => {
 				/>
 			</Stack.Protected>
 
-			<Stack.Protected guard={isLogged && !isFetching}>
+			<Stack.Protected guard={!isFetching && isLogged}>
 				<Stack.Screen
 					name="(tabs)"
 					options={{
@@ -66,7 +66,7 @@ const StackPersonalizado = () => {
 				/>
 			</Stack.Protected>
 
-			<Stack.Protected guard={!isLogged && !isFetching}>
+			<Stack.Protected guard={!isFetching && !isLogged}>
 				<Stack.Screen
 					name="(auth)"
 					options={{
