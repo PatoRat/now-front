@@ -1,6 +1,6 @@
 import { useTheme } from "@/src/hooks/theme-hooks";
 import React, { useState } from "react";
-import { Pressable, Text, StyleSheet, useWindowDimensions } from "react-native";
+import { Pressable, StyleSheet, Text } from "react-native";
 import MapModal from "./MapModal";
 
 type Props = {
@@ -12,7 +12,6 @@ type Props = {
 const PostMapSelector = ({ value, direccion, onChange }: Props) => {
   const { theme } = useTheme();
   const [mostrarMapa, setMostrarMapa] = useState(false);
-  const { width } = useWindowDimensions();
 
   return (
     <>

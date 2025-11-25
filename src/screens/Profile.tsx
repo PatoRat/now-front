@@ -27,7 +27,8 @@ import { useAuth } from "../hooks/auth-hooks";
 
 export default function ProfileGamified() {
 	//Referencia para que te lleve a un lugar directo de tu perfil
-	const postsRef = useRef<View>(null);
+	// const postsRef = useRef<View>(null);
+
 	// Array de rutas estáticas
 	const avatarImages = [
 		require("@/assets/images/avatars/Avatar-1.png"),
@@ -55,13 +56,13 @@ export default function ProfileGamified() {
 	const [posts, setPosts] = useState<any[]>([]);
 
 	const [modalVisible, setModalVisible] = useState(false);
-	const [refreshing, setRefreshing] = useState(false);
+	// const [refreshing, setRefreshing] = useState(false);
 
 	// Modal de detalle de trofeo
-	const [selectedBadge, setSelectedBadge] = useState<{
-		type: "asistencia" | "organizador";
-		index: number;
-	} | null>(null);
+	// const [selectedBadge, setSelectedBadge] = useState<{
+	// 	type: "asistencia" | "organizador";
+	// 	index: number;
+	// } | null>(null);
 
 	const queryClient = useQueryClient();
 
@@ -92,7 +93,7 @@ export default function ProfileGamified() {
 		cambiarNumeroAvatarMute(newAvatarIndex);
 	};
 
-	const maxEvents = 5;
+	// const maxEvents = 5;
 
 	// Para abrir pop-up
 	const openPopup = (item: typeof DATA[number]) => {
@@ -110,7 +111,7 @@ export default function ProfileGamified() {
 
 
 	const cargarEventos = async () => {
-		setRefreshing(true);
+		// setRefreshing(true); // no se usa
 		try {
 			// console.log("llegue a userloc: ", userLocation);
 			const eventos = await getMyEvents(token);
@@ -118,7 +119,7 @@ export default function ProfileGamified() {
 		} catch (error) {
 			console.log("Error al traer eventos:", error);
 		} finally {
-			setRefreshing(false);
+			// setRefreshing(false); // no se usa
 		}
 	};
 
@@ -131,41 +132,41 @@ export default function ProfileGamified() {
 	};
 
 	// Arrays de trofeos
-	const asistenciaImages = [
-		require("@/assets/images/trofeos/Asistencia-1.png"),
-		require("@/assets/images/trofeos/Asistencia-2.png"),
-		require("@/assets/images/trofeos/Asistencia-3.png"),
-		require("@/assets/images/trofeos/Asistencia-4.png"),
-		require("@/assets/images/trofeos/Asistencia-5.png"),
-	];
+	// const asistenciaImages = [
+	// 	require("@/assets/images/trofeos/Asistencia-1.png"),
+	// 	require("@/assets/images/trofeos/Asistencia-2.png"),
+	// 	require("@/assets/images/trofeos/Asistencia-3.png"),
+	// 	require("@/assets/images/trofeos/Asistencia-4.png"),
+	// 	require("@/assets/images/trofeos/Asistencia-5.png"),
+	// ];
 
-	const organizadorImages = [
-		require("@/assets/images/trofeos/Organizador-1.png"),
-		require("@/assets/images/trofeos/Organizador-2.png"),
-		require("@/assets/images/trofeos/Organizador-3.png"),
-		require("@/assets/images/trofeos/Organizador-4.png"),
-		require("@/assets/images/trofeos/Organizador-5.png"),
-	];
+	// const organizadorImages = [
+	// 	require("@/assets/images/trofeos/Organizador-1.png"),
+	// 	require("@/assets/images/trofeos/Organizador-2.png"),
+	// 	require("@/assets/images/trofeos/Organizador-3.png"),
+	// 	require("@/assets/images/trofeos/Organizador-4.png"),
+	// 	require("@/assets/images/trofeos/Organizador-5.png"),
+	// ];
 
 	// Función renderizada de trofeos
-	const renderBoxes = (count: number, type: "asistencia" | "organizador") => {
-		const boxes = [];
-		const images = type === "asistencia" ? asistenciaImages : organizadorImages;
+	// const renderBoxes = (count: number, type: "asistencia" | "organizador") => {
+	// 	const boxes = [];
+	// 	const images = type === "asistencia" ? asistenciaImages : organizadorImages;
 
-		for (let i = 0; i < maxEvents; i++) {
-			boxes.push(
-				<View
-					key={i}
-					style={[styles.badgeBox, { opacity: i < count ? 1 : 0.3 }]}
-				>
-					<Pressable onPress={() => setSelectedBadge({ type, index: i })}>
-						<Image source={images[i]} style={styles.badgeImage} />
-					</Pressable>
-				</View>
-			);
-		}
-		return boxes;
-	};
+	// 	for (let i = 0; i < maxEvents; i++) {
+	// 		boxes.push(
+	// 			<View
+	// 				key={i}
+	// 				style={[styles.badgeBox, { opacity: i < count ? 1 : 0.3 }]}
+	// 			>
+	// 				<Pressable onPress={() => setSelectedBadge({ type, index: i })}>
+	// 					<Image source={images[i]} style={styles.badgeImage} />
+	// 				</Pressable>
+	// 			</View>
+	// 		);
+	// 	}
+	// 	return boxes;
+	// };
 
 	useFocusEffect(
 		useCallback(() => {
