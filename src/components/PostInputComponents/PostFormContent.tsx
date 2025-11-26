@@ -65,9 +65,9 @@ const PostFormContent = ({ theme, router }: any) => {
 			if (imagenes.length > 0) {
 				await guardarImagenes(imagenes, eventId, token);
 			}
-			mensaje.set("Publicacion exitosa");
-			success.set(true);
-			visible.set(true);
+			// mensaje.set("Publicacion exitosa");
+			// success.set(true);
+			// visible.set(true);
 
 			router.back();
 
