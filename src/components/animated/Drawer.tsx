@@ -3,6 +3,7 @@ import { ThemeColors } from "@/scripts/types";
 import { useAuth } from "@/src/hooks/auth-hooks";
 import { useTheme } from "@/src/hooks/theme-hooks";
 import { FontAwesome } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
     Animated,
@@ -14,7 +15,6 @@ import {
     View
 } from "react-native";
 import { EdgeInsets, useSafeAreaInsets } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
 
 
 export const Drawer = () => {
@@ -105,7 +105,7 @@ export const Drawer = () => {
                 </Pressable>
 
                 <Pressable style={styles.drawerItem} onPress={() => {
-                    toggleTheme();
+                    toggleDrawer();
                     Linking.openURL('https://fijate.com/es/tools/generador-frases-motivacionales');
                 }}
                 >
