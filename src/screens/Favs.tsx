@@ -5,8 +5,11 @@ import React, { useCallback, useContext, useRef, useState } from "react";
 import { Animated, FlatList, StyleSheet, useWindowDimensions, View } from "react-native";
 import { getFavs } from "../api/event.route";
 import { AuthContext } from "../components/context-provider/AuthContext";
-import Post from "../components/Post";
+import CustomAlert from "../components/CustomAlert";
+import Post from "../components/Post/Post";
+import PostPopUp from "../components/Post/PostPopUp";
 import { URL_BACKEND } from "../config";
+import { useAlertState } from "../hooks/alert-hooks";
 
 export default function Favs() {
     const { theme } = useTheme();
@@ -20,19 +23,26 @@ export default function Favs() {
     // const [loading, setLoading] = useState(false);
     // const [error, setError] = useState<string | null>(null);
     // const [refreshing, setRefreshing] = useState(false);
+
+    const { visible, mensaje, success } = useAlertState();
+
+    // Pop-up
+    const [selectedPost, setSelectedPost] = useState<any>(null);
     const fadeAnim = useRef(new Animated.Value(0)).current;
 
     const cargarFavs = async () => {
         // setRefreshing(true); // no se usa
         // setError(null); // no se usa
         try {
-            if (!token) throw new Error("No hay token de usuario");
-
+            // if (!token) throw new Error("No hay token de usuario");
             const favs = await getFavs(token);
             setPosts(favs);
 
-        } catch (err: any) {
-            console.error("Error al traer favoritos:", err);
+        } catch (error: any) {
+            // console.error("Error al traer favoritos:", error);
+            mensaje.set(`Ocurrio un error trayendo los favoritos: ${error}`);
+            success.set(false);
+            visible.set(true);
             // setError(err.message || "Error desconocido"); // no se usa
         } finally {
             // setRefreshing(false); // no se usa
@@ -47,12 +57,20 @@ export default function Favs() {
     );
 
     const openPopup = (item: any) => {
-        // setSelectedPost(item); // no se usa
+        setSelectedPost(item); 
         Animated.timing(fadeAnim, {
             toValue: 1,
             duration: 250,
             useNativeDriver: true,
         }).start();
+    };
+
+    const closePopup = () => {
+        Animated.timing(fadeAnim, {
+            toValue: 0,
+            duration: 200,
+            useNativeDriver: true,
+        }).start(() => setSelectedPost(null));
     };
 
     return (
@@ -103,7 +121,17 @@ export default function Favs() {
                 }}
                 contentContainerStyle={styles.listaContenido}
                 showsVerticalScrollIndicator={false}
-                
+
+            />
+            
+            <PostPopUp visible={!!selectedPost} post={selectedPost} onClose={closePopup} />
+            
+            {/* Alert */}
+            <CustomAlert
+                visible={visible.get()}
+                message={mensaje.get()}
+                isSuccessful={success.get()}
+                onClose={() => visible.set(false)}
             />
         </View>
     );

@@ -1,3 +1,4 @@
+import { URL_BACKEND } from "@/src/config";
 import { useTheme } from "@/src/hooks/theme-hooks";
 import { FontAwesome } from "@expo/vector-icons";
 import { Theme } from "@react-navigation/native";
@@ -23,12 +24,12 @@ type PostPopUpProps = {
     onClose: () => void
 }
 
-export default function PostPopUp({ visible, post, onClose}: PostPopUpProps) {
+export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const [currentIndex, setCurrentIndex] = useState(0);
     const width = Dimensions.get("window").width;
-	const { theme } = useTheme();
-	const styles = stylesFn(theme, width);
+    const { theme } = useTheme();
+    const styles = stylesFn(theme, width);
 
     useEffect(() => {
         if (visible) {
@@ -57,6 +58,25 @@ export default function PostPopUp({ visible, post, onClose}: PostPopUpProps) {
             year: "numeric",
         });
     };
+
+    const imagenesMapeadas = post.imagenes?.map((img: { url: string }) => {
+        if (!img.url) return null;
+
+        let uri = img.url;
+
+        // Caso 1: empieza con http
+        if (uri.startsWith("http")) {
+            // Reemplazamos localhost si lo contiene
+            uri = uri.replace("localhost", URL_BACKEND.replace(/^https?:\/\//, ""));
+            return { uri };
+        }
+
+        // Caso 2: ruta relativa o nombre de archivo
+        uri = uri.startsWith("/") ? `${URL_BACKEND}${uri}` : `${URL_BACKEND}/uploads/${uri}`;
+        return { uri };
+    }).filter(Boolean); // elimina nulls
+
+
 
     const abrirEnMaps = (lat: number, lng: number) => {
         const url = Platform.select({
@@ -94,9 +114,10 @@ export default function PostPopUp({ visible, post, onClose}: PostPopUpProps) {
                 {post.imagenes?.length > 0 && (
                     <>
                         <FlatList
-                            data={post.imagenes}
+                            data={imagenesMapeadas}
                             horizontal
-                            pagingEnabled
+                            pagingEnabled={false}
+                            snapToInterval={width * 0.65}
                             showsHorizontalScrollIndicator={false}
                             keyExtractor={(_, i) => i.toString()}
                             onScroll={(e) => {
@@ -104,21 +125,32 @@ export default function PostPopUp({ visible, post, onClose}: PostPopUpProps) {
                                 setCurrentIndex(index);
                             }}
                             scrollEventThrottle={16}
-                            renderItem={({ item }) => (
-                                <View style={{
-                                    width: width * 0.85,
-                                    height: 200,
-                                    marginRight: 10,
-                                    borderRadius: 15,
-                                    overflow: "hidden",
-                                    shadowColor: "#000",
-                                    shadowOpacity: 0.3,
-                                    shadowRadius: 10,
-                                    elevation: 5,
-                                }}>
-                                    <Image source={item} style={{ width: "100%", height: "100%" }} resizeMode="cover" />
-                                </View>
-                            )}
+                            renderItem={({ item }) => {
+
+                                // PARA VER EN EL LOG LO QUE SE RECIBE
+                                // console.log("Evento:", item);
+                                // console.log(
+                                // 	"Imagenes del evento:",
+                                // 	item.imagenes?.map((img: { id: number; eventId: number; url: string }) => img.url)
+                                // );
+
+                                return (
+
+                                    <View style={{
+                                        width: width * 0.85,
+                                        height: 200,
+                                        marginRight: 10,
+                                        borderRadius: 15,
+                                        overflow: "hidden",
+                                        shadowColor: "#000",
+                                        shadowOpacity: 0.3,
+                                        shadowRadius: 10,
+                                        elevation: 5,
+                                    }}>
+                                        <Image source={item} style={{ width: "100%", height: "100%" }} resizeMode="cover" />
+                                    </View>
+                                );
+                            }}
                             contentContainerStyle={{ paddingHorizontal: width * 0.075 / 2 }}
                         />
 
@@ -174,93 +206,93 @@ export default function PostPopUp({ visible, post, onClose}: PostPopUpProps) {
 }
 
 const stylesFn = (theme: Theme, width: number) =>
-	StyleSheet.create({
-		listaContenido: {
-			paddingBottom: 100,
-		},
-		botonContainer: {
-			position: "absolute",
-			bottom: 20,
-			right: 20,
-		},
-		nuevoPosteo: {
-			width: Dimensions.get("window").width * 0.16,
-			height: Dimensions.get("window").width * 0.16,
-		},
-		overlay: {
-			...StyleSheet.absoluteFillObject,
-			backgroundColor: "rgba(0,0,0,0.5)",
-		},
-		popupContainer: {
-			position: "absolute",
-			bottom: Dimensions.get("window").height * 0.25,
-			alignSelf: "center",
-			width: "85%",
-			backgroundColor: theme.colors.background,
-			borderRadius: 20,
-			padding: 20,
-			shadowColor: "#000",
-			shadowOpacity: 0.4,
-			shadowRadius: 10,
-			elevation: 8,
-		},
+    StyleSheet.create({
+        listaContenido: {
+            paddingBottom: 100,
+        },
+        botonContainer: {
+            position: "absolute",
+            bottom: 20,
+            right: 20,
+        },
+        nuevoPosteo: {
+            width: Dimensions.get("window").width * 0.16,
+            height: Dimensions.get("window").width * 0.16,
+        },
+        overlay: {
+            ...StyleSheet.absoluteFillObject,
+            backgroundColor: "rgba(0,0,0,0.5)",
+        },
+        popupContainer: {
+            position: "absolute",
+            bottom: Dimensions.get("window").height * 0.25,
+            alignSelf: "center",
+            width: "85%",
+            backgroundColor: theme.colors.background,
+            borderRadius: 20,
+            padding: 20,
+            shadowColor: "#000",
+            shadowOpacity: 0.4,
+            shadowRadius: 10,
+            elevation: 8,
+        },
 
-		popupTitle: {
-			fontSize: 20,
-			fontWeight: "bold",
-			color: theme.colors.text,
-			marginBottom: 10,
-			textAlign: "center",
-		},
-		popupDesc: {
-			color: theme.colors.text,
-			fontSize: 15,
-			marginBottom: 15,
-			textAlign: "center",
-		},
-		closeButton: {
-			alignSelf: "flex-end",
-			backgroundColor: "#007AFF",
-			paddingVertical: 8,
-			paddingHorizontal: 15,
-			borderRadius: 10,
-		},
-		carousel: {
-			width: "100%",
-			height: 200,
-			marginBottom: 15,
-		},
-		popupImage: {
-			width: Dimensions.get("window").width * 0.85,
-			height: 200,
-			borderRadius: 15,
-			marginRight: 5,
-		},
-		direccionContainer: {
-			flexDirection: "row",
-			alignItems: "center",
-			justifyContent: "center",
-			marginBottom: 10,
-		},
-		fechasContainer: {
-			marginTop: 10,
-		},
-		fechaText: {
-			color: theme.colors.text,
-			fontSize: 14,
-			textAlign: "center",
-			marginBottom: 10,
-		},
+        popupTitle: {
+            fontSize: 20,
+            fontWeight: "bold",
+            color: theme.colors.text,
+            marginBottom: 10,
+            textAlign: "center",
+        },
+        popupDesc: {
+            color: theme.colors.text,
+            fontSize: 15,
+            marginBottom: 15,
+            textAlign: "center",
+        },
+        closeButton: {
+            alignSelf: "flex-end",
+            backgroundColor: "#007AFF",
+            paddingVertical: 8,
+            paddingHorizontal: 15,
+            borderRadius: 10,
+        },
+        carousel: {
+            width: "100%",
+            height: 200,
+            marginBottom: 15,
+        },
+        popupImage: {
+            width: Dimensions.get("window").width * 0.85,
+            height: 200,
+            borderRadius: 15,
+            marginRight: 5,
+        },
+        direccionContainer: {
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: 10,
+        },
+        fechasContainer: {
+            marginTop: 10,
+        },
+        fechaText: {
+            color: theme.colors.text,
+            fontSize: 14,
+            textAlign: "center",
+            marginBottom: 10,
+        },
 
-		direccionIcon: {
-			marginRight: 6,
-			fontSize: 16,
-		},
+        direccionIcon: {
+            marginRight: 6,
+            fontSize: 16,
+        },
 
-		direccionText: {
-			fontSize: 14,
-			color: theme.colors.text,
-			flexShrink: 1,
-		},
+        direccionText: {
+            fontSize: 14,
+            color: theme.colors.text,
+            flexShrink: 1,
+        },
 
-	});
+    });

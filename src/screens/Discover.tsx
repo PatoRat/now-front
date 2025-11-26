@@ -1,4 +1,4 @@
-import Post from "@/src/components/Post";
+import Post from "@/src/components/Post/Post";
 import { URL_BACKEND } from "@/src/config";
 import { useTheme } from "@/src/hooks/theme-hooks";
 import { Theme } from "@react-navigation/native";
@@ -17,13 +17,16 @@ import {
     View,
     useWindowDimensions
 } from "react-native";
-import { getAllEvents, getEvents } from "../api/event.route";
-import PostPopUp from "../components/PostPopUp/PostPopUp";
+import { getAllEvents, getEvents, getFavs } from "../api/event.route";
+import { useLikes } from "../components/context-provider/LikeContext";
+import CustomAlert from "../components/CustomAlert";
+import PostPopUp from "../components/Post/PostPopUp";
+import { useAlertState } from "../hooks/alert-hooks";
 import { useAuth } from "../hooks/auth-hooks";
 
-	
+
 export default function Discover() {
-	
+
     const { theme } = useTheme();
     const { width } = useWindowDimensions();
     const { token } = useAuth();
@@ -39,6 +42,8 @@ export default function Discover() {
 
     // Refresh
     const [refreshing, setRefreshing] = useState(false);
+
+    const { visible, mensaje, success } = useAlertState();
 
     const nuevoPost = () => router.push({ pathname: "../postear" });
 
@@ -58,6 +63,27 @@ export default function Discover() {
             useNativeDriver: true,
         }).start(() => setSelectedPost(null));
     };
+    
+    // Carga de los likes del usuario a una const global
+
+    const { setAllLikes } = useLikes();
+    const cargarFavoritos = async () => {
+    try {
+        const favsData = await getFavs(token);
+        const favs: number[] = favsData.map((f: any) => f.id);
+
+        const likeMap: Record<number, boolean> = {};
+
+        favs.forEach((id: number) => {
+            likeMap[id] = true;
+        });
+
+        setAllLikes(likeMap);
+
+    } catch (error) {
+        console.log("Error cargando favoritos:", error);
+    }
+};
 
     const distancia = (lat1: number, lon1: number, lat2: number, lon2: number) => {
         const R = 6371; // km
@@ -66,8 +92,8 @@ export default function Discover() {
         const a =
             Math.sin(dLat / 2) ** 2 +
             Math.cos((lat1 * Math.PI) / 180) *
-                Math.cos((lat2 * Math.PI) / 180) *
-                Math.sin(dLon / 2) ** 2;
+            Math.cos((lat2 * Math.PI) / 180) *
+            Math.sin(dLon / 2) ** 2;
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c;
     };
@@ -86,22 +112,26 @@ export default function Discover() {
     };
 
     const cargarEventos = async () => {
-		setRefreshing(true);
-		try {
-			if (userLocation) {
+        setRefreshing(true);
+        try {
+            if (userLocation) {
                 // console.log("llegue a userloc: ", userLocation);
                 const eventos = await getEvents(token, userLocation);
-				ordenarPorCercaniaConArray(eventos, userLocation);
-			} else {
+                ordenarPorCercaniaConArray(eventos, userLocation);
+            } else {
                 const eventos = await getAllEvents(token);
-				setPosts(eventos);
-			}
-		} catch (error) {
-			console.log("Error al traer eventos:", error);
-		} finally {
-			setRefreshing(false);
-		}
-	};
+                setPosts(eventos);
+            }
+        } catch (error) {
+            // console.log("Error al traer eventos:", error);
+            mensaje.set(`Error al traer eventos: ${error}`);
+            success.set(false);
+            visible.set(true);
+
+        } finally {
+            setRefreshing(false);
+        }
+    };
 
     useFocusEffect(
         useCallback(() => {
@@ -112,6 +142,8 @@ export default function Discover() {
     // Ubicación
     useEffect(() => {
         (async () => {
+            await cargarFavoritos();
+            
             let { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== "granted") {
                 console.log("Permisos de ubicación denegados");
@@ -132,86 +164,86 @@ export default function Discover() {
     if (!posts.length && !userLocation) {
         return (
             <View style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: theme.colors.background,
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: theme.colors.background,
             }}>
-            {/* Logo arriba */}
-            <Image
-                source={require("@/assets/images/NOW-LOGO.png")}
-                style={{ width: 150, height: 150, resizeMode: "contain", marginBottom: 50 }}
-            />
+                {/* Logo arriba */}
+                <Image
+                    source={require("@/assets/images/NOW-LOGO.png")}
+                    style={{ width: 150, height: 150, resizeMode: "contain", marginBottom: 50 }}
+                />
 
-            {/* Spinner abajo */}
-            <ActivityIndicator
-                size="large"
-                color="#52E4F5"
-                style={{ position: "absolute", bottom: 100}}
-            />
+                {/* Spinner abajo */}
+                <ActivityIndicator
+                    size="large"
+                    color="#52E4F5"
+                    style={{ position: "absolute", bottom: 100 }}
+                />
             </View>
         );
     }
     return (
-		<View style={{ flex: 1 }}>
-			<FlatList
-				data={posts}
-				keyExtractor={item => item.id.toString()}
-				renderItem={({ item }) => {
+        <View style={{ flex: 1 }}>
+            <FlatList
+                data={posts}
+                keyExtractor={item => item.id.toString()}
+                renderItem={({ item }) => {
 
-					// PARA VER EN EL LOG LO QUE SE RECIBE
-					// console.log("Evento:", item);
-					// console.log(
-					// 	"Imagenes del evento:",
-					// 	item.imagenes?.map((img: { id: number; eventId: number; url: string }) => img.url)
-					// );
+                    // PARA VER EN EL LOG LO QUE SE RECIBE
+                    // console.log("Evento:", item);
+                    // console.log(
+                    // 	"Imagenes del evento:",
+                    // 	item.imagenes?.map((img: { id: number; eventId: number; url: string }) => img.url)
+                    // );
 
-					const imagenesMapeadas = item.imagenes?.map((img: { url: string }) => {
-						if (!img.url) return null;
+                    const imagenesMapeadas = item.imagenes?.map((img: { url: string }) => {
+                        if (!img.url) return null;
 
-						let uri = img.url;
+                        let uri = img.url;
 
-						// Caso 1: empieza con http
-						if (uri.startsWith("http")) {
-							// Reemplazamos localhost si lo contiene
-							uri = uri.replace("localhost", URL_BACKEND.replace(/^https?:\/\//, ""));
-							return { uri };
-						}
+                        // Caso 1: empieza con http
+                        if (uri.startsWith("http")) {
+                            // Reemplazamos localhost si lo contiene
+                            uri = uri.replace("localhost", URL_BACKEND.replace(/^https?:\/\//, ""));
+                            return { uri };
+                        }
 
-						// Caso 2: ruta relativa o nombre de archivo
-						uri = uri.startsWith("/") ? `${URL_BACKEND}${uri}` : `${URL_BACKEND}/uploads/${uri}`;
-						return { uri };
-					}).filter(Boolean); // elimina nulls
+                        // Caso 2: ruta relativa o nombre de archivo
+                        uri = uri.startsWith("/") ? `${URL_BACKEND}${uri}` : `${URL_BACKEND}/uploads/${uri}`;
+                        return { uri };
+                    }).filter(Boolean); // elimina nulls
 
-					return (
-						<Post
+                    return (
+                        <Post
                             id={item.id}
-							titulo={item.titulo ?? ""}
-							descripcion={item.descripcion ?? ""}
-							imagenes={imagenesMapeadas}
-							fechaInicio={item.fechaInicio ? new Date(item.fechaInicio) : new Date()}
-							fechaFin={item.fechaFin ? new Date(item.fechaFin) : new Date()}
-							ubicacion={item.ubicacion ?? null}
-							direccion={item.ubicacion?.direccion ?? ""}
-							creador={item.creador ?? "Anónimo"}
-							onSingleTap={() => openPopup(item)}
-						/>
-					);
-				}}
-				contentContainerStyle={styles.listaContenido}
-				showsVerticalScrollIndicator={false}
-				refreshControl={
-					<RefreshControl
-						refreshing={refreshing}
-						onRefresh={onRefresh}
-						tintColor="#52E4F5"
-						colors={["#52E4F5"]}
-						progressBackgroundColor="#ffffff00"
-					/>
-				}
-			/>
+                            titulo={item.titulo ?? ""}
+                            descripcion={item.descripcion ?? ""}
+                            imagenes={imagenesMapeadas}
+                            fechaInicio={item.fechaInicio ? new Date(item.fechaInicio) : new Date()}
+                            fechaFin={item.fechaFin ? new Date(item.fechaFin) : new Date()}
+                            ubicacion={item.ubicacion ?? null}
+                            direccion={item.ubicacion?.direccion ?? ""}
+                            creador={item.creador ?? "Anónimo"}
+                            onSingleTap={() => openPopup(item)}
+                        />
+                    );
+                }}
+                contentContainerStyle={styles.listaContenido}
+                showsVerticalScrollIndicator={false}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                        tintColor="#52E4F5"
+                        colors={["#52E4F5"]}
+                        progressBackgroundColor="#ffffff00"
+                    />
+                }
+            />
 
-			<Pressable style={styles.botonContainer} onPress={nuevoPost}>
+            <Pressable style={styles.botonContainer} onPress={nuevoPost}>
                 <Image
                     source={require("@/assets/images/new-post.png")}
                     style={styles.nuevoPosteo}
@@ -220,9 +252,16 @@ export default function Discover() {
             </Pressable>
 
 
-			<PostPopUp visible={!!selectedPost} post={selectedPost} onClose={closePopup} />
-		</View>
-	);
+            <PostPopUp visible={!!selectedPost} post={selectedPost} onClose={closePopup} />
+            {/* Alert */}
+            <CustomAlert
+                visible={visible.get()}
+                message={mensaje.get()}
+                isSuccessful={success.get()}
+                onClose={() => visible.set(false)}
+            />
+        </View>
+    );
 
 }
 
@@ -240,7 +279,7 @@ const stylesFn = (theme: Theme, width: number) =>
         },
         nuevoPosteo: {
             width: width * 0.16,
-            height: width * 0.16,   
+            height: width * 0.16,
         },
         overlay: {
             ...StyleSheet.absoluteFillObject,

@@ -111,7 +111,11 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             contrasenia
         }: LoginInput) => userLogin(email, contrasenia),
 
-        onError: (error: Error) => console.error(error.message),
+        onError: (error: Error) => {
+			// console.log("LLEGO HASTA ACA, provider");
+            // console.error(error.message);
+            throw new Error(error.message);
+        },
 
         onSuccess: async (token) => {
             await guardar_sesion(token);
@@ -126,7 +130,10 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             numeroAvatar
         }: RegisterInput) => userRegister(nombre, email, contrasenia, numeroAvatar),
 
-        onError: (error: Error) => console.error(error.message),
+        onError: (error: Error) => {
+            console.error(error.message);
+            throw new Error(error.message);
+        },
 
         onSuccess: async (token) => {
             await guardar_sesion(token);

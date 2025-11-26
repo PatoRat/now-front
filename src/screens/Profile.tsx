@@ -1,5 +1,4 @@
-import DATA from "@/assets/databases/data";
-import Post from "@/src/components/Post";
+import Post from "@/src/components/Post/Post";
 import { useTheme } from "@/src/hooks/theme-hooks";
 import { Theme, useFocusEffect } from "@react-navigation/native";
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -16,8 +15,10 @@ import {
 } from "react-native";
 import { getMyEvents } from "../api/event.route";
 import { cambiarAvatar } from "../api/user.route";
-import PostPopUp from "../components/PostPopUp/PostPopUp";
+import CustomAlert from "../components/CustomAlert";
+import PostPopUp from "../components/Post/PostPopUp";
 import { URL_BACKEND } from "../config";
+import { useAlertState } from "../hooks/alert-hooks";
 import { useAuth } from "../hooks/auth-hooks";
 
 
@@ -44,6 +45,14 @@ export default function ProfileGamified() {
 	const styles = stylesFn(theme, width, height);
 	const { token, usuario } = useAuth();
 
+	const { visible, mensaje, success } = useAlertState();
+
+
+	// Estado del pop-up
+	const [selectedPost, setSelectedPost] = useState<any>(null);
+	const fadeAnim = useRef(new Animated.Value(0)).current;
+
+
 	const [posts, setPosts] = useState<any[]>([]);
 
 	const [modalVisible, setModalVisible] = useState(false);
@@ -64,11 +73,17 @@ export default function ProfileGamified() {
 
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+			mensaje.set("¡Avatar cambiado correctamente!");
+			success.set(true);
+			visible.set(true);
 
 		},
 
 		onError: (error) => {
 			console.error("Error al cambiar el avatar:", error);
+			mensaje.set("Error al cambiar el avatar");
+			success.set(false);
+			visible.set(true);
 		}
 	});
 
@@ -81,7 +96,7 @@ export default function ProfileGamified() {
 	// const maxEvents = 5;
 
 	// Para abrir pop-up
-	const openPopup = (item: typeof DATA[number]) => {
+	const openPopup = (item: any) => {
 		setSelectedPost(item);
 		Animated.timing(fadeAnim, {
 			toValue: 1,
@@ -90,11 +105,15 @@ export default function ProfileGamified() {
 		}).start();
 	};
 
-	// Estado del pop-up
-	const [selectedPost, setSelectedPost] = useState<null | (typeof DATA[number])>(null);
-	const fadeAnim = useRef(new Animated.Value(0)).current;
+	const closePopup = () => {
+			Animated.timing(fadeAnim, {
+				toValue: 0,
+				duration: 200,
+				useNativeDriver: true,
+			}).start(() => setSelectedPost(null));
+		};
 
-
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	const cargarEventos = async () => {
 		// setRefreshing(true); // no se usa
 		try {
@@ -107,14 +126,8 @@ export default function ProfileGamified() {
 			// setRefreshing(false); // no se usa
 		}
 	};
-
-	const closePopup = () => {
-		Animated.timing(fadeAnim, {
-			toValue: 0,
-			duration: 200,
-			useNativeDriver: true,
-		}).start(() => setSelectedPost(null));
-	};
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
 
 	// Arrays de trofeos
 	// const asistenciaImages = [
@@ -230,7 +243,7 @@ export default function ProfileGamified() {
 							fechaFin={item.fechaFin ? new Date(item.fechaFin) : new Date()}
 							ubicacion={item.ubicacion ?? null}
 							direccion={item.ubicacion?.direccion ?? ""}
-							creador={item.creador ?? "Anónimo"}
+							creador={item.creador ?? "Anónimo"} // SACAR ANONIMO
 							onSingleTap={() => openPopup(item)}
 						/>
 					);
@@ -240,7 +253,11 @@ export default function ProfileGamified() {
 			/>
 
 
-			<PostPopUp visible={!!selectedPost} post={selectedPost} onClose={closePopup} />
+			<PostPopUp
+				visible={!!selectedPost}
+				post={selectedPost}
+				onClose={closePopup}
+			/>
 
 			{/* Modal de selección de avatar */}
 			<Modal
@@ -344,6 +361,14 @@ export default function ProfileGamified() {
 					</Modal>
 				)} */}
 
+			<CustomAlert
+				visible={visible.get()}
+				message={mensaje.get()}
+				isSuccessful={success.get()}
+				onClose={() => visible.set(false)}
+			/>
+
+
 		</View>
 	);
 }
@@ -355,7 +380,6 @@ const stylesFn = (theme: Theme, width: number, height: number) => {
 		container: {
 			flex: 1,
 			backgroundColor: theme.colors.background,
-			alignItems: "center",
 			paddingTop: 40 * scale,
 			paddingHorizontal: 20 * scale,
 		},
@@ -370,17 +394,17 @@ const stylesFn = (theme: Theme, width: number, height: number) => {
 		avatarBox: {
 			width: 130 * scale,
 			height: 130 * scale,
-			borderRadius: 12 * scale, 
+			borderRadius: 12 * scale,
 			backgroundColor: "#eee",
-			overflow: "hidden",       
+			overflow: "hidden",
 			marginRight: 20 * scale,
-			borderWidth: 3,           
+			borderWidth: 3,
 			borderColor: "#bbb",
 		},
 
 		avatarImage: {
-			width: "120%",            
-			height: "110%",           
+			width: "120%",
+			height: "110%",
 			position: 'absolute',
 			resizeMode: "cover",
 			top: -10,

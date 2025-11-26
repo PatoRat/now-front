@@ -1,9 +1,9 @@
 import { useTheme } from "@/src/hooks/theme-hooks";
+import { Theme } from "@react-navigation/native";
 import { Router } from "expo-router";
 import React from "react";
-import { View, useWindowDimensions, StyleSheet } from "react-native";
+import { StyleSheet, View, useWindowDimensions } from "react-native";
 import PostFormContent from "./PostFormContent";
-import { Theme } from "@react-navigation/native";
 
 
 
@@ -32,7 +32,8 @@ const stylesFn = (theme: Theme, width: number) =>
 		card: {
 			backgroundColor: theme.colors.card,
 			borderRadius: 12,
-			top: 100,
+			// top: 100,
+			marginTop: 60,
 			padding: 16,
 			gap: 12,
 			shadowColor: "#000",
@@ -40,6 +41,8 @@ const stylesFn = (theme: Theme, width: number) =>
 			shadowRadius: 4,
 			shadowOffset: { width: 0, height: 2 },
 			elevation: 3,
+			flex: 1,
+			overflow: "hidden"
 		},
 
 	});

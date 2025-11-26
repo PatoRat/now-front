@@ -4,12 +4,15 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
 	Pressable,
+	ScrollView,
 	StyleSheet,
 	Text,
 	TextInput,
 	View,
 	useWindowDimensions,
 } from "react-native";
+import CustomAlert from "../components/CustomAlert";
+import { useAlertState } from "../hooks/alert-hooks";
 
 const Register = () => {
 	const router = useRouter();
@@ -24,21 +27,27 @@ const Register = () => {
 	const [confirmarPsw, setPswConfirm] = useState("");
 	const [numeroAvatar] = useState(1);
 
+	const { visible, mensaje, success } = useAlertState();
+
 
 	const onRegister = async () => {
 
 		try {
 			if (!(contrasenia === confirmarPsw)) {
-				console.error("Las contraseñas deben coincidir");
-				{/* Poner algun componente bonito de animacion que haga el Alert */ }
+				// console.error("Las contraseñas deben coincidir");
+				mensaje.set("Las contraseñas deben coincidir");
+				success.set(false);
+				visible.set(true);
 			}
 			else {
-				registrarse.mutate({ nombre, email, contrasenia, numeroAvatar });
+				await registrarse.mutateAsync({ nombre, email, contrasenia, numeroAvatar });
 			}
 
 		} catch (error) {
-			console.error("Ocurrio un error: ", error);
-			{/* Poner algun componente bonito de animacion que haga el Alert */ }
+			// console.error("Ocurrio un error: ", error);
+			mensaje.set(`Ocurrio un error: ${error}`);
+			success.set(false);
+			visible.set(true);
 		}
 
 	};
@@ -48,53 +57,67 @@ const Register = () => {
 
 	return (
 		<View style={styles.container}>
-			<View style={styles.card}>
-				<Text style={styles.title}>Crear cuenta</Text>
+			<ScrollView
+				contentContainerStyle={styles.scroller}
+				keyboardShouldPersistTaps="handled"
+			>
 
-				<TextInput
-					placeholder="Nombre completo"
-					placeholderTextColor="#aaa"
-					value={nombre}
-					onChangeText={setNombre}
-					style={styles.input}
-				/>
-				<TextInput
-					placeholder="Email"
-					placeholderTextColor="#aaa"
-					value={email}
-					onChangeText={setEmail}
-					keyboardType="email-address"
-					style={styles.input}
-				/>
-				<TextInput
-					placeholder="Contraseña"
-					placeholderTextColor="#aaa"
-					value={contrasenia}
-					onChangeText={setContrasenia}
-					secureTextEntry
-					style={styles.input}
-				/>
-				<TextInput
-					placeholder="Confirmar contraseña"
-					placeholderTextColor="#aaa"
-					value={confirmarPsw}
-					onChangeText={setPswConfirm}
-					secureTextEntry
-					style={styles.input}
-				/>
+				<View style={styles.card}>
+					<Text style={styles.title}>Crear cuenta</Text>
 
-				{/** Habría que meter un selector para elegir el avatar, o por defecto le asignamos uno */}
+					<TextInput
+						placeholder="Nombre completo"
+						placeholderTextColor="#aaa"
+						value={nombre}
+						onChangeText={setNombre}
+						style={styles.input}
+					/>
+					<TextInput
+						placeholder="Email"
+						placeholderTextColor="#aaa"
+						value={email}
+						onChangeText={setEmail}
+						keyboardType="email-address"
+						style={styles.input}
+					/>
+					<TextInput
+						placeholder="Contraseña"
+						placeholderTextColor="#aaa"
+						value={contrasenia}
+						onChangeText={setContrasenia}
+						secureTextEntry
+						style={styles.input}
+					/>
+					<TextInput
+						placeholder="Confirmar contraseña"
+						placeholderTextColor="#aaa"
+						value={confirmarPsw}
+						onChangeText={setPswConfirm}
+						secureTextEntry
+						style={styles.input}
+					/>
 
-				<Pressable onPress={onRegister} style={styles.button} disabled={registrarse.isPending}>
-					<Text style={styles.buttonText}>
-						{registrarse.isPending ? "Creando cuenta..." : "Registrarme"}
-					</Text>
-				</Pressable>
+					{/** Habría que meter un selector para elegir el avatar, o por defecto le asignamos uno */}
 
-				<Pressable onPress={volverLogin} style={styles.registerLink}>
-					<Text style={styles.registerHighlight}>¿Ya tenés cuenta? Iniciá sesión</Text>
-				</Pressable>
-			</View>
+					<Pressable onPress={onRegister} style={styles.button} disabled={registrarse.isPending}>
+						<Text style={styles.buttonText}>
+							{registrarse.isPending ? "Creando cuenta..." : "Registrarme"}
+						</Text>
+					</Pressable>
+
+					<Pressable onPress={volverLogin} style={styles.registerLink}>
+						<Text style={styles.registerHighlight}>¿Ya tenés cuenta? Iniciá sesión</Text>
+					</Pressable>
+				</View>
+
+			</ScrollView>
+			{/* Alert */}
+			<CustomAlert
+				visible={visible.get()}
+				message={mensaje.get()}
+				isSuccessful={success.get()}
+				onClose={() => visible.set(false)}
+			/>
 		</View>
 	);
 };
@@ -105,9 +128,15 @@ const stylesFn = (theme: any, width: number, height: number) => {
 	const scale = Math.min(width / 400, 1.3);
 
 	return StyleSheet.create({
+		scroller: {
+			paddingVertical: 40,
+			paddingBottom: 100,
+			alignItems: "center"
+		},
+
 		container: {
 			flex: 1,
-			justifyContent: "center",
+			// justifyContent: "center",
 			alignItems: "center",
 			backgroundColor: theme.colors.background,
 			paddingHorizontal: 26 * scale,
@@ -115,7 +144,8 @@ const stylesFn = (theme: any, width: number, height: number) => {
 
 		card: {
 			width: width * 0.8,          // 80% del ancho
-			height: height * 0.75,        // 80% del alto
+			// height: height * 0.75,        // 80% del alto
+			minHeight: height * 0.75,
 			backgroundColor: theme.dark ? "#1E1E1E" : "#fff",
 			borderRadius: 26 * scale,
 			padding: 32 * scale,

@@ -11,10 +11,12 @@ import {
 	View
 } from "react-native";
 import { GestureHandlerRootView, TapGestureHandler } from "react-native-gesture-handler";
-import { agregarFavs, quitarFavs } from "../api/event.route";
-import { useAuth } from "../hooks/auth-hooks";
-import { useTheme } from "../hooks/theme-hooks";
-import { useLikes } from "./context-provider/LikeContext";
+import { agregarFavs, quitarFavs } from "../../api/event.route";
+import { useAlertState } from "../../hooks/alert-hooks";
+import { useAuth } from "../../hooks/auth-hooks";
+import { useTheme } from "../../hooks/theme-hooks";
+import { useLikes } from "../context-provider/LikeContext";
+import CustomAlert from "../CustomAlert";
 
 const Post = (
 	{ id, titulo, descripcion, imagenes, fechaInicio, fechaFin, direccion, onSingleTap }:
@@ -32,17 +34,34 @@ const Post = (
 	const { likes, toggleLike } = useLikes();
 	const showHeart = likes[Number(id)] || false;
 
+	const { visible, mensaje, success } = useAlertState();
+
 	const handleDoubleTap = async () => {
-		if (!showHeart) {
-			await agregarFavs(token, id);
-			toggleLike(Number(id), true);
+		const nuevoLike = !showHeart; // <-- ESTE es el valor real que queda después del tap
+		
+		if (nuevoLike) {
+			try {
+				await agregarFavs(token, id);
+				toggleLike(Number(id), true);
+			} catch (error) {
+				mensaje.set(`Error al intentar agregar a favoritos: ${error}`);
+				success.set(false);
+				visible.set(true);
+			}
 		} else {
-			await quitarFavs(token, id);
-			toggleLike(Number(id), false);
+			try {
+				await quitarFavs(token, id);
+				toggleLike(Number(id), false);
+			} catch (error) {
+				mensaje.set(`Error al intentar eliminar de favoritos: ${error}`);
+				success.set(false);
+				visible.set(true);
+			}
 		}
 
+		// Usar el valor correcto para la animación
 		Animated.timing(heartAnim, {
-			toValue: showHeart ? 0 : 1,
+			toValue: nuevoLike ? 1 : 0,
 			duration: 200,
 			useNativeDriver: true,
 		}).start();
@@ -51,7 +70,7 @@ const Post = (
 
 	const formatoFecha = (fecha: Date) =>
 		fecha.toLocaleString("es-AR", { dateStyle: "short", timeStyle: "short" });
-	
+
 	useEffect(() => {
 		Animated.timing(heartAnim, {
 			toValue: showHeart ? 1 : 0,
@@ -76,19 +95,27 @@ const Post = (
 					<Animated.View style={{ position: "relative" }}>
 
 						{/* Corazón animado */}
-						{showHeart && (
+						<Animated.View style={{ position: "absolute", top: 10, left: 10, zIndex: 20 }}>
+							{/* Corazón que siempre se ve: vacío si no likeado, rojo si likeado */}
+							<FontAwesome
+								name={showHeart ? "heart" : "heart-o"}
+								size={32}
+								color={showHeart ? "red" : theme.colors.text}
+							/>
+
+							{/* Corazón animado solo al hacer doble tap */}
 							<Animated.View
 								style={{
 									position: "absolute",
-									top: 10,
-									left: 10,
+									top: 0,
+									left: 0,
 									transform: [{ scale: heartAnim }],
-									zIndex: 20,
 								}}
 							>
 								<FontAwesome name="heart" size={32} color="red" />
 							</Animated.View>
-						)}
+						</Animated.View>
+
 
 						<View style={styles.postContainer}>
 
@@ -120,7 +147,13 @@ const Post = (
 							</View>
 
 						</View>
-
+						{/* Alert */}
+						<CustomAlert
+							visible={visible.get()}
+							message={mensaje.get()}
+							isSuccessful={success.get()}
+							onClose={() => visible.set(false)}
+						/>
 					</Animated.View>
 				</TapGestureHandler>
 			</TapGestureHandler>

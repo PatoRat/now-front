@@ -5,12 +5,15 @@ import React, { useState } from "react";
 import {
 	Image,
 	Pressable,
+	ScrollView,
 	StyleSheet,
 	Text,
 	TextInput,
 	useWindowDimensions,
 	View,
 } from "react-native";
+import CustomAlert from "../components/CustomAlert";
+import { useAlertState } from "../hooks/alert-hooks";
 
 const Login = () => {
 	const router = useRouter();
@@ -22,13 +25,18 @@ const Login = () => {
 	const [email, setEmail] = useState("");
 	const [contrasenia, setContrasenia] = useState("");
 
+	const { visible, mensaje, success } = useAlertState();
+
 	const onLogin = async () => {
 		try {
-			login.mutate({ email, contrasenia });
+			await login.mutateAsync({ email, contrasenia }); //para que tire errores
 
 		} catch (error) {
-			console.error("Ocurrio un error: ", error);
-			{/* Poner algun componente bonito de animacion que haga el Alert */ }
+			// console.log("LLEGO HASTA ACA, login");
+			// console.error("Ocurrio un error: ", error);
+			mensaje.set(`Ocurrio un error: ${error}`);
+			success.set(false);
+			visible.set(true);
 		}
 	}
 
@@ -36,50 +44,63 @@ const Login = () => {
 
 	return (
 		<View style={styles.container}>
+			<ScrollView
+				contentContainerStyle={styles.scroller}
+				keyboardShouldPersistTaps="handled"
+			>
 
-			<View style={styles.card}>
-				<Image
-					source={require("@/assets/images/NOW-LOGO.png")}
-					style={styles.logo}
-					resizeMode="contain"
-				/>
-				<Text style={styles.title}>Iniciar sesión</Text>
-				<Text style={styles.subtitle}>Accedé a tu cuenta para continuar</Text>
+				<View style={styles.card}>
+					<Image
+						source={require("@/assets/images/NOW-LOGO.png")}
+						style={styles.logo}
+						resizeMode="contain"
+					/>
+					<Text style={styles.title}>Iniciar sesión</Text>
+					<Text style={styles.subtitle}>Accedé a tu cuenta para continuar</Text>
 
-				{/* Email */}
-				<TextInput
-					style={styles.input}
-					placeholder="Correo electrónico"
-					placeholderTextColor="#aaa"
-					value={email}
-					onChangeText={setEmail}
-					keyboardType="email-address"
-				/>
+					{/* Email */}
+					<TextInput
+						style={styles.input}
+						placeholder="Correo electrónico"
+						placeholderTextColor="#aaa"
+						value={email}
+						onChangeText={setEmail}
+						keyboardType="email-address"
+					/>
 
-				{/* Password */}
-				<TextInput
-					style={styles.input}
-					placeholder="Contraseña"
-					placeholderTextColor="#aaa"
-					value={contrasenia}
-					onChangeText={setContrasenia}
-					secureTextEntry
-				/>
+					{/* Password */}
+					<TextInput
+						style={styles.input}
+						placeholder="Contraseña"
+						placeholderTextColor="#aaa"
+						value={contrasenia}
+						onChangeText={setContrasenia}
+						secureTextEntry
+					/>
 
-				{/* Botón Entrar */}
-				<Pressable style={styles.btnPrimary} onPress={onLogin} disabled={login.isPending}>
-					<Text style={styles.btnPrimaryText}>
-						{login.isPending ? "Entrando" : "Entrar"}
-					</Text>
-				</Pressable>
+					{/* Botón Entrar */}
+					<Pressable style={styles.btnPrimary} onPress={onLogin} disabled={login.isPending}>
+						<Text style={styles.btnPrimaryText}>
+							{login.isPending ? "Entrando" : "Entrar"}
+						</Text>
+					</Pressable>
 
-				{/* Registrar */}
-				<Pressable onPress={registrar} style={styles.registerLink}>
-					<Text style={styles.registerHighlight}>
-						¿No tenés cuenta? Registrarse
-					</Text>
-				</Pressable>
-			</View>
+					{/* Registrar */}
+					<Pressable onPress={registrar} style={styles.registerLink}>
+						<Text style={styles.registerHighlight}>
+							¿No tenés cuenta? Registrarse
+						</Text>
+					</Pressable>
+				</View>
+
+			</ScrollView>
+			{/* Alert */}
+			<CustomAlert
+				visible={visible.get()}
+				message={mensaje.get()}
+				isSuccessful={success.get()}
+				onClose={() => visible.set(false)}
+			/>
 		</View>
 	);
 };
@@ -90,9 +111,15 @@ const stylesFn = (theme: any, width: number, height: number) => {
 	const scale = Math.min(width / 400, 1.3);
 
 	return StyleSheet.create({
+		scroller: {
+			paddingVertical: 40,
+			paddingBottom: 100,
+			alignItems: "center"
+		},
+
 		container: {
 			flex: 1,
-			justifyContent: "center",
+			// justifyContent: "center",
 			alignItems: "center",
 			backgroundColor: theme.colors.background,
 			paddingHorizontal: 26 * scale,
@@ -107,7 +134,8 @@ const stylesFn = (theme: any, width: number, height: number) => {
 
 		card: {
 			width: width * 0.8,          // Igual que Register
-			height: height * 0.75,       // Igual que Register
+			// height: height * 0.75,       // Igual que Register
+			minHeight: height * 0.75,
 			backgroundColor: theme.colors.card,
 			borderRadius: 26 * scale,
 			padding: 32 * scale,
@@ -167,7 +195,7 @@ const stylesFn = (theme: any, width: number, height: number) => {
 			color: "#3B82F6",
 			fontWeight: "700",
 			fontSize: 18 * scale,
-    		textAlign: "center",
+			textAlign: "center",
 		},
 	});
 };

@@ -31,7 +31,6 @@ const userRegister = async (
 
 
 const cambiarAvatar = async (tokenAuth: string | null, index: number) => {
-    console.log(index);
     const response = await fetch(`${USER_PATH}/cambiar-avatar/${index}`, {
         method: 'PUT',
         headers: {
@@ -57,6 +56,7 @@ const userLogin = async (email: string, password: string) => {
     });
 
     if (!response.ok) {
+        // console.log("LLEGO HASTA ACA, user route");
         const error = await response.json();
         throw new Error(error.error);
     }
