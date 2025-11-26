@@ -11,6 +11,8 @@ import {
 	useWindowDimensions,
 	View,
 } from "react-native";
+import CustomAlert from "../components/CustomAlert";
+import { useAlertState } from "../hooks/alert-hooks";
 
 const Login = () => {
 	const router = useRouter();
@@ -22,13 +24,17 @@ const Login = () => {
 	const [email, setEmail] = useState("");
 	const [contrasenia, setContrasenia] = useState("");
 
+	const { visible, mensaje, success } = useAlertState();
+
 	const onLogin = async () => {
 		try {
 			login.mutate({ email, contrasenia });
 
 		} catch (error) {
-			console.error("Ocurrio un error: ", error);
-			{/* Poner algun componente bonito de animacion que haga el Alert */ }
+			// console.error("Ocurrio un error: ", error);
+			mensaje.set(`Ocurrio un error: ${error}`);
+			success.set(false);
+			visible.set(true);
 		}
 	}
 
@@ -80,6 +86,13 @@ const Login = () => {
 					</Text>
 				</Pressable>
 			</View>
+			{/* Alert */}
+			<CustomAlert
+				visible={visible.get()}
+				message={mensaje.get()}
+				isSuccessful={success.get()}
+				onClose={() => visible.set(false)}
+			/>
 		</View>
 	);
 };
@@ -167,7 +180,7 @@ const stylesFn = (theme: any, width: number, height: number) => {
 			color: "#3B82F6",
 			fontWeight: "700",
 			fontSize: 18 * scale,
-    		textAlign: "center",
+			textAlign: "center",
 		},
 	});
 };

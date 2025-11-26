@@ -10,6 +10,8 @@ import {
 	View,
 	useWindowDimensions,
 } from "react-native";
+import CustomAlert from "../components/CustomAlert";
+import { useAlertState } from "../hooks/alert-hooks";
 
 const Register = () => {
 	const router = useRouter();
@@ -24,21 +26,27 @@ const Register = () => {
 	const [confirmarPsw, setPswConfirm] = useState("");
 	const [numeroAvatar] = useState(1);
 
+	const { visible, mensaje, success } = useAlertState();
+
 
 	const onRegister = async () => {
 
 		try {
 			if (!(contrasenia === confirmarPsw)) {
-				console.error("Las contraseñas deben coincidir");
-				{/* Poner algun componente bonito de animacion que haga el Alert */ }
+				// console.error("Las contraseñas deben coincidir");
+				mensaje.set("Las contraseñas deben coincidir");
+				success.set(false);
+				visible.set(true);
 			}
 			else {
 				registrarse.mutate({ nombre, email, contrasenia, numeroAvatar });
 			}
 
 		} catch (error) {
-			console.error("Ocurrio un error: ", error);
-			{/* Poner algun componente bonito de animacion que haga el Alert */ }
+			// console.error("Ocurrio un error: ", error);
+			mensaje.set(`Ocurrio un error: ${error}`);
+			success.set(false);
+			visible.set(true);
 		}
 
 	};
@@ -95,6 +103,13 @@ const Register = () => {
 					<Text style={styles.registerHighlight}>¿Ya tenés cuenta? Iniciá sesión</Text>
 				</Pressable>
 			</View>
+			{/* Alert */}
+			<CustomAlert
+				visible={visible.get()}
+				message={mensaje.get()}
+				isSuccessful={success.get()}
+				onClose={() => visible.set(false)}
+			/>
 		</View>
 	);
 };

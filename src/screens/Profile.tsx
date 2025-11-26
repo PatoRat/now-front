@@ -1,13 +1,13 @@
-import DATA from "@/assets/databases/data";
 import Post from "@/src/components/Post";
 import { useTheme } from "@/src/hooks/theme-hooks";
 import { Theme, useFocusEffect } from "@react-navigation/native";
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useRef, useState } from "react";
-import CustomAlert from "../components/Alert";
+import CustomAlert from "../components/CustomAlert";
 
 
 
+import { PostType } from "@/scripts/types";
 import {
 	Animated,
 	FlatList,
@@ -22,6 +22,7 @@ import { getMyEvents } from "../api/event.route";
 import { cambiarAvatar } from "../api/user.route";
 import PostPopUp from "../components/PostPopUp/PostPopUp";
 import { URL_BACKEND } from "../config";
+import { useAlertState } from "../hooks/alert-hooks";
 import { useAuth } from "../hooks/auth-hooks";
 
 
@@ -47,9 +48,8 @@ export default function ProfileGamified() {
 	const { width, height } = useWindowDimensions();
 	const styles = stylesFn(theme, width, height);
 	const { token, usuario } = useAuth();
-	const [alertVisible, setAlertVisible] = useState(false);
-	const [alertMessage, setAlertMessage] = useState("");
-	const [alertType, setAlertType] = useState<'success' | 'error'>('success');
+	
+	const { visible, mensaje, success } = useAlertState();
 
 
 
@@ -73,17 +73,17 @@ export default function ProfileGamified() {
 
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
-			setAlertMessage("¡Avatar cambiado correctamente!");
-			setAlertType("success");
-			setAlertVisible(true);
+			mensaje.set("¡Avatar cambiado correctamente!");
+			success.set(true);
+			visible.set(true);
 
 		},
 
 		onError: (error) => {
 			console.error("Error al cambiar el avatar:", error);
-			setAlertMessage("Error al cambiar el avatar");
-			setAlertType("error");
-			setAlertVisible(true);
+			mensaje.set("Error al cambiar el avatar");
+			success.set(false);
+			visible.set(true);
 		}
 	});
 
@@ -96,7 +96,7 @@ export default function ProfileGamified() {
 	// const maxEvents = 5;
 
 	// Para abrir pop-up
-	const openPopup = (item: typeof DATA[number]) => {
+	const openPopup = (item: PostType) => {
 		setSelectedPost(item);
 		Animated.timing(fadeAnim, {
 			toValue: 1,
@@ -106,10 +106,10 @@ export default function ProfileGamified() {
 	};
 
 	// Estado del pop-up
-	const [selectedPost, setSelectedPost] = useState<null | (typeof DATA[number])>(null);
+	const [selectedPost, setSelectedPost] = useState<null | (PostType)>(null);
 	const fadeAnim = useRef(new Animated.Value(0)).current;
 
-
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	const cargarEventos = async () => {
 		// setRefreshing(true); // no se usa
 		try {
@@ -122,7 +122,7 @@ export default function ProfileGamified() {
 			// setRefreshing(false); // no se usa
 		}
 	};
-
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	const closePopup = () => {
 		Animated.timing(fadeAnim, {
 			toValue: 0,
@@ -360,10 +360,10 @@ export default function ProfileGamified() {
 				)} */}
 
 			<CustomAlert
-				visible={alertVisible}
-				message={alertMessage}
-				type={alertType} // success | error
-				onClose={() => setAlertVisible(false)}
+				visible={visible.get()}
+				message={mensaje.get()}
+				isSuccessful={success.get()}
+				onClose={() => visible.set(false)}
 			/>
 
 

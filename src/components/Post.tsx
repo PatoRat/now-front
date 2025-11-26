@@ -12,9 +12,11 @@ import {
 } from "react-native";
 import { GestureHandlerRootView, TapGestureHandler } from "react-native-gesture-handler";
 import { agregarFavs, quitarFavs } from "../api/event.route";
+import { useAlertState } from "../hooks/alert-hooks";
 import { useAuth } from "../hooks/auth-hooks";
 import { useTheme } from "../hooks/theme-hooks";
 import { useLikes } from "./context-provider/LikeContext";
+import CustomAlert from "./CustomAlert";
 
 const Post = (
 	{ id, titulo, descripcion, imagenes, fechaInicio, fechaFin, direccion, onSingleTap }:
@@ -32,13 +34,27 @@ const Post = (
 	const { likes, toggleLike } = useLikes();
 	const showHeart = likes[Number(id)] || false;
 
+	const { visible, mensaje, success } = useAlertState();
+
 	const handleDoubleTap = async () => {
 		if (!showHeart) {
-			await agregarFavs(token, id);
-			toggleLike(Number(id), true);
+			try {
+				await agregarFavs(token, id);
+				toggleLike(Number(id), true);
+			} catch (error) {
+				mensaje.set(`Error al intentar agregar a favoritos: ${error}`);
+				success.set(false);
+				visible.set(true);
+			}
 		} else {
-			await quitarFavs(token, id);
-			toggleLike(Number(id), false);
+			try {
+				await quitarFavs(token, id);
+				toggleLike(Number(id), false);
+			} catch (error) {
+				mensaje.set(`Error al intentar eliminar de favoritos: ${error}`);
+				success.set(false);
+				visible.set(true);
+			}
 		}
 
 		Animated.timing(heartAnim, {
@@ -128,7 +144,13 @@ const Post = (
 							</View>
 
 						</View>
-
+						{/* Alert */}
+						<CustomAlert
+							visible={visible.get()}
+							message={mensaje.get()}
+							isSuccessful={success.get()}
+							onClose={() => visible.set(false)}
+						/>
 					</Animated.View>
 				</TapGestureHandler>
 			</TapGestureHandler>

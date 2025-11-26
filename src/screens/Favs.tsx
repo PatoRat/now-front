@@ -5,8 +5,10 @@ import React, { useCallback, useContext, useRef, useState } from "react";
 import { Animated, FlatList, StyleSheet, useWindowDimensions, View } from "react-native";
 import { getFavs } from "../api/event.route";
 import { AuthContext } from "../components/context-provider/AuthContext";
+import CustomAlert from "../components/CustomAlert";
 import Post from "../components/Post";
 import { URL_BACKEND } from "../config";
+import { useAlertState } from "../hooks/alert-hooks";
 
 export default function Favs() {
     const { theme } = useTheme();
@@ -22,17 +24,21 @@ export default function Favs() {
     // const [refreshing, setRefreshing] = useState(false);
     const fadeAnim = useRef(new Animated.Value(0)).current;
 
+    const { visible, mensaje, success } = useAlertState();
+
     const cargarFavs = async () => {
         // setRefreshing(true); // no se usa
         // setError(null); // no se usa
         try {
-            if (!token) throw new Error("No hay token de usuario");
-
+            // if (!token) throw new Error("No hay token de usuario");
             const favs = await getFavs(token);
             setPosts(favs);
 
-        } catch (err: any) {
-            console.error("Error al traer favoritos:", err);
+        } catch (error: any) {
+            // console.error("Error al traer favoritos:", error);
+            mensaje.set(`Ocurrio un error trayendo los favoritos: ${error}`);
+            success.set(false);
+            visible.set(true);
             // setError(err.message || "Error desconocido"); // no se usa
         } finally {
             // setRefreshing(false); // no se usa
@@ -103,7 +109,14 @@ export default function Favs() {
                 }}
                 contentContainerStyle={styles.listaContenido}
                 showsVerticalScrollIndicator={false}
-                
+
+            />
+            {/* Alert */}
+            <CustomAlert
+                visible={visible.get()}
+                message={mensaje.get()}
+                isSuccessful={success.get()}
+                onClose={() => visible.set(false)}
             />
         </View>
     );

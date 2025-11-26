@@ -1,12 +1,13 @@
 import { eventCreate, guardarImagenes } from "@/src/api/event.route";
+import { useAlertState } from "@/src/hooks/alert-hooks";
 import { useAuth } from "@/src/hooks/auth-hooks";
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
+import { Theme } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import { ImageSourcePropType, Pressable, Text, TextInput, View, StyleSheet, useWindowDimensions } from "react-native";
+import { ImageSourcePropType, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from "react-native";
+import CustomAlert from "../CustomAlert";
 import ImageSelectorButton from "./ImageSelectorButton";
 import PostMapSelector from "./PostMapSelector";
-import { Theme } from "@react-navigation/native";
-import CustomAlert from "../Alert";
 
 
 const PostFormContent = ({ theme, router }: any) => {
@@ -24,9 +25,7 @@ const PostFormContent = ({ theme, router }: any) => {
 	const [imagenes, setImagenes] = useState<ImageSourcePropType[]>([]);
 	const styles = stylesFn(theme, width, height);
 	//ALERTS
-	const [alertVisible, setAlertVisible] = useState(false);
-	const [alertMessage, setAlertMessage] = useState("");
-	const [alertType, setAlertType] = useState<'success' | 'error'>('success');
+	const { visible, mensaje, success } = useAlertState();
 
 
 	useEffect(() => {
@@ -42,9 +41,9 @@ const PostFormContent = ({ theme, router }: any) => {
 	// 🔹 Función para publicar
 	const publicarPosteo = async () => {
 		if (!fechaInicio || !fechaFin || !ubicacion || !direccion) {
-			setAlertMessage("Por favor completa todos los campos, incluyendo la ubicación.");
-			setAlertType("error");
-			setAlertVisible(true);
+			mensaje.set("Por favor completa todos los campos, incluyendo la ubicación.");
+			success.set(false);
+			visible.set(true);
 			return;
 		}
 
@@ -54,38 +53,30 @@ const PostFormContent = ({ theme, router }: any) => {
 			direccion: direccion
 		};
 
-		const eventId = await eventCreate(
-			titulo,
-			descripcion,
-			fechaInicio,
-			fechaFin,
-			ubicacionEvento,
-			token
-		);
+		try {
+			const eventId = await eventCreate(
+				titulo,
+				descripcion,
+				fechaInicio,
+				fechaFin,
+				ubicacionEvento,
+				token
+			);
 
-		if (imagenes.length > 0) {
-			await guardarImagenes(imagenes, eventId, token);
+			if (imagenes.length > 0) {
+				await guardarImagenes(imagenes, eventId, token);
+			}
+			mensaje.set("Publicacion exitosa");
+			success.set(true);
+			visible.set(true);
+
+			router.back();
+
+		} catch (error) {
+			mensaje.set(`Ocurrio un error: ${error}`);
+			success.set(false);
+			visible.set(true);
 		}
-		setAlertMessage("Publicacion exitosa");
-		setAlertType("success");
-		setAlertVisible(true);
-
-		// DATA.unshift({
-		//   id: (DATA.length + 1).toString(),// vuela
-		//   titulo,
-		//   descripcion,
-		//   imagenes,
-		//   fechaInicio,
-		//   fechaFin,
-		//   ubicacion: {
-		//     latitud: ubicacion.latitude,
-		//     longitud: ubicacion.longitude,
-		//     direccion,
-		//   },
-		//   creador: 'Mateo Villanueva',
-		// });
-
-		router.back();
 	};
 
 	return (
@@ -218,10 +209,10 @@ const PostFormContent = ({ theme, router }: any) => {
 
 			{/* Alert */}
 			<CustomAlert
-				visible={alertVisible}
-				message={alertMessage}
-				type={alertType} // 'success' | 'error'
-				onClose={() => setAlertVisible(false)}
+				visible={visible.get()}
+				message={mensaje.get()}
+				isSuccessful={success.get()}
+				onClose={() => visible.set(false)}
 			/>
 
 		</>
