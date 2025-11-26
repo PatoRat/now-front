@@ -9,6 +9,7 @@ import CustomAlert from "../components/CustomAlert";
 import Post from "../components/Post";
 import { URL_BACKEND } from "../config";
 import { useAlertState } from "../hooks/alert-hooks";
+import PostPopUp from "../components/PostPopUp/PostPopUp";
 
 export default function Favs() {
     const { theme } = useTheme();
@@ -22,9 +23,12 @@ export default function Favs() {
     // const [loading, setLoading] = useState(false);
     // const [error, setError] = useState<string | null>(null);
     // const [refreshing, setRefreshing] = useState(false);
-    const fadeAnim = useRef(new Animated.Value(0)).current;
 
     const { visible, mensaje, success } = useAlertState();
+
+    // Pop-up
+    const [selectedPost, setSelectedPost] = useState<any>(null);
+    const fadeAnim = useRef(new Animated.Value(0)).current;
 
     const cargarFavs = async () => {
         // setRefreshing(true); // no se usa
@@ -53,12 +57,20 @@ export default function Favs() {
     );
 
     const openPopup = (item: any) => {
-        // setSelectedPost(item); // no se usa
+        setSelectedPost(item); 
         Animated.timing(fadeAnim, {
             toValue: 1,
             duration: 250,
             useNativeDriver: true,
         }).start();
+    };
+
+    const closePopup = () => {
+        Animated.timing(fadeAnim, {
+            toValue: 0,
+            duration: 200,
+            useNativeDriver: true,
+        }).start(() => setSelectedPost(null));
     };
 
     return (
@@ -111,6 +123,9 @@ export default function Favs() {
                 showsVerticalScrollIndicator={false}
 
             />
+            
+            <PostPopUp visible={!!selectedPost} post={selectedPost} onClose={closePopup} />
+            
             {/* Alert */}
             <CustomAlert
                 visible={visible.get()}

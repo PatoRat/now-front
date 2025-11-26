@@ -4,10 +4,6 @@ import { Theme, useFocusEffect } from "@react-navigation/native";
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useRef, useState } from "react";
 import CustomAlert from "../components/CustomAlert";
-
-
-
-import { PostType } from "@/scripts/types";
 import {
 	Animated,
 	FlatList,
@@ -48,9 +44,13 @@ export default function ProfileGamified() {
 	const { width, height } = useWindowDimensions();
 	const styles = stylesFn(theme, width, height);
 	const { token, usuario } = useAuth();
-	
+
 	const { visible, mensaje, success } = useAlertState();
 
+
+	// Estado del pop-up
+	const [selectedPost, setSelectedPost] = useState<any>(null);
+	const fadeAnim = useRef(new Animated.Value(0)).current;
 
 
 	const [posts, setPosts] = useState<any[]>([]);
@@ -96,7 +96,7 @@ export default function ProfileGamified() {
 	// const maxEvents = 5;
 
 	// Para abrir pop-up
-	const openPopup = (item: PostType) => {
+	const openPopup = (item: any) => {
 		setSelectedPost(item);
 		Animated.timing(fadeAnim, {
 			toValue: 1,
@@ -105,11 +105,15 @@ export default function ProfileGamified() {
 		}).start();
 	};
 
-	// Estado del pop-up
-	const [selectedPost, setSelectedPost] = useState<null | (PostType)>(null);
-	const fadeAnim = useRef(new Animated.Value(0)).current;
+	const closePopup = () => {
+			Animated.timing(fadeAnim, {
+				toValue: 0,
+				duration: 200,
+				useNativeDriver: true,
+			}).start(() => setSelectedPost(null));
+		};
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	const cargarEventos = async () => {
 		// setRefreshing(true); // no se usa
 		try {
@@ -122,14 +126,8 @@ export default function ProfileGamified() {
 			// setRefreshing(false); // no se usa
 		}
 	};
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	const closePopup = () => {
-		Animated.timing(fadeAnim, {
-			toValue: 0,
-			duration: 200,
-			useNativeDriver: true,
-		}).start(() => setSelectedPost(null));
-	};
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
 
 	// Arrays de trofeos
 	// const asistenciaImages = [
@@ -245,7 +243,7 @@ export default function ProfileGamified() {
 							fechaFin={item.fechaFin ? new Date(item.fechaFin) : new Date()}
 							ubicacion={item.ubicacion ?? null}
 							direccion={item.ubicacion?.direccion ?? ""}
-							creador={item.creador ?? "Anónimo"}
+							creador={item.creador ?? "Anónimo"} // SACAR ANONIMO
 							onSingleTap={() => openPopup(item)}
 						/>
 					);
@@ -255,7 +253,11 @@ export default function ProfileGamified() {
 			/>
 
 
-			<PostPopUp visible={!!selectedPost} post={selectedPost} onClose={closePopup} />
+			<PostPopUp
+				visible={!!selectedPost}
+				post={selectedPost}
+				onClose={closePopup}
+			/>
 
 			{/* Modal de selección de avatar */}
 			<Modal
