@@ -1,4 +1,4 @@
-import Post from "@/src/components/Post";
+import Post from "@/src/components/Post/Post";
 import { URL_BACKEND } from "@/src/config";
 import { useTheme } from "@/src/hooks/theme-hooks";
 import { Theme } from "@react-navigation/native";
@@ -18,11 +18,11 @@ import {
     useWindowDimensions
 } from "react-native";
 import { getAllEvents, getEvents, getFavs } from "../api/event.route";
+import { useLikes } from "../components/context-provider/LikeContext";
 import CustomAlert from "../components/CustomAlert";
-import PostPopUp from "../components/PostPopUp/PostPopUp";
+import PostPopUp from "../components/Post/PostPopUp";
 import { useAlertState } from "../hooks/alert-hooks";
 import { useAuth } from "../hooks/auth-hooks";
-import { useLikes } from "../components/context-provider/LikeContext";
 
 
 export default function Discover() {

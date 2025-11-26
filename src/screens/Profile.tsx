@@ -1,9 +1,8 @@
-import Post from "@/src/components/Post";
+import Post from "@/src/components/Post/Post";
 import { useTheme } from "@/src/hooks/theme-hooks";
 import { Theme, useFocusEffect } from "@react-navigation/native";
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useRef, useState } from "react";
-import CustomAlert from "../components/CustomAlert";
 import {
 	Animated,
 	FlatList,
@@ -16,7 +15,8 @@ import {
 } from "react-native";
 import { getMyEvents } from "../api/event.route";
 import { cambiarAvatar } from "../api/user.route";
-import PostPopUp from "../components/PostPopUp/PostPopUp";
+import CustomAlert from "../components/CustomAlert";
+import PostPopUp from "../components/Post/PostPopUp";
 import { URL_BACKEND } from "../config";
 import { useAlertState } from "../hooks/alert-hooks";
 import { useAuth } from "../hooks/auth-hooks";

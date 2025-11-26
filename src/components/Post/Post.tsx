@@ -11,12 +11,12 @@ import {
 	View
 } from "react-native";
 import { GestureHandlerRootView, TapGestureHandler } from "react-native-gesture-handler";
-import { agregarFavs, quitarFavs } from "../api/event.route";
-import { useAlertState } from "../hooks/alert-hooks";
-import { useAuth } from "../hooks/auth-hooks";
-import { useTheme } from "../hooks/theme-hooks";
-import { useLikes } from "./context-provider/LikeContext";
-import CustomAlert from "./CustomAlert";
+import { agregarFavs, quitarFavs } from "../../api/event.route";
+import { useAlertState } from "../../hooks/alert-hooks";
+import { useAuth } from "../../hooks/auth-hooks";
+import { useTheme } from "../../hooks/theme-hooks";
+import { useLikes } from "../context-provider/LikeContext";
+import CustomAlert from "../CustomAlert";
 
 const Post = (
 	{ id, titulo, descripcion, imagenes, fechaInicio, fechaFin, direccion, onSingleTap }:

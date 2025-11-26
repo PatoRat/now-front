@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import {
 	Image,
 	Pressable,
+	ScrollView,
 	StyleSheet,
 	Text,
 	TextInput,
@@ -43,50 +44,56 @@ const Login = () => {
 
 	return (
 		<View style={styles.container}>
+			<ScrollView
+				contentContainerStyle={{ paddingVertical: 40 }}
+				keyboardShouldPersistTaps="handled"
+			>
 
-			<View style={styles.card}>
-				<Image
-					source={require("@/assets/images/NOW-LOGO.png")}
-					style={styles.logo}
-					resizeMode="contain"
-				/>
-				<Text style={styles.title}>Iniciar sesión</Text>
-				<Text style={styles.subtitle}>Accedé a tu cuenta para continuar</Text>
+				<View style={styles.card}>
+					<Image
+						source={require("@/assets/images/NOW-LOGO.png")}
+						style={styles.logo}
+						resizeMode="contain"
+					/>
+					<Text style={styles.title}>Iniciar sesión</Text>
+					<Text style={styles.subtitle}>Accedé a tu cuenta para continuar</Text>
 
-				{/* Email */}
-				<TextInput
-					style={styles.input}
-					placeholder="Correo electrónico"
-					placeholderTextColor="#aaa"
-					value={email}
-					onChangeText={setEmail}
-					keyboardType="email-address"
-				/>
+					{/* Email */}
+					<TextInput
+						style={styles.input}
+						placeholder="Correo electrónico"
+						placeholderTextColor="#aaa"
+						value={email}
+						onChangeText={setEmail}
+						keyboardType="email-address"
+					/>
 
-				{/* Password */}
-				<TextInput
-					style={styles.input}
-					placeholder="Contraseña"
-					placeholderTextColor="#aaa"
-					value={contrasenia}
-					onChangeText={setContrasenia}
-					secureTextEntry
-				/>
+					{/* Password */}
+					<TextInput
+						style={styles.input}
+						placeholder="Contraseña"
+						placeholderTextColor="#aaa"
+						value={contrasenia}
+						onChangeText={setContrasenia}
+						secureTextEntry
+					/>
 
-				{/* Botón Entrar */}
-				<Pressable style={styles.btnPrimary} onPress={onLogin} disabled={login.isPending}>
-					<Text style={styles.btnPrimaryText}>
-						{login.isPending ? "Entrando" : "Entrar"}
-					</Text>
-				</Pressable>
+					{/* Botón Entrar */}
+					<Pressable style={styles.btnPrimary} onPress={onLogin} disabled={login.isPending}>
+						<Text style={styles.btnPrimaryText}>
+							{login.isPending ? "Entrando" : "Entrar"}
+						</Text>
+					</Pressable>
 
-				{/* Registrar */}
-				<Pressable onPress={registrar} style={styles.registerLink}>
-					<Text style={styles.registerHighlight}>
-						¿No tenés cuenta? Registrarse
-					</Text>
-				</Pressable>
-			</View>
+					{/* Registrar */}
+					<Pressable onPress={registrar} style={styles.registerLink}>
+						<Text style={styles.registerHighlight}>
+							¿No tenés cuenta? Registrarse
+						</Text>
+					</Pressable>
+				</View>
+
+			</ScrollView>
 			{/* Alert */}
 			<CustomAlert
 				visible={visible.get()}
@@ -106,7 +113,7 @@ const stylesFn = (theme: any, width: number, height: number) => {
 	return StyleSheet.create({
 		container: {
 			flex: 1,
-			justifyContent: "center",
+			// justifyContent: "center",
 			alignItems: "center",
 			backgroundColor: theme.colors.background,
 			paddingHorizontal: 26 * scale,
@@ -121,7 +128,8 @@ const stylesFn = (theme: any, width: number, height: number) => {
 
 		card: {
 			width: width * 0.8,          // Igual que Register
-			height: height * 0.75,       // Igual que Register
+			// height: height * 0.75,       // Igual que Register
+			minHeight: height * 0.75,
 			backgroundColor: theme.colors.card,
 			borderRadius: 26 * scale,
 			padding: 32 * scale,

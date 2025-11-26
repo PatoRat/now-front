@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
 	Pressable,
+	ScrollView,
 	StyleSheet,
 	Text,
 	TextInput,
@@ -56,53 +57,60 @@ const Register = () => {
 
 	return (
 		<View style={styles.container}>
-			<View style={styles.card}>
-				<Text style={styles.title}>Crear cuenta</Text>
+			<ScrollView
+				contentContainerStyle={{ paddingVertical: 40 }}
+				keyboardShouldPersistTaps="handled"
+			>
 
-				<TextInput
-					placeholder="Nombre completo"
-					placeholderTextColor="#aaa"
-					value={nombre}
-					onChangeText={setNombre}
-					style={styles.input}
-				/>
-				<TextInput
-					placeholder="Email"
-					placeholderTextColor="#aaa"
-					value={email}
-					onChangeText={setEmail}
-					keyboardType="email-address"
-					style={styles.input}
-				/>
-				<TextInput
-					placeholder="Contraseña"
-					placeholderTextColor="#aaa"
-					value={contrasenia}
-					onChangeText={setContrasenia}
-					secureTextEntry
-					style={styles.input}
-				/>
-				<TextInput
-					placeholder="Confirmar contraseña"
-					placeholderTextColor="#aaa"
-					value={confirmarPsw}
-					onChangeText={setPswConfirm}
-					secureTextEntry
-					style={styles.input}
-				/>
+				<View style={styles.card}>
+					<Text style={styles.title}>Crear cuenta</Text>
 
-				{/** Habría que meter un selector para elegir el avatar, o por defecto le asignamos uno */}
+					<TextInput
+						placeholder="Nombre completo"
+						placeholderTextColor="#aaa"
+						value={nombre}
+						onChangeText={setNombre}
+						style={styles.input}
+					/>
+					<TextInput
+						placeholder="Email"
+						placeholderTextColor="#aaa"
+						value={email}
+						onChangeText={setEmail}
+						keyboardType="email-address"
+						style={styles.input}
+					/>
+					<TextInput
+						placeholder="Contraseña"
+						placeholderTextColor="#aaa"
+						value={contrasenia}
+						onChangeText={setContrasenia}
+						secureTextEntry
+						style={styles.input}
+					/>
+					<TextInput
+						placeholder="Confirmar contraseña"
+						placeholderTextColor="#aaa"
+						value={confirmarPsw}
+						onChangeText={setPswConfirm}
+						secureTextEntry
+						style={styles.input}
+					/>
 
-				<Pressable onPress={onRegister} style={styles.button} disabled={registrarse.isPending}>
-					<Text style={styles.buttonText}>
-						{registrarse.isPending ? "Creando cuenta..." : "Registrarme"}
-					</Text>
-				</Pressable>
+					{/** Habría que meter un selector para elegir el avatar, o por defecto le asignamos uno */}
 
-				<Pressable onPress={volverLogin} style={styles.registerLink}>
-					<Text style={styles.registerHighlight}>¿Ya tenés cuenta? Iniciá sesión</Text>
-				</Pressable>
-			</View>
+					<Pressable onPress={onRegister} style={styles.button} disabled={registrarse.isPending}>
+						<Text style={styles.buttonText}>
+							{registrarse.isPending ? "Creando cuenta..." : "Registrarme"}
+						</Text>
+					</Pressable>
+
+					<Pressable onPress={volverLogin} style={styles.registerLink}>
+						<Text style={styles.registerHighlight}>¿Ya tenés cuenta? Iniciá sesión</Text>
+					</Pressable>
+				</View>
+
+			</ScrollView>
 			{/* Alert */}
 			<CustomAlert
 				visible={visible.get()}
@@ -122,7 +130,7 @@ const stylesFn = (theme: any, width: number, height: number) => {
 	return StyleSheet.create({
 		container: {
 			flex: 1,
-			justifyContent: "center",
+			// justifyContent: "center",
 			alignItems: "center",
 			backgroundColor: theme.colors.background,
 			paddingHorizontal: 26 * scale,
@@ -130,7 +138,8 @@ const stylesFn = (theme: any, width: number, height: number) => {
 
 		card: {
 			width: width * 0.8,          // 80% del ancho
-			height: height * 0.75,        // 80% del alto
+			// height: height * 0.75,        // 80% del alto
+			minHeight: height * 0.75,
 			backgroundColor: theme.dark ? "#1E1E1E" : "#fff",
 			borderRadius: 26 * scale,
 			padding: 32 * scale,

@@ -4,7 +4,7 @@ import { useAuth } from "@/src/hooks/auth-hooks";
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import { Theme } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import { ImageSourcePropType, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from "react-native";
+import { ImageSourcePropType, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import CustomAlert from "../CustomAlert";
 import ImageSelectorButton from "./ImageSelectorButton";
 import PostMapSelector from "./PostMapSelector";
@@ -12,7 +12,6 @@ import PostMapSelector from "./PostMapSelector";
 
 const PostFormContent = ({ theme, router }: any) => {
 	const [titulo, setTitulo] = useState("");
-	const { width, height } = useWindowDimensions();
 	const [descripcion, setDescripcion] = useState("");
 	const [fechaInicio, setFechaInicio] = useState(new Date());
 	const [fechaFin, setFechaFin] = useState<Date | null>(null);
@@ -23,7 +22,7 @@ const PostFormContent = ({ theme, router }: any) => {
 	const [ubicacion, setUbicacion] = useState<{ latitude: number; longitude: number } | null>(null);
 	const [direccion, setDireccion] = useState<string | null>(null);
 	const [imagenes, setImagenes] = useState<ImageSourcePropType[]>([]);
-	const styles = stylesFn(theme, width, height);
+	const styles = stylesFn(theme);
 	//ALERTS
 	const { visible, mensaje, success } = useAlertState();
 
@@ -81,132 +80,138 @@ const PostFormContent = ({ theme, router }: any) => {
 
 	return (
 		<>
-			{/* Título */}
-			<View style={styles.section}>
-				<Text style={styles.labelText}>Título</Text>
-				<TextInput
-					style={[styles.input, { color: theme.colors.text }]}
-					placeholder="Título"
-					placeholderTextColor="#8a8a8a"
-					onChangeText={setTitulo}
-					value={titulo}
-				/>
-			</View>
+			<ScrollView
+				contentContainerStyle={{ paddingVertical: 40 }}
+				keyboardShouldPersistTaps="handled"
+			>
+				{/* Título */}
+				<View style={styles.section}>
+					<Text style={styles.labelText}>Título</Text>
+					<TextInput
+						style={[styles.input, { color: theme.colors.text }]}
+						placeholder="Título"
+						placeholderTextColor="#8a8a8a"
+						onChangeText={setTitulo}
+						value={titulo}
+					/>
+				</View>
 
-			{/* Descripción */}
-			<View style={styles.section}>
-				<Text style={styles.labelText}>Descripción</Text>
-				<TextInput
-					style={[styles.input, styles.inputMultiline, { color: theme.colors.text }]}
-					placeholder="Descripción"
-					placeholderTextColor="#8a8a8a"
-					multiline
-					onChangeText={setDescripcion}
-					value={descripcion}
-					textAlignVertical="top"
-				/>
-			</View>
+				{/* Descripción */}
+				<View style={styles.section}>
+					<Text style={styles.labelText}>Descripción</Text>
+					<TextInput
+						style={[styles.input, styles.inputMultiline, { color: theme.colors.text }]}
+						placeholder="Descripción"
+						placeholderTextColor="#8a8a8a"
+						multiline
+						onChangeText={setDescripcion}
+						value={descripcion}
+						textAlignVertical="top"
+					/>
+				</View>
 
-			{/* Fecha de inicio */}
-			<View style={styles.section}>
-				<Text style={styles.labelText}>Fecha de inicio</Text>
-				<Pressable style={styles.input} onPress={() => setMostrarPicker(true)}>
-					<Text style={{ color: "#8a8a8a" }}>
-						{fechaInicio
-							? fechaInicio.toLocaleDateString("es-AR")
-							: "Seleccionar fecha de inicio"}
-					</Text>
-				</Pressable>
+				{/* Fecha de inicio */}
+				<View style={styles.section}>
+					<Text style={styles.labelText}>Fecha de inicio</Text>
+					<Pressable style={styles.input} onPress={() => setMostrarPicker(true)}>
+						<Text style={{ color: "#8a8a8a" }}>
+							{fechaInicio
+								? fechaInicio.toLocaleDateString("es-AR")
+								: "Seleccionar fecha de inicio"}
+						</Text>
+					</Pressable>
 
-				{mostrarPicker && (
-					<DateTimePicker
-						value={fechaInicio}
-						mode="date"
-						display="calendar"
-						onChange={(event: DateTimePickerEvent, selectedDate?: Date) => {
-							setMostrarPicker(false); // cerramos siempre
-							if (event.type === "set" && selectedDate) {
-								const nuevaFecha = new Date(fechaInicio);
-								nuevaFecha.setFullYear(selectedDate.getFullYear());
-								nuevaFecha.setMonth(selectedDate.getMonth());
-								nuevaFecha.setDate(selectedDate.getDate());
-								setFechaInicio(nuevaFecha);
-							}
+					{mostrarPicker && (
+						<DateTimePicker
+							value={fechaInicio}
+							mode="date"
+							display="calendar"
+							onChange={(event: DateTimePickerEvent, selectedDate?: Date) => {
+								setMostrarPicker(false); // cerramos siempre
+								if (event.type === "set" && selectedDate) {
+									const nuevaFecha = new Date(fechaInicio);
+									nuevaFecha.setFullYear(selectedDate.getFullYear());
+									nuevaFecha.setMonth(selectedDate.getMonth());
+									nuevaFecha.setDate(selectedDate.getDate());
+									setFechaInicio(nuevaFecha);
+								}
+							}}
+						/>
+					)}
+				</View>
+
+				{/* Hora de inicio */}
+				<View style={styles.section}>
+					<Text style={styles.labelText}>Hora de inicio</Text>
+					<Pressable style={styles.input} onPress={() => setMostrarHoraPicker(true)}>
+						<Text style={{ color: "#8a8a8a" }}>
+							{fechaInicio
+								? fechaInicio.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" })
+								: "Seleccionar hora de inicio"}
+						</Text>
+					</Pressable>
+
+					{mostrarHoraPicker && (
+						<DateTimePicker
+							value={fechaInicio}
+							mode="time"
+							is24Hour={true}
+							display="spinner"
+							onChange={(event: DateTimePickerEvent, selectedTime?: Date) => {
+								setMostrarHoraPicker(false); // cerramos siempre
+								if (event.type === "set" && selectedTime) {
+									const nuevaFecha = new Date(fechaInicio);
+									nuevaFecha.setHours(selectedTime.getHours());
+									nuevaFecha.setMinutes(selectedTime.getMinutes());
+									nuevaFecha.setSeconds(selectedTime.getSeconds());
+									setFechaInicio(nuevaFecha);
+								}
+							}}
+						/>
+					)}
+
+				</View>
+				{/* Duración */}
+				<View style={styles.section}>
+					<Text style={styles.labelText}>Duración (horas)</Text>
+					<TextInput
+						style={styles.input}
+						placeholder="Ingrese la duración en horas"
+						placeholderTextColor="#aaa"
+						keyboardType="numeric"
+						value={duracion}
+						onChangeText={setDuracion}
+					/>
+				</View>
+
+				{/* Ubicación */}
+				<View style={styles.section}>
+					<Text style={styles.labelText}>Ubicación</Text>
+					<PostMapSelector
+						value={ubicacion}
+						direccion={direccion}
+						onChange={(coord, dir) => {
+							setUbicacion(coord);
+							setDireccion(dir);
 						}}
 					/>
-				)}
-			</View>
+				</View>
 
-			{/* Hora de inicio */}
-			<View style={styles.section}>
-				<Text style={styles.labelText}>Hora de inicio</Text>
-				<Pressable style={styles.input} onPress={() => setMostrarHoraPicker(true)}>
-					<Text style={{ color: "#8a8a8a" }}>
-						{fechaInicio
-							? fechaInicio.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" })
-							: "Seleccionar hora de inicio"}
-					</Text>
-				</Pressable>
+				{/* Selección de imágenes */}
+				<View style={styles.section}>
+					<Text style={styles.labelText}>Imágenes</Text>
+					<ImageSelectorButton onSelect={setImagenes} />
+				</View>
 
-				{mostrarHoraPicker && (
-					<DateTimePicker
-						value={fechaInicio}
-						mode="time"
-						is24Hour={true}
-						display="spinner"
-						onChange={(event: DateTimePickerEvent, selectedTime?: Date) => {
-							setMostrarHoraPicker(false); // cerramos siempre
-							if (event.type === "set" && selectedTime) {
-								const nuevaFecha = new Date(fechaInicio);
-								nuevaFecha.setHours(selectedTime.getHours());
-								nuevaFecha.setMinutes(selectedTime.getMinutes());
-								nuevaFecha.setSeconds(selectedTime.getSeconds());
-								setFechaInicio(nuevaFecha);
-							}
-						}}
-					/>
-				)}
+				{/* Botón publicar */}
+				<View style={styles.buttonsRow}>
+					<Pressable style={styles.primaryBtn} onPress={publicarPosteo}>
+						<Text style={styles.primaryBtnText}>Publicar</Text>
+					</Pressable>
+				</View>
 
-			</View>
-			{/* Duración */}
-			<View style={styles.section}>
-				<Text style={styles.labelText}>Duración (horas)</Text>
-				<TextInput
-					style={styles.input}
-					placeholder="Ingrese la duración en horas"
-					placeholderTextColor="#aaa"
-					keyboardType="numeric"
-					value={duracion}
-					onChangeText={setDuracion}
-				/>
-			</View>
 
-			{/* Ubicación */}
-			<View style={styles.section}>
-				<Text style={styles.labelText}>Ubicación</Text>
-				<PostMapSelector
-					value={ubicacion}
-					direccion={direccion}
-					onChange={(coord, dir) => {
-						setUbicacion(coord);
-						setDireccion(dir);
-					}}
-				/>
-			</View>
-
-			{/* Selección de imágenes */}
-			<View style={styles.section}>
-				<Text style={styles.labelText}>Imágenes</Text>
-				<ImageSelectorButton onSelect={setImagenes} />
-			</View>
-
-			{/* Botón publicar */}
-			<View style={styles.buttonsRow}>
-				<Pressable style={styles.primaryBtn} onPress={publicarPosteo}>
-					<Text style={styles.primaryBtnText}>Publicar</Text>
-				</Pressable>
-			</View>
-
+			</ScrollView>
 			{/* Alert */}
 			<CustomAlert
 				visible={visible.get()}
@@ -219,7 +224,7 @@ const PostFormContent = ({ theme, router }: any) => {
 	);
 };
 
-const stylesFn = (theme: Theme, width: number, height: number) =>
+const stylesFn = (theme: Theme) =>
 	StyleSheet.create({
 		// Contenedor de la tarjeta principal
 		card: {

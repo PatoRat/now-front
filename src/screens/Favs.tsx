@@ -6,10 +6,10 @@ import { Animated, FlatList, StyleSheet, useWindowDimensions, View } from "react
 import { getFavs } from "../api/event.route";
 import { AuthContext } from "../components/context-provider/AuthContext";
 import CustomAlert from "../components/CustomAlert";
-import Post from "../components/Post";
+import Post from "../components/Post/Post";
+import PostPopUp from "../components/Post/PostPopUp";
 import { URL_BACKEND } from "../config";
 import { useAlertState } from "../hooks/alert-hooks";
-import PostPopUp from "../components/PostPopUp/PostPopUp";
 
 export default function Favs() {
     const { theme } = useTheme();
