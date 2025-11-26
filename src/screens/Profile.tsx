@@ -380,7 +380,6 @@ const stylesFn = (theme: Theme, width: number, height: number) => {
 		container: {
 			flex: 1,
 			backgroundColor: theme.colors.background,
-			alignItems: "center",
 			paddingTop: 40 * scale,
 			paddingHorizontal: 20 * scale,
 		},
