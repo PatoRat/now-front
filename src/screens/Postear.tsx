@@ -3,6 +3,7 @@ import { useRouter } from "expo-router";
 import {
     Dimensions,
     KeyboardAvoidingView,
+    Platform,
     StyleSheet,
     View
 } from "react-native";
@@ -12,7 +13,11 @@ export default function Postear() {
 
     return (
 
-        <KeyboardAvoidingView style={styles.pestaña}>
+        <KeyboardAvoidingView
+            style={styles.pestaña}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 60}
+        >
 
             <View style={styles.content}>
                 <PostInputsHandler router={router} />
@@ -33,5 +38,6 @@ const styles = StyleSheet.create({
         paddingTop: 12,
         paddingBottom: 16,
         gap: 12,
+        flex: 1
     },
 });

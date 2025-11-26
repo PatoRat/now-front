@@ -20,8 +20,8 @@ export default function PostScreen() {
 const styles = StyleSheet.create({
 	pestaña: {
 		flex: 1,
-		justifyContent: "center",
-		alignItems: "center",
+		// justifyContent: "center",
+		// alignItems: "center",
 	},
 	drawer: {
 		top: 10,

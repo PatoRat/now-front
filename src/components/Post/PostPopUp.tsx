@@ -116,7 +116,8 @@ export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
                         <FlatList
                             data={imagenesMapeadas}
                             horizontal
-                            pagingEnabled
+                            pagingEnabled={false}
+                            snapToInterval={width * 0.65}
                             showsHorizontalScrollIndicator={false}
                             keyExtractor={(_, i) => i.toString()}
                             onScroll={(e) => {

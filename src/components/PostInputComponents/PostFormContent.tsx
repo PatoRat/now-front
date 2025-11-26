@@ -81,8 +81,12 @@ const PostFormContent = ({ theme, router }: any) => {
 	return (
 		<>
 			<ScrollView
-				contentContainerStyle={{ paddingVertical: 40 }}
+				style={{ flex: 1 }}
+				contentContainerStyle={styles.scroller}
 				keyboardShouldPersistTaps="handled"
+				keyboardDismissMode="on-drag"
+				nestedScrollEnabled={true}
+				showsVerticalScrollIndicator={true}
 			>
 				{/* Título */}
 				<View style={styles.section}>
@@ -226,11 +230,16 @@ const PostFormContent = ({ theme, router }: any) => {
 
 const stylesFn = (theme: Theme) =>
 	StyleSheet.create({
+		scroller: {
+			paddingVertical: 20,
+			paddingBottom: 160,
+		},
 		// Contenedor de la tarjeta principal
 		card: {
 			backgroundColor: theme.colors.card,
 			borderRadius: 12,
-			top: 100,
+			// top: 100,
+			marginTop: 60,
 			padding: 12, // reducido
 			gap: 8,      // reducido
 			shadowColor: "#000",

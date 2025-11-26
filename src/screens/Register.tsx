@@ -58,7 +58,7 @@ const Register = () => {
 	return (
 		<View style={styles.container}>
 			<ScrollView
-				contentContainerStyle={{ paddingVertical: 40 }}
+				contentContainerStyle={styles.scroller}
 				keyboardShouldPersistTaps="handled"
 			>
 
@@ -128,6 +128,12 @@ const stylesFn = (theme: any, width: number, height: number) => {
 	const scale = Math.min(width / 400, 1.3);
 
 	return StyleSheet.create({
+		scroller: {
+			paddingVertical: 40,
+			paddingBottom: 100,
+			alignItems: "center"
+		},
+
 		container: {
 			flex: 1,
 			// justifyContent: "center",

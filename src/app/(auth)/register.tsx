@@ -19,7 +19,7 @@ const stylesFn = (colors: ThemeColors) => StyleSheet.create({
 	pestaña: {
 		flex: 1,
 		backgroundColor: colors.background,
-		justifyContent: "center",
-		alignItems: "center",
+		// justifyContent: "center",
+		// alignItems: "center",
 	}
 });
