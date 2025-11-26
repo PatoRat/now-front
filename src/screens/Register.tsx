@@ -39,7 +39,7 @@ const Register = () => {
 				visible.set(true);
 			}
 			else {
-				registrarse.mutate({ nombre, email, contrasenia, numeroAvatar });
+				await registrarse.mutateAsync({ nombre, email, contrasenia, numeroAvatar });
 			}
 
 		} catch (error) {

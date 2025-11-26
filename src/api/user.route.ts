@@ -56,6 +56,7 @@ const userLogin = async (email: string, password: string) => {
     });
 
     if (!response.ok) {
+        // console.log("LLEGO HASTA ACA, user route");
         const error = await response.json();
         throw new Error(error.error);
     }

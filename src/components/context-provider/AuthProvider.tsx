@@ -112,7 +112,8 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }: LoginInput) => userLogin(email, contrasenia),
 
         onError: (error: Error) => {
-            console.error(error.message);
+			// console.log("LLEGO HASTA ACA, provider");
+            // console.error(error.message);
             throw new Error(error.message);
         },
 

@@ -28,9 +28,10 @@ const Login = () => {
 
 	const onLogin = async () => {
 		try {
-			login.mutate({ email, contrasenia });
+			await login.mutateAsync({ email, contrasenia }); //para que tire errores
 
 		} catch (error) {
+			// console.log("LLEGO HASTA ACA, login");
 			// console.error("Ocurrio un error: ", error);
 			mensaje.set(`Ocurrio un error: ${error}`);
 			success.set(false);
