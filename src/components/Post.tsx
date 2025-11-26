@@ -37,7 +37,9 @@ const Post = (
 	const { visible, mensaje, success } = useAlertState();
 
 	const handleDoubleTap = async () => {
-		if (!showHeart) {
+		const nuevoLike = !showHeart; // <-- ESTE es el valor real que queda después del tap
+		
+		if (nuevoLike) {
 			try {
 				await agregarFavs(token, id);
 				toggleLike(Number(id), true);
@@ -57,8 +59,9 @@ const Post = (
 			}
 		}
 
+		// Usar el valor correcto para la animación
 		Animated.timing(heartAnim, {
-			toValue: showHeart ? 0 : 1,
+			toValue: nuevoLike ? 1 : 0,
 			duration: 200,
 			useNativeDriver: true,
 		}).start();

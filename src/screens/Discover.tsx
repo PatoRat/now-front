@@ -17,11 +17,12 @@ import {
     View,
     useWindowDimensions
 } from "react-native";
-import { getAllEvents, getEvents } from "../api/event.route";
+import { getAllEvents, getEvents, getFavs } from "../api/event.route";
 import CustomAlert from "../components/CustomAlert";
 import PostPopUp from "../components/PostPopUp/PostPopUp";
 import { useAlertState } from "../hooks/alert-hooks";
 import { useAuth } from "../hooks/auth-hooks";
+import { useLikes } from "../components/context-provider/LikeContext";
 
 
 export default function Discover() {
@@ -62,6 +63,27 @@ export default function Discover() {
             useNativeDriver: true,
         }).start(() => setSelectedPost(null));
     };
+    
+    // Carga de los likes del usuario a una const global
+
+    const { setAllLikes } = useLikes();
+    const cargarFavoritos = async () => {
+    try {
+        const favsData = await getFavs(token);
+        const favs: number[] = favsData.map((f: any) => f.id);
+
+        const likeMap: Record<number, boolean> = {};
+
+        favs.forEach((id: number) => {
+            likeMap[id] = true;
+        });
+
+        setAllLikes(likeMap);
+
+    } catch (error) {
+        console.log("Error cargando favoritos:", error);
+    }
+};
 
     const distancia = (lat1: number, lon1: number, lat2: number, lon2: number) => {
         const R = 6371; // km
@@ -120,6 +142,8 @@ export default function Discover() {
     // Ubicación
     useEffect(() => {
         (async () => {
+            await cargarFavoritos();
+            
             let { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== "granted") {
                 console.log("Permisos de ubicación denegados");
