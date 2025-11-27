@@ -52,12 +52,15 @@ export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
     const formatoFecha = (fecha: Date) => {
         if (!fecha) return "";
         const date = new Date(fecha);
-        return date.toLocaleDateString("es-AR", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-            timeStyle: "short"
-        });
+        return (
+            date.toLocaleDateString("es-AR", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+            }) + ", " + date.toLocaleTimeString("es-AR", {
+                timeStyle: "short"
+            })
+        );
     };
 
     const imagenesMapeadas = post.imagenes?.map((img: { url: string }) => {
