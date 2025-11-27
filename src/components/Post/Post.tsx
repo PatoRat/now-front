@@ -38,7 +38,7 @@ const Post = (
 
 	const handleDoubleTap = async () => {
 		const nuevoLike = !showHeart; // <-- ESTE es el valor real que queda después del tap
-		
+
 		if (nuevoLike) {
 			try {
 				await agregarFavs(token, id);
