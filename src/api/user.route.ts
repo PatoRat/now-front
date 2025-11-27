@@ -8,6 +8,8 @@ const userRegister = async (
     contrasenia: string,
     numeroAvatar: number
 ) => {
+    const emailToLower = email.toLocaleLowerCase("es-AR");
+
     const response = await fetch(`${USER_PATH}/register`, {
         method: 'POST',
         headers: {
@@ -15,7 +17,7 @@ const userRegister = async (
         },
         body: JSON.stringify({
             nombre: nombre,
-            email: email,
+            email: emailToLower,
             contrasenia: contrasenia,
             numeroAvatar: numeroAvatar
         })
@@ -47,12 +49,14 @@ const cambiarAvatar = async (tokenAuth: string | null, index: number) => {
 };
 
 const userLogin = async (email: string, password: string) => {
+    const emailToLower = email.toLocaleLowerCase("es-AR");
+
     const response = await fetch(`${USER_PATH}/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email: email, password: password })
+        body: JSON.stringify({ email: emailToLower, password: password })
     });
 
     if (!response.ok) {
