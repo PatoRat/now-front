@@ -1,3 +1,2 @@
-// Para que sea más facil cambiar la IP:
-const TU_IP = "10.0.0.221"
+const TU_IP = ""
 export const URL_BACKEND = `http://${TU_IP}:3000`;
