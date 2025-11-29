@@ -14,6 +14,7 @@ import {
     Pressable,
     RefreshControl,
     StyleSheet,
+    TextInput,
     View,
     useWindowDimensions
 } from "react-native";
@@ -43,6 +44,8 @@ export default function Discover() {
     // Refresh
     const [refreshing, setRefreshing] = useState(false);
 
+    const [rango, setRango] = useState("10");
+
     const { visible, mensaje, success } = useAlertState();
 
     const nuevoPost = () => router.push({ pathname: "../postear" });
@@ -63,27 +66,27 @@ export default function Discover() {
             useNativeDriver: true,
         }).start(() => setSelectedPost(null));
     };
-    
+
     // Carga de los likes del usuario a una const global
 
     const { setAllLikes } = useLikes();
     const cargarFavoritos = async () => {
-    try {
-        const favsData = await getFavs(token);
-        const favs: number[] = favsData.map((f: any) => f.id);
+        try {
+            const favsData = await getFavs(token);
+            const favs: number[] = favsData.map((f: any) => f.id);
 
-        const likeMap: Record<number, boolean> = {};
+            const likeMap: Record<number, boolean> = {};
 
-        favs.forEach((id: number) => {
-            likeMap[id] = true;
-        });
+            favs.forEach((id: number) => {
+                likeMap[id] = true;
+            });
 
-        setAllLikes(likeMap);
+            setAllLikes(likeMap);
 
-    } catch (error) {
-        console.log("Error cargando favoritos:", error);
-    }
-};
+        } catch (error) {
+            console.log("Error cargando favoritos:", error);
+        }
+    };
 
     const distancia = (lat1: number, lon1: number, lat2: number, lon2: number) => {
         const R = 6371; // km
@@ -116,7 +119,7 @@ export default function Discover() {
         try {
             if (userLocation) {
                 // console.log("llegue a userloc: ", userLocation);
-                const eventos = await getEvents(token, userLocation);
+                const eventos = await getEvents(token, userLocation, Number(rango));
                 ordenarPorCercaniaConArray(eventos, userLocation);
             } else {
                 const eventos = await getAllEvents(token);
@@ -143,7 +146,7 @@ export default function Discover() {
     useEffect(() => {
         (async () => {
             await cargarFavoritos();
-            
+
             let { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== "granted") {
                 console.log("Permisos de ubicación denegados");
@@ -186,6 +189,14 @@ export default function Discover() {
     }
     return (
         <View style={{ flex: 1 }}>
+            <TextInput
+                placeholder="Rango"
+                placeholderTextColor="#aaa"
+                value={rango}
+                onChangeText={setRango}
+                keyboardType="numeric"
+                style={styles.input}
+            />
             <FlatList
                 data={posts}
                 keyExtractor={item => item.id.toString()}
@@ -265,8 +276,10 @@ export default function Discover() {
 
 }
 
-const stylesFn = (theme: Theme, width: number) =>
-    StyleSheet.create({
+const stylesFn = (theme: Theme, width: number) => {
+    const scale = Math.min(width / 400, 1.3);
+
+    return StyleSheet.create({
         listaContenido: {
             paddingBottom: 100,
         },
@@ -304,6 +317,17 @@ const stylesFn = (theme: Theme, width: number) =>
             color: theme.colors.text,
             marginBottom: 10,
             textAlign: "center",
+        },
+        input: {
+            borderWidth: 1,
+            backgroundColor: theme.colors.background,
+            borderColor: theme.colors.border,
+            borderRadius: 16 * scale,
+            paddingVertical: 14 * scale,
+            paddingHorizontal: 18 * scale,
+            fontSize: 20 * scale,
+            color: theme.colors.text,
+            marginBottom: 16 * scale,
         },
         popupDesc: {
             color: theme.colors.text,
@@ -354,3 +378,4 @@ const stylesFn = (theme: Theme, width: number) =>
             flexShrink: 1,
         },
     });
+}

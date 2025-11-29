@@ -9,7 +9,8 @@ const getEvents = async (
     userLocation: {
         lat: number,
         lon: number
-    }
+    },
+    rango: number
 ) => {
     try {
         // console.log("llegue al getEvents del front");
@@ -25,7 +26,8 @@ const getEvents = async (
                 'Authorization': `Bearer ${tokenAuth}`,
             },
             body: JSON.stringify({
-                coordenadasUsuario: ubicacion
+                coordenadasUsuario: ubicacion,
+                rango: rango
             })
         });
         if (!res.ok) throw new Error(`Error ${res.status}`);
@@ -36,7 +38,7 @@ const getEvents = async (
         throw error;
     }
 };
-const agregarFavs = async (tokenAuth: string | null, id : string) => {
+const agregarFavs = async (tokenAuth: string | null, id: string) => {
 
     try {
         const res = await fetch(`${EVENT_PATH}/add-fav`, {
@@ -67,7 +69,7 @@ const agregarFavs = async (tokenAuth: string | null, id : string) => {
 };
 
 
-const quitarFavs = async (tokenAuth: string | null, id : string) => {
+const quitarFavs = async (tokenAuth: string | null, id: string) => {
 
     try {
         const res = await fetch(`${EVENT_PATH}/rem-fav`, {
@@ -153,7 +155,7 @@ const getAllEvents = async (
     tokenAuth: string | null
 ) => {
     try {
-        
+
         // console.log("Entraal getALlEvents del front???");
         const res = await fetch(`${EVENT_PATH}/all`, {
             method: 'GET',
@@ -176,7 +178,7 @@ const getMyEvents = async (
     tokenAuth: string | null
 ) => {
     try {
-        
+
         const res = await fetch(`${EVENT_PATH}/created-by-authorized-user`, {
             method: 'GET',
             headers: {
