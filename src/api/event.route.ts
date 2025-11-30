@@ -34,10 +34,12 @@ const getEvents = async (
         const data = await res.json();
         return data; // Array de eventos
     } catch (error) {
-        console.error("Error fetching events:", error);
+        // console.error("Error fetching events:", error);
         throw error;
     }
 };
+
+
 const agregarFavs = async (tokenAuth: string | null, id: string) => {
 
     try {
@@ -54,7 +56,7 @@ const agregarFavs = async (tokenAuth: string | null, id: string) => {
 
 
         if (!res.ok) {
-            console.error("Error al crear favoritos:", res.status);
+            // console.error("Error al crear favoritos:", res.status);
             throw new Error(`Error ${res.status}: `);
         }
 
@@ -63,7 +65,7 @@ const agregarFavs = async (tokenAuth: string | null, id: string) => {
         return favs; // Array de eventos favoritos
 
     } catch (error) {
-        console.error("Error creating favoritos:", error);
+        // console.error("Error creating favoritos:", error);
         throw error;
     }
 };
@@ -85,7 +87,7 @@ const quitarFavs = async (tokenAuth: string | null, id: string) => {
 
 
         if (!res.ok) {
-            console.error("Error al borrar favoritos:", res.status);
+            // console.error("Error al borrar favoritos:", res.status);
             throw new Error(`Error ${res.status}: `);
         }
 
@@ -94,7 +96,7 @@ const quitarFavs = async (tokenAuth: string | null, id: string) => {
         return favs; // Array de eventos favoritos
 
     } catch (error) {
-        console.error("Error al borrar favoritos:", error);
+        // console.error("Error al borrar favoritos:", error);
         throw error;
     }
 };
@@ -137,7 +139,7 @@ const getFavs = async (tokenAuth: string | null) => {
 
 
         if (!res.ok) {
-            console.error("Error al cargar favoritos:", res.status);
+            // console.error("Error al cargar favoritos:", res.status);
             throw new Error(`Error ${res.status}: `);
         }
 
@@ -146,7 +148,7 @@ const getFavs = async (tokenAuth: string | null) => {
         return favs; // Array de eventos favoritos
 
     } catch (error) {
-        console.error("Error fetching favoritos:", error);
+        // console.error("Error fetching favoritos:", error);
         throw error;
     }
 };
@@ -167,7 +169,7 @@ const getAllEvents = async (
         const data = await res.json();
         return data; // Array de eventos
     } catch (error) {
-        console.error("Error fetching events:", error);
+        // console.error("Error fetching events:", error);
         throw error;
     }
 };
@@ -189,7 +191,7 @@ const getMyEvents = async (
         const data = await res.json();
         return data; // Array de eventos
     } catch (error) {
-        console.error("Error fetching events:", error);
+        // console.error("Error fetching events:", error);
         throw error;
     }
 };
