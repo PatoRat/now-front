@@ -36,7 +36,7 @@ const Post = (
 
 	const { visible, mensaje, success } = useAlertState();
 
-	const handleDoubleTap = async () => {
+	const likear = async () => {
 		const nuevoLike = !showHeart; // <-- ESTE es el valor real que queda después del tap
 
 		if (nuevoLike) {
@@ -84,7 +84,7 @@ const Post = (
 			<TapGestureHandler
 				ref={doubleTapRef}
 				numberOfTaps={2}
-				onActivated={handleDoubleTap}
+				onActivated={likear}
 			>
 				<TapGestureHandler
 					waitFor={doubleTapRef}
