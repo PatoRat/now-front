@@ -67,39 +67,22 @@ const Post = (
 		}).start();
 	};
 
-	const doubleTap = Gesture.Tap()
-		.numberOfTaps(2)
-		.runOnJS(true)
-		.onEnd(() => {
-			handleDoubleTap();
-		});
 
-	const singleTap = Gesture.Tap()
-		.numberOfTaps(1)
-		.maxDelay(250)
-		.runOnJS(true)
-		.onEnd(() => {
-			onSingleTap?.();
-		});
 
-	const handleLike = () => {
-		handleDoubleTap();
-	};
 
 	const heartTapGesture = Gesture.Tap()
 		.numberOfTaps(1)
 		.runOnJS(true)
 		.onEnd(() => {
-			handleLike();
+			handleDoubleTap();
 		});
 
-	const tapGesture = Gesture.Exclusive(doubleTap, singleTap);
 
 	const postDoubleTap = Gesture.Tap()
 		.numberOfTaps(2)
 		.runOnJS(true)
 		.onEnd(() => {
-			handleLike();
+			handleDoubleTap();
 		});
 
 	const postSingleTap = Gesture.Tap()
@@ -213,12 +196,6 @@ const stylesFn = (theme: Theme, width: number) =>
 			shadowRadius: 6,
 			shadowOffset: { width: 0, height: 4 },
 			elevation: 3,
-		},
-		heart: {
-			position: "absolute",
-			top: 12,
-			left: 12,
-			zIndex: 10,
 		},
 		titulo: {
 			fontSize: 18,
