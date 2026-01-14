@@ -37,10 +37,6 @@ export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
     const { theme } = useTheme();
     const styles = stylesFn(theme, width);
 
-    const POPUP_WIDTH = width * 0.9; // o el mismo valor que uses en styles.popupContainer
-    const ITEM_WIDTH = width * 0.9;
-    const ITEM_HEIGHT = 220;
-
     const nextImage = () => {
         if (currentIndex < imagenesMapeadas.length - 1) {
             setCurrentIndex(currentIndex + 1);

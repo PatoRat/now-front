@@ -1,6 +1,6 @@
 import { PostType } from "@/scripts/types";
 import { FontAwesome } from "@expo/vector-icons";
-import { Theme } from "@react-navigation/native";
+import { useTheme } from "@/src/hooks/theme-hooks";
 import React, { useEffect, useRef } from "react";
 import {
 	Animated,
@@ -14,9 +14,9 @@ import { GestureDetector, GestureHandlerRootView, Gesture } from "react-native-g
 import { agregarFavs, quitarFavs } from "../../api/event.route";
 import { useAlertState } from "../../hooks/alert-hooks";
 import { useAuth } from "../../hooks/auth-hooks";
-import { useTheme } from "../../hooks/theme-hooks";
 import { useLikes } from "../context-provider/LikeContext";
 import CustomAlert from "../CustomAlert";
+import { Theme } from "@react-navigation/native";
 
 const Post = (
 	{ id, titulo, descripcion, imagenes, fechaInicio, fechaFin, direccion, onSingleTap }:
