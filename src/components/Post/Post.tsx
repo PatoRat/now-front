@@ -82,7 +82,35 @@ const Post = (
 			onSingleTap?.();
 		});
 
+	const handleLike = () => {
+		handleDoubleTap();
+	};
+
+	const heartTapGesture = Gesture.Tap()
+		.numberOfTaps(1)
+		.runOnJS(true)
+		.onEnd(() => {
+			handleLike();
+		});
+
 	const tapGesture = Gesture.Exclusive(doubleTap, singleTap);
+
+	const postDoubleTap = Gesture.Tap()
+		.numberOfTaps(2)
+		.runOnJS(true)
+		.onEnd(() => {
+			handleLike();
+		});
+
+	const postSingleTap = Gesture.Tap()
+		.numberOfTaps(1)
+		.maxDelay(250)
+		.runOnJS(true)
+		.onEnd(() => {
+			onSingleTap?.();
+		});
+
+	const postTapGesture = Gesture.Exclusive(postDoubleTap, postSingleTap);
 
 	const formatoFecha = (fecha: Date) =>
 		fecha.toLocaleString("es-AR", { dateStyle: "short", timeStyle: "short" });
@@ -97,31 +125,32 @@ const Post = (
 
 	return (
 		<GestureHandlerRootView style={{ flex: 1 }}>
-			<GestureDetector gesture={tapGesture}>
+			<GestureDetector gesture={postTapGesture}>
 				<Animated.View style={{ position: "relative" }}>
 
-					{/* Corazón animado */}
-					<Animated.View style={{ position: "absolute", top: 10, left: 10, zIndex: 20 }}>
-						{/* Corazón que siempre se ve: vacío si no likeado, rojo si likeado */}
-						<FontAwesome
-							name={showHeart ? "heart" : "heart-o"}
-							size={32}
-							color={showHeart ? "red" : theme.colors.text}
-						/>
+					<GestureDetector gesture={heartTapGesture}>
+						{/* Corazón animado */}
+						<Animated.View style={{ position: "absolute", top: 10, left: 10, zIndex: 20 }}>
+							{/* Corazón que siempre se ve: vacío si no likeado, rojo si likeado */}
+							<FontAwesome
+								name={showHeart ? "heart" : "heart-o"}
+								size={32}
+								color={showHeart ? "red" : theme.colors.text}
+							/>
 
-						{/* Corazón animado solo al hacer doble tap */}
-						<Animated.View
-							style={{
-								position: "absolute",
-								top: 0,
-								left: 0,
-								transform: [{ scale: heartAnim }],
-							}}
-						>
-							<FontAwesome name="heart" size={32} color="red" />
+							{/* Corazón animado solo al hacer doble tap */}
+							<Animated.View
+								style={{
+									position: "absolute",
+									top: 0,
+									left: 0,
+									transform: [{ scale: heartAnim }],
+								}}
+							>
+								<FontAwesome name="heart" size={32} color="red" />
+							</Animated.View>
 						</Animated.View>
-					</Animated.View>
-
+					</GestureDetector>
 
 					<View style={styles.postContainer}>
 
@@ -161,8 +190,8 @@ const Post = (
 						onClose={() => visible.set(false)}
 					/>
 				</Animated.View>
-			</GestureDetector>
-		</GestureHandlerRootView>
+			</GestureDetector >
+		</GestureHandlerRootView >
 	);
 };
 
