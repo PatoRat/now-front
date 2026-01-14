@@ -13,6 +13,7 @@ import {
     Modal,
     Platform,
     Pressable,
+    ScrollView,
     StyleSheet,
     Text,
     View,
@@ -24,12 +25,35 @@ type PostPopUpProps = {
     onClose: () => void
 }
 
+type ImagenSource = {
+    uri: string;
+};
+
+
 export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const [currentIndex, setCurrentIndex] = useState(0);
     const width = Dimensions.get("window").width;
     const { theme } = useTheme();
     const styles = stylesFn(theme, width);
+
+    const POPUP_WIDTH = width * 0.9; // o el mismo valor que uses en styles.popupContainer
+    const ITEM_WIDTH = width * 0.9;
+    const ITEM_HEIGHT = 220;
+
+    const nextImage = () => {
+        if (currentIndex < imagenesMapeadas.length - 1) {
+            setCurrentIndex(currentIndex + 1);
+        }
+    };
+
+    const prevImage = () => {
+        if (currentIndex > 0) {
+            setCurrentIndex(currentIndex - 1);
+        }
+    };
+
+
 
     useEffect(() => {
         if (visible) {
@@ -63,22 +87,28 @@ export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
         );
     };
 
-    const imagenesMapeadas = post.imagenes?.map((img: { url: string }) => {
-        if (!img.url) return null;
+    const imagenesMapeadas: ImagenSource[] =
+        post.imagenes
+            ?.map((img: { url: string }) => {
+                if (!img.url) return null;
 
-        let uri = img.url;
+                let uri = img.url;
 
-        // Caso 1: empieza con http
-        if (uri.startsWith("http")) {
-            // Reemplazamos localhost si lo contiene
-            uri = uri.replace("localhost", URL_BACKEND.replace(/^https?:\/\//, ""));
-            return { uri };
-        }
+                if (uri.startsWith("http")) {
+                    uri = uri.replace(
+                        "localhost",
+                        URL_BACKEND.replace(/^https?:\/\//, "")
+                    );
+                    return { uri };
+                }
 
-        // Caso 2: ruta relativa o nombre de archivo
-        uri = uri.startsWith("/") ? `${URL_BACKEND}${uri}` : `${URL_BACKEND}/uploads/${uri}`;
-        return { uri };
-    }).filter(Boolean); // elimina nulls
+                uri = uri.startsWith("/")
+                    ? `${URL_BACKEND}${uri}`
+                    : `${URL_BACKEND}/uploads/${uri}`;
+
+                return { uri };
+            })
+            .filter(Boolean);
 
 
 
@@ -115,63 +145,120 @@ export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
                 ]}
             >
                 {/* Carrusel de imágenes */}
-                {post.imagenes?.length > 0 && (
+                {imagenesMapeadas.length > 0 && (
                     <>
-                        <FlatList
-                            data={imagenesMapeadas}
-                            horizontal
-                            pagingEnabled={false}
-                            snapToInterval={width * 0.65}
-                            showsHorizontalScrollIndicator={false}
-                            keyExtractor={(_, i) => i.toString()}
-                            onScroll={(e) => {
-                                const index = Math.round(e.nativeEvent.contentOffset.x / (width * 0.85));
-                                setCurrentIndex(index);
+                        <View
+                            style={{
+                                justifyContent: "center",
+                                alignItems: "center",
+                                alignSelf: "center",
                             }}
-                            scrollEventThrottle={16}
-                            renderItem={({ item }) => {
+                        >
+                            <View
+                                style={{
+                                    width: width * 0.75,
+                                    height: 180,
+                                    borderRadius: 12,
+                                    overflow: "hidden",
+                                    backgroundColor: "#000",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                }}
+                            >
+                                {/* Flecha izquierda */}
+                                {currentIndex > 0 && (
+                                    <FontAwesome
+                                        name="chevron-left"
+                                        size={26}
+                                        color="rgba(255,255,255,0.5)"
+                                        style={{
+                                            position: "absolute",
+                                            left: 10,
+                                            zIndex: 1,
+                                        }}
+                                    />
+                                )}
 
-                                // PARA VER EN EL LOG LO QUE SE RECIBE
-                                // console.log("Evento:", item);
-                                // console.log(
-                                // 	"Imagenes del evento:",
-                                // 	item.imagenes?.map((img: { id: number; eventId: number; url: string }) => img.url)
-                                // );
+                                {/* Flecha derecha */}
+                                {currentIndex < imagenesMapeadas.length - 1 && (
+                                    <FontAwesome
+                                        name="chevron-right"
+                                        size={26}
+                                        color="rgba(255,255,255,0.5)"
+                                        style={{
+                                            position: "absolute",
+                                            right: 10,
+                                            zIndex: 1,
+                                        }}
+                                    />
+                                )}
 
-                                return (
+                                {/* Zona izquierda (tap) */}
+                                <Pressable
+                                    onPress={prevImage}
+                                    style={{
+                                        position: "absolute",
+                                        left: 0,
+                                        top: 0,
+                                        bottom: 0,
+                                        width: "50%",
+                                        zIndex: 2,
+                                    }}
+                                />
 
-                                    <View style={{
-                                        width: width * 0.85,
-                                        height: 200,
-                                        marginRight: 10,
-                                        borderRadius: 15,
-                                        overflow: "hidden",
-                                        shadowColor: "#000",
-                                        shadowOpacity: 0.3,
-                                        shadowRadius: 10,
-                                        elevation: 5,
-                                    }}>
-                                        <Image source={item} style={{ width: "100%", height: "100%" }} resizeMode="cover" />
-                                    </View>
-                                );
+                                {/* Imagen */}
+                                <Image
+                                    source={imagenesMapeadas[currentIndex]}
+                                    style={{
+                                        width: "100%",
+                                        height: "100%",
+                                        alignSelf: "center",
+                                    }}
+                                    resizeMode="contain"
+                                />
+
+                                {/* Zona derecha (tap) */}
+                                <Pressable
+                                    onPress={nextImage}
+                                    style={{
+                                        position: "absolute",
+                                        right: 0,
+                                        top: 0,
+                                        bottom: 0,
+                                        width: "50%",
+                                        zIndex: 2,
+                                    }}
+                                />
+                            </View>
+                        </View>
+
+
+                        {/* Dots */}
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                justifyContent: "center",
+                                marginTop: 10,
+                                marginBottom: 5,
                             }}
-                            contentContainerStyle={{ paddingHorizontal: width * 0.075 / 2 }}
-                        />
-
-                        {/* Dots de paginación */}
-                        <View style={{ flexDirection: "row", justifyContent: "center", marginTop: 10, marginBottom: 5 }}>
-                            {post.imagenes.map((_: any, i: React.Key | null | undefined) => (
-                                <View key={i} style={{
-                                    width: 8,
-                                    height: 8,
-                                    borderRadius: 4,
-                                    marginHorizontal: 4,
-                                    backgroundColor: i === currentIndex ? "#007AFF" : "#ccc",
-                                }} />
+                        >
+                            {imagenesMapeadas.map((_, i) => (
+                                <View
+                                    key={i}
+                                    style={{
+                                        width: 8,
+                                        height: 8,
+                                        borderRadius: 4,
+                                        marginHorizontal: 4,
+                                        backgroundColor: i === currentIndex ? "#007AFF" : "#ccc",
+                                    }}
+                                />
                             ))}
                         </View>
                     </>
                 )}
+
+
 
                 <Text style={styles.popupTitle}>{post.titulo}</Text>
                 {!!post.descripcion && <Text style={styles.popupDesc}>{post.descripcion}</Text>}
@@ -205,7 +292,7 @@ export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
                     <FontAwesome name="close" size={20} color="white" />
                 </Pressable>
             </Animated.View>
-        </Modal>
+        </Modal >
     );
 }
 
