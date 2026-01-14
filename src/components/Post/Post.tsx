@@ -10,7 +10,7 @@ import {
 	useWindowDimensions,
 	View
 } from "react-native";
-import { GestureHandlerRootView, TapGestureHandler } from "react-native-gesture-handler";
+import { GestureDetector, GestureHandlerRootView, Gesture } from "react-native-gesture-handler";
 import { agregarFavs, quitarFavs } from "../../api/event.route";
 import { useAlertState } from "../../hooks/alert-hooks";
 import { useAuth } from "../../hooks/auth-hooks";
@@ -28,7 +28,7 @@ const Post = (
 	const styles = stylesFn(theme, width);
 	const { token } = useAuth();
 
-	const doubleTapRef = useRef(null);
+
 	const heartAnim = useRef(new Animated.Value(0)).current;
 
 	const { likes, toggleLike } = useLikes();
@@ -36,7 +36,7 @@ const Post = (
 
 	const { visible, mensaje, success } = useAlertState();
 
-	const likear = async () => {
+	const handleDoubleTap = async () => {
 		const nuevoLike = !showHeart; // <-- ESTE es el valor real que queda después del tap
 
 		if (nuevoLike) {
@@ -68,6 +68,33 @@ const Post = (
 	};
 
 
+
+
+	const heartTapGesture = Gesture.Tap()
+		.numberOfTaps(1)
+		.runOnJS(true)
+		.onEnd(() => {
+			handleDoubleTap();
+		});
+
+
+	const postDoubleTap = Gesture.Tap()
+		.numberOfTaps(2)
+		.runOnJS(true)
+		.onEnd(() => {
+			handleDoubleTap();
+		});
+
+	const postSingleTap = Gesture.Tap()
+		.numberOfTaps(1)
+		.maxDelay(250)
+		.runOnJS(true)
+		.onEnd(() => {
+			onSingleTap?.();
+		});
+
+	const postTapGesture = Gesture.Exclusive(postDoubleTap, postSingleTap);
+
 	const formatoFecha = (fecha: Date) =>
 		fecha.toLocaleString("es-AR", { dateStyle: "short", timeStyle: "short" });
 
@@ -80,20 +107,11 @@ const Post = (
 	}, [showHeart]);
 
 	return (
-		<GestureHandlerRootView>
-			<TapGestureHandler
-				ref={doubleTapRef}
-				numberOfTaps={2}
-				onActivated={likear}
-			>
-				<TapGestureHandler
-					waitFor={doubleTapRef}
-					onActivated={() => {
-						if (onSingleTap) onSingleTap();
-					}}
-				>
-					<Animated.View style={{ position: "relative" }}>
+		<GestureHandlerRootView style={{ flex: 1 }}>
+			<GestureDetector gesture={postTapGesture}>
+				<Animated.View style={{ position: "relative" }}>
 
+					<GestureDetector gesture={heartTapGesture}>
 						{/* Corazón animado */}
 						<Animated.View style={{ position: "absolute", top: 10, left: 10, zIndex: 20 }}>
 							{/* Corazón que siempre se ve: vacío si no likeado, rojo si likeado */}
@@ -115,49 +133,48 @@ const Post = (
 								<FontAwesome name="heart" size={32} color="red" />
 							</Animated.View>
 						</Animated.View>
+					</GestureDetector>
 
+					<View style={styles.postContainer}>
 
-						<View style={styles.postContainer}>
+						<Text style={styles.titulo}>{titulo}</Text>
 
-							<Text style={styles.titulo}>{titulo}</Text>
-
-							{imagenes?.length > 0 && (
-								<View style={styles.imagenContainer}>
-									<Image source={imagenes[0]} style={styles.imagen} resizeMode="cover" />
-									{imagenes.length > 1 && (
-										<View style={styles.overlay}>
-											<Text style={styles.overlayText}>+{imagenes.length - 1}</Text>
-										</View>
-									)}
-								</View>
-							)}
-
-							{!!descripcion && <Text style={styles.descripcion}>{descripcion}</Text>}
-
-							{direccion && (
-								<View style={styles.direccionContainer}>
-									<FontAwesome style={styles.direccionIcon} size={24} name="map-marker" color="red" />
-									<Text style={styles.direccionText}>{direccion}</Text>
-								</View>
-							)}
-
-							<View style={styles.fechasContainer}>
-								<Text style={styles.fechaText}>Inicio: {formatoFecha(fechaInicio)}</Text>
-								<Text style={styles.fechaText}>Fin: {formatoFecha(fechaFin)}</Text>
+						{imagenes?.length > 0 && (
+							<View style={styles.imagenContainer}>
+								<Image source={imagenes[0]} style={styles.imagen} resizeMode="cover" />
+								{imagenes.length > 1 && (
+									<View style={styles.overlay}>
+										<Text style={styles.overlayText}>+{imagenes.length - 1}</Text>
+									</View>
+								)}
 							</View>
+						)}
 
+						{!!descripcion && <Text style={styles.descripcion}>{descripcion}</Text>}
+
+						{direccion && (
+							<View style={styles.direccionContainer}>
+								<FontAwesome style={styles.direccionIcon} size={24} name="map-marker" color="red" />
+								<Text style={styles.direccionText}>{direccion}</Text>
+							</View>
+						)}
+
+						<View style={styles.fechasContainer}>
+							<Text style={styles.fechaText}>Inicio: {formatoFecha(fechaInicio)}</Text>
+							<Text style={styles.fechaText}>Fin: {formatoFecha(fechaFin)}</Text>
 						</View>
-						{/* Alert */}
-						<CustomAlert
-							visible={visible.get()}
-							message={mensaje.get()}
-							isSuccessful={success.get()}
-							onClose={() => visible.set(false)}
-						/>
-					</Animated.View>
-				</TapGestureHandler>
-			</TapGestureHandler>
-		</GestureHandlerRootView>
+
+					</View>
+					{/* Alert */}
+					<CustomAlert
+						visible={visible.get()}
+						message={mensaje.get()}
+						isSuccessful={success.get()}
+						onClose={() => visible.set(false)}
+					/>
+				</Animated.View>
+			</GestureDetector >
+		</GestureHandlerRootView >
 	);
 };
 
@@ -179,12 +196,6 @@ const stylesFn = (theme: Theme, width: number) =>
 			shadowRadius: 6,
 			shadowOffset: { width: 0, height: 4 },
 			elevation: 3,
-		},
-		heart: {
-			position: "absolute",
-			top: 12,
-			left: 12,
-			zIndex: 10,
 		},
 		titulo: {
 			fontSize: 18,
