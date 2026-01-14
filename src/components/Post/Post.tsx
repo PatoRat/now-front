@@ -1,14 +1,16 @@
 import { PostType } from "@/scripts/types";
 import { FontAwesome } from "@expo/vector-icons";
 import { useTheme } from "@/src/hooks/theme-hooks";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
 	Animated,
 	Image,
 	StyleSheet,
 	Text,
 	useWindowDimensions,
-	View
+	View,
+	Pressable,
+	Modal
 } from "react-native";
 import { GestureDetector, GestureHandlerRootView, Gesture } from "react-native-gesture-handler";
 import { agregarFavs, quitarFavs } from "../../api/event.route";
@@ -77,6 +79,7 @@ const Post = (
 			handleDoubleTap();
 		});
 
+	const [menuVisible, setMenuVisible] = useState(false);
 
 	const postDoubleTap = Gesture.Tap()
 		.numberOfTaps(2)
@@ -93,7 +96,16 @@ const Post = (
 			onSingleTap?.();
 		});
 
+		
 	const postTapGesture = Gesture.Exclusive(postDoubleTap, postSingleTap);
+
+	const menuTapGesture = Gesture.Tap()
+		.runOnJS(true)
+		.onEnd(() => {
+			setMenuVisible(v => !v);
+		});
+
+
 
 	const formatoFecha = (fecha: Date) =>
 		fecha.toLocaleString("es-AR", { dateStyle: "short", timeStyle: "short" });
@@ -134,6 +146,50 @@ const Post = (
 							</Animated.View>
 						</Animated.View>
 					</GestureDetector>
+					{/* Opciones */}
+					<GestureDetector gesture={menuTapGesture}>
+						<View
+							style={{
+								position: "absolute",
+								top: 10,
+								right: 10,
+								zIndex: 30,
+								padding: 8,
+							}}
+						>
+							<FontAwesome name="ellipsis-v" size={20} color="#888" />
+						</View>
+					</GestureDetector>
+
+					<Modal
+						transparent
+						visible={menuVisible}
+						animationType="fade"
+						onRequestClose={() => setMenuVisible(false)}
+					>
+						<Pressable
+							style={styles.menuOverlay}
+							onPress={() => setMenuVisible(false)}
+						>
+							<View style={styles.menuContainer}>
+								<Pressable style={styles.menuItem}>
+									<Text style={styles.menuText}>Compartir</Text>
+								</Pressable>
+
+								<Pressable style={styles.menuItem}>
+									<Text style={styles.menuText}>Reportar</Text>
+								</Pressable>
+
+								<Pressable style={styles.menuItem}>
+									<Text style={[styles.menuText, { color: "red" }]}>
+										Eliminar
+									</Text>
+								</Pressable>
+							</View>
+						</Pressable>
+					</Modal>
+
+
 
 					<View style={styles.postContainer}>
 
@@ -218,6 +274,43 @@ const stylesFn = (theme: Theme, width: number) =>
 		imagen: {
 			width: "100%",
 			height: "100%",
+		},
+		menuButton: {
+			padding: 8,
+		},
+		headerRow: {
+			flexDirection: "row",
+			justifyContent: "space-between",
+			alignItems: "center",
+		},
+		menuOverlay: {
+			...StyleSheet.absoluteFillObject,
+			backgroundColor: "rgba(0,0,0,0.2)",
+			justifyContent: "flex-start",
+			alignItems: "flex-end",
+			paddingTop: 40,
+			paddingRight: 12,
+		},
+		menuContainer: {
+			position: "absolute",
+			top: 40,
+			right: 10,
+			backgroundColor: theme.colors.border,
+			borderRadius: 8,
+			paddingVertical: 6,
+			minWidth: 150,
+			elevation: 5,
+			shadowColor: "#000",
+			shadowOpacity: 0.2,
+			shadowRadius: 10,
+		},
+		menuItem: {
+			paddingVertical: 10,
+			paddingHorizontal: 16,
+		},
+		menuText: {
+			fontSize: 14,
+			color: theme.colors.text,
 		},
 		overlay: {
 			position: "absolute",
