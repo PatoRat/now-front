@@ -1,6 +1,6 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import React, { useState } from "react";
-import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import {
     View,
     Text,
@@ -21,7 +21,6 @@ export default function FilterContent() {
     const styles = stylesFn(theme, width);
     const [fechaInicio, setFechaInicio] = useState(new Date());
     const [fechaFin, setFechaFin] = useState<Date | null>(null);
-    const [mostrarPicker, setMostrarPicker] = useState(false);
     const [range, setRange] = useState([0, 50]);
 
     //filtro de lugar (imput con sugerencias de direcciones)
@@ -41,7 +40,7 @@ export default function FilterContent() {
         try {
             const res = await Location.geocodeAsync(text);
             setSuggestions(res.slice(0, 5));
-        } catch (e) {
+        } catch {
             setSuggestions([]);
         }
     };
