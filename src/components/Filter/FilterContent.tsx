@@ -11,6 +11,9 @@ import {
 } from "react-native";
 import { useTheme } from "@/src/hooks/theme-hooks";
 import { Theme } from "@react-navigation/native";
+import MultiSlider from "@ptomasroos/react-native-multi-slider";
+import * as Location from "expo-location";
+
 
 export default function FilterContent() {
     const { theme } = useTheme();
@@ -19,6 +22,31 @@ export default function FilterContent() {
     const [fechaInicio, setFechaInicio] = useState(new Date());
     const [fechaFin, setFechaFin] = useState<Date | null>(null);
     const [mostrarPicker, setMostrarPicker] = useState(false);
+    const [range, setRange] = useState([0, 50]);
+
+    //filtro de lugar (imput con sugerencias de direcciones)
+    const [suggestions, setSuggestions] =
+        useState<Location.LocationGeocodedLocation[]>([]);
+
+    const [query, setQuery] = useState("");
+
+    const buscarLugar = async (text: string) => {
+        setQuery(text);
+
+        if (text.length < 3) {
+            setSuggestions([]);
+            return;
+        }
+
+        try {
+            const res = await Location.geocodeAsync(text);
+            setSuggestions(res.slice(0, 5));
+        } catch (e) {
+            setSuggestions([]);
+        }
+    };
+
+
 
     const [pickerVisible, setPickerVisible] = useState<"inicio" | "fin" | null>(null);
 
@@ -29,25 +57,26 @@ export default function FilterContent() {
             {/* ===== DISTANCIA ===== */}
             <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Distancia (km)</Text>
-
-                <View style={styles.row}>
-                    <TextInput
-                        placeholder="Mín"
-                        keyboardType="numeric"
-                        placeholderTextColor="#999"
-                        style={styles.input}
-                    />
-                    <TextInput
-                        placeholder="Máx"
-                        keyboardType="numeric"
-                        placeholderTextColor="#999"
-                        style={styles.input}
+                <Text style={styles.clearText}>
+                    {range[0]} km – {range[1]} km
+                </Text>
+                <View style={styles.sliderWrapper}>
+                    <MultiSlider
+                        values={range}
+                        min={0}
+                        max={50}
+                        step={1}
+                        onValuesChange={setRange}
+                        sliderLength={width * 0.7}
+                        selectedStyle={{ backgroundColor: "#52E4F5" }}
+                        unselectedStyle={{ backgroundColor: "#ccc" }}
+                        markerStyle={{ backgroundColor: "#52E4F5" }}
                     />
                 </View>
             </View>
 
 
-            {/* ===== FECHAS ===== */}
+
             {/* ===== FECHAS ===== */}
             <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Fecha</Text>
@@ -123,11 +152,33 @@ export default function FilterContent() {
                 <Text style={styles.sectionTitle}>Lugar</Text>
 
                 <TextInput
-                    placeholder="Ciudad, barrio o dirección"
+                    placeholder="Ciudad o barrio"
+                    value={query}
+                    onChangeText={buscarLugar}
+                    style={styles.input}
                     placeholderTextColor="#999"
-                    style={styles.inputFull}
                 />
+
+                {suggestions.length > 0 && (
+                    <View style={styles.suggestionsBox}>
+                        {suggestions.map((_, index) => (
+                            <Pressable
+                                key={index}
+                                style={styles.suggestionItem}
+                                onPress={() => {
+                                    setQuery(query);
+                                    setSuggestions([]);
+                                }}
+                            >
+                                <Text>{query}</Text>
+                            </Pressable>
+                        ))}
+                    </View>
+                )}
+
+
             </View>
+
 
 
             {/* ===== ACCIONES ===== */}
@@ -149,6 +200,49 @@ export default function FilterContent() {
 const stylesFn = (theme: Theme, width: number) => {
 
     return StyleSheet.create({
+        suggestionsBox: {
+            borderWidth: 1,
+            borderColor: "#ddd",
+            borderRadius: 8,
+            marginTop: 4,
+            backgroundColor: "white",
+            maxHeight: 160,
+        },
+
+        suggestionItem: {
+            paddingVertical: 10,
+            paddingHorizontal: 12,
+            borderBottomWidth: 1,
+            borderBottomColor: "#eee",
+        },
+
+        sliderWrapper: {
+            alignItems: "center",
+        },
+        rangeValues: {
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginBottom: 6,
+        },
+
+        rangeText: {
+            fontSize: 13,
+            color: "#666",
+        },
+
+        sliderMarker: {
+            height: 22,
+            width: 22,
+            borderRadius: 11,
+            backgroundColor: "#fff",
+            borderWidth: 2,
+            borderColor: "#ccc",
+            shadowColor: "#000",
+            shadowOpacity: 0.1,
+            shadowRadius: 3,
+            elevation: 3,
+        },
+
         container: {
             padding: 16,
             gap: 20,
@@ -170,13 +264,15 @@ const stylesFn = (theme: Theme, width: number) => {
         },
 
         input: {
-            flex: 1,
-            borderWidth: 1,
-            borderColor: "#ccc",
+            height: 48,
             borderRadius: 10,
+            borderWidth: 1,
+            borderColor: "#ddd",
             paddingHorizontal: 12,
-            paddingVertical: 10,
+            fontSize: 16,
+            backgroundColor: "white",
         },
+
 
         inputFull: {
             borderWidth: 1,
@@ -220,7 +316,7 @@ const stylesFn = (theme: Theme, width: number) => {
         clearText: {
             color: "#888",
         },
-        
+
         dateInputInline: {
             flexDirection: "row",
             alignItems: "center",
@@ -230,7 +326,7 @@ const stylesFn = (theme: Theme, width: number) => {
             borderRadius: 10,
             borderWidth: 1,
             borderColor: "#ddd",
-            backgroundColor: "#f8f8f8",
+            backgroundColor: theme.colors.card,
         },
 
         applyButton: {
