@@ -25,6 +25,9 @@ import CustomAlert from "../components/CustomAlert";
 import PostPopUp from "../components/Post/PostPopUp";
 import { useAlertState } from "../hooks/alert-hooks";
 import { useAuth } from "../hooks/auth-hooks";
+import MaterialIcons from "@expo/vector-icons/build/MaterialIcons";
+import FilterModal from "../components/Filter/Filter";
+import FilterContent from "../components/Filter/FilterContent";
 
 
 export default function Discover() {
@@ -67,6 +70,9 @@ export default function Discover() {
             useNativeDriver: true,
         }).start(() => setSelectedPost(null));
     };
+
+    //FILTER
+    const [filterVisible, setFilterVisible] = useState(false);
 
     // Carga de los likes del usuario a una const global
 
@@ -243,6 +249,26 @@ export default function Discover() {
                 }
             />
 
+            <Pressable
+                style={styles.filtroButton}
+                onPress={() => setFilterVisible(true)}
+            >
+                <MaterialIcons
+                    name="filter-list"
+                    size={26}
+                    color="#000"
+                />
+            </Pressable>
+            
+            <FilterModal
+                visible={filterVisible}
+                onClose={() => setFilterVisible(false)}
+            >
+                <FilterContent />
+            </FilterModal>
+
+
+
             <Pressable style={styles.botonContainer} onPress={nuevoPost}>
                 <Image
                     source={require("@/assets/images/new-post.png")}
@@ -269,6 +295,24 @@ const stylesFn = (theme: Theme, width: number) => {
     const scale = Math.min(width / 400, 1.3);
 
     return StyleSheet.create({
+        filtroButton: {
+            position: "absolute",
+            top: 20,
+            left: 20,
+            width: 48,
+            height: 48,
+            borderRadius: 24,
+            backgroundColor: "#52E4F5",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 100,
+            elevation: 5, // Android
+        },
+        filtroIcon: {
+            width: 24,
+            height: 24,
+            tintColor: "#000",
+        },
         listaContenido: {
             paddingBottom: 100,
         },
