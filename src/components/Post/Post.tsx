@@ -105,18 +105,33 @@ const Post = (
 		});
 
 
-	const postTapGesture = Gesture.Exclusive(postDoubleTap, postSingleTap);
+	const openMenu = () => {
+		menuButtonRef.current?.measureInWindow((x, y, width, height) => {
+			setMenuPosition({ x, y, width, height });
+			setMenuVisible(true);
+		});
+	};
 
 	const menuTapGesture = Gesture.Tap()
 		.runOnJS(true)
 		.onEnd(() => {
-			menuButtonRef.current?.measureInWindow((x, y, width, height) => {
-				setMenuPosition({ x, y, width, height });
-				setMenuVisible(true);
-			});
+			openMenu();
 		});
 
 
+
+	const postLongPress = Gesture.LongPress()
+		.minDuration(500) // medio segundo, estándar UX
+		.runOnJS(true)
+		.onStart(() => {
+			openMenu();
+		});
+
+
+	const postGesture = Gesture.Exclusive(
+		postLongPress,
+		Gesture.Exclusive(postDoubleTap, postSingleTap)
+	);
 
 
 	const formatoFecha = (fecha: Date) =>
@@ -132,7 +147,7 @@ const Post = (
 
 	return (
 		<GestureHandlerRootView style={{ flex: 1 }}>
-			<GestureDetector gesture={postTapGesture}>
+			<GestureDetector gesture={postGesture}>
 				<Animated.View style={{ position: "relative" }}>
 
 					<GestureDetector gesture={heartTapGesture}>
@@ -213,7 +228,7 @@ const Post = (
 							)}
 						</Pressable>
 					</Modal>
-					
+
 					{/* Contenido del Post */}
 
 
