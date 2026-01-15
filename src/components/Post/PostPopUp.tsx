@@ -7,13 +7,11 @@ import React, { useEffect, useRef, useState } from "react";
 import {
     Animated,
     Dimensions,
-    FlatList,
     Image,
     Linking,
     Modal,
     Platform,
     Pressable,
-    ScrollView,
     StyleSheet,
     Text,
     View,
@@ -65,7 +63,7 @@ export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
                 useNativeDriver: true,
             }).start();
         }
-    }, [visible]);
+    }, [fadeAnim, visible]);
 
     if (!post) return null;
 

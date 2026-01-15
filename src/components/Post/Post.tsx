@@ -30,6 +30,14 @@ const Post = (
 	const styles = stylesFn(theme, width);
 	const { token } = useAuth();
 
+	const menuButtonRef = useRef<View>(null);
+
+	const [menuPosition, setMenuPosition] = useState<{
+		x: number;
+		y: number;
+		width: number;
+		height: number;
+	} | null>(null);
 
 	const heartAnim = useRef(new Animated.Value(0)).current;
 
@@ -96,14 +104,18 @@ const Post = (
 			onSingleTap?.();
 		});
 
-		
+
 	const postTapGesture = Gesture.Exclusive(postDoubleTap, postSingleTap);
 
 	const menuTapGesture = Gesture.Tap()
 		.runOnJS(true)
 		.onEnd(() => {
-			setMenuVisible(v => !v);
+			menuButtonRef.current?.measureInWindow((x, y, width, height) => {
+				setMenuPosition({ x, y, width, height });
+				setMenuVisible(true);
+			});
 		});
+
 
 
 
@@ -116,7 +128,7 @@ const Post = (
 			duration: 0, // sin animación, solo para sincronizar
 			useNativeDriver: true,
 		}).start();
-	}, [showHeart]);
+	}, [heartAnim, showHeart]);
 
 	return (
 		<GestureHandlerRootView style={{ flex: 1 }}>
@@ -147,8 +159,10 @@ const Post = (
 						</Animated.View>
 					</GestureDetector>
 					{/* Opciones */}
+
 					<GestureDetector gesture={menuTapGesture}>
 						<View
+							ref={menuButtonRef}
 							style={{
 								position: "absolute",
 								top: 10,
@@ -157,7 +171,7 @@ const Post = (
 								padding: 8,
 							}}
 						>
-							<FontAwesome name="ellipsis-v" size={20} color="#888" />
+							<FontAwesome name="ellipsis-v" size={32} color="#888" />
 						</View>
 					</GestureDetector>
 
@@ -168,26 +182,39 @@ const Post = (
 						onRequestClose={() => setMenuVisible(false)}
 					>
 						<Pressable
-							style={styles.menuOverlay}
+							style={StyleSheet.absoluteFill}
 							onPress={() => setMenuVisible(false)}
 						>
-							<View style={styles.menuContainer}>
-								<Pressable style={styles.menuItem}>
-									<Text style={styles.menuText}>Compartir</Text>
-								</Pressable>
+							{menuPosition && (
+								<View
+									style={[
+										styles.menuContainer,
+										{
+											position: "absolute",
+											top: menuPosition.y + menuPosition.height + 6,
+											left: menuPosition.x - 140 + menuPosition.width,
+										},
+									]}
+								>
+									<Pressable style={styles.menuItem}>
+										<Text style={styles.menuText}>Compartir</Text>
+									</Pressable>
 
-								<Pressable style={styles.menuItem}>
-									<Text style={styles.menuText}>Reportar</Text>
-								</Pressable>
+									<Pressable style={styles.menuItem}>
+										<Text style={styles.menuText}>Reportar</Text>
+									</Pressable>
 
-								<Pressable style={styles.menuItem}>
-									<Text style={[styles.menuText, { color: "red" }]}>
-										Eliminar
-									</Text>
-								</Pressable>
-							</View>
+									<Pressable style={styles.menuItem}>
+										<Text style={[styles.menuText, { color: "red" }]}>
+											Eliminar
+										</Text>
+									</Pressable>
+								</View>
+							)}
 						</Pressable>
 					</Modal>
+					
+					{/* Contenido del Post */}
 
 
 
