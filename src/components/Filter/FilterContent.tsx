@@ -1,5 +1,5 @@
 import { MaterialIcons } from "@expo/vector-icons";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import {
     View,
@@ -14,7 +14,6 @@ import { Theme } from "@react-navigation/native";
 import MultiSlider from "@ptomasroos/react-native-multi-slider";
 import * as Location from "expo-location";
 
-
 export default function FilterContent() {
     const { theme } = useTheme();
     const { width } = useWindowDimensions();
@@ -23,31 +22,77 @@ export default function FilterContent() {
     const [fechaFin, setFechaFin] = useState<Date | null>(null);
     const [range, setRange] = useState([0, 50]);
 
-    //filtro de lugar (imput con sugerencias de direcciones)
-    const [suggestions, setSuggestions] =
-        useState<Location.LocationGeocodedLocation[]>([]);
 
     const [query, setQuery] = useState("");
+    const [ubicacionActual, setUbicacionActual] =
+        useState<Location.LocationObjectCoords | null>(null);
 
-    const buscarLugar = async (text: string) => {
-        setQuery(text);
 
-        if (text.length < 3) {
-            setSuggestions([]);
-            return;
-        }
+    const [pickerVisible, setPickerVisible] = useState<"inicio" | "fin" | null>(null);
+
+    const limpiarFiltros = () => {
+        setRange([0, 50]);
+        setFechaInicio(new Date());
+        setFechaFin(null);
+        setQuery("");
+        setPickerVisible(null);
+    };
+
+    const formatearDireccion = async () => {
+        if (!query) return;
 
         try {
-            const res = await Location.geocodeAsync(text);
-            setSuggestions(res.slice(0, 5));
-        } catch {
-            setSuggestions([]);
+            const resultados = await Location.geocodeAsync(query);
+
+            if (resultados.length === 0) {
+                alert("No se encontró la dirección.");
+                return;
+            }
+
+            const coord = resultados[0];
+
+            const [dir] = await Location.reverseGeocodeAsync({
+                latitude: coord.latitude,
+                longitude: coord.longitude,
+            });
+
+            const direccionFormateada = [
+                `${dir.street || ""} ${dir.name || ""}`.trim(),
+                dir.city,
+            ]
+                .filter(Boolean)
+                .join(", ");
+
+            setQuery(direccionFormateada || "Dirección no disponible");
+
+        } catch (e) {
+            console.error("Error al formatear dirección:", e);
+            alert("Error al buscar la dirección.");
         }
     };
 
 
+    useEffect(() => {
+        const obtenerUbicacion = async () => {
+            try {
+                const { status } =
+                    await Location.requestForegroundPermissionsAsync();
 
-    const [pickerVisible, setPickerVisible] = useState<"inicio" | "fin" | null>(null);
+                if (status !== "granted") {
+                    console.log("Permiso de ubicación denegado");
+                    return;
+                }
+
+                const location = await Location.getCurrentPositionAsync({});
+                setUbicacionActual(location.coords);
+            } catch (e) {
+                console.log("Error obteniendo ubicación:", e);
+            }
+        };
+
+        obtenerUbicacion();
+    }, []);
+
 
 
     return (
@@ -127,6 +172,11 @@ export default function FilterContent() {
                         }
                         mode="date"
                         display="calendar"
+                        minimumDate={
+                            pickerVisible === "fin"
+                                ? fechaInicio
+                                : new Date()
+                        }
                         onChange={(event, selectedDate) => {
                             if (event.type === "set" && selectedDate) {
                                 if (pickerVisible === "inicio") {
@@ -139,6 +189,7 @@ export default function FilterContent() {
                         }}
                     />
                 )}
+
             </View>
 
 
@@ -148,41 +199,44 @@ export default function FilterContent() {
 
             {/* ===== LUGAR ===== */}
             <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Lugar</Text>
+                <Text style={styles.sectionTitle}>Lugar (ubicacion actual por default)</Text>
 
-                <TextInput
-                    placeholder="Ciudad o barrio"
-                    value={query}
-                    onChangeText={buscarLugar}
-                    style={styles.input}
-                    placeholderTextColor="#999"
-                />
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    <TextInput
+                        placeholder="Ciudad o barrio"
+                        value={query}
+                        onChangeText={setQuery}
+                        style={[styles.input, { flex: 1 }]}
+                        placeholderTextColor="#999"
+                    />
 
-                {suggestions.length > 0 && (
-                    <View style={styles.suggestionsBox}>
-                        {suggestions.map((_, index) => (
-                            <Pressable
-                                key={index}
-                                style={styles.suggestionItem}
-                                onPress={() => {
-                                    setQuery(query);
-                                    setSuggestions([]);
-                                }}
-                            >
-                                <Text>{query}</Text>
-                            </Pressable>
-                        ))}
-                    </View>
-                )}
-
-
+                    <Pressable
+                        style={{
+                            marginLeft: 8,
+                            backgroundColor: "#3B82F6",
+                            paddingHorizontal: 12,
+                            paddingVertical: 10,
+                            borderRadius: 8,
+                        }}
+                        onPress={formatearDireccion}
+                    >
+                        <Text style={{ color: "white", fontWeight: "bold" }}>
+                            Buscar
+                        </Text>
+                    </Pressable>
+                </View>
             </View>
+
+
 
 
 
             {/* ===== ACCIONES ===== */}
             <View style={styles.actions}>
-                <Pressable style={styles.clearButton}>
+                <Pressable
+                    style={styles.clearButton}
+                    onPress={limpiarFiltros}
+                >
                     <Text style={styles.clearText}>Limpiar</Text>
                 </Pressable>
 
