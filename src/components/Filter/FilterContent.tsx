@@ -13,8 +13,13 @@ import { useTheme } from "@/src/hooks/theme-hooks";
 import { Theme } from "@react-navigation/native";
 import MultiSlider from "@ptomasroos/react-native-multi-slider";
 import * as Location from "expo-location";
+import { Filtros } from "@/src/types/filtros";
 
-export default function FilterContent() {
+type Props = {
+    onApply: (filtros: Filtros) => void;
+};
+
+export default function FilterContent({ onApply }: Props) {
     const { theme } = useTheme();
     const { width } = useWindowDimensions();
     const styles = stylesFn(theme, width);
@@ -24,7 +29,7 @@ export default function FilterContent() {
 
 
     const [query, setQuery] = useState("");
-    const [ubicacionActual, setUbicacionActual] =
+    const [, setUbicacionActual] =
         useState<Location.LocationObjectCoords | null>(null);
 
 
@@ -69,6 +74,23 @@ export default function FilterContent() {
             console.error("Error al formatear dirección:", e);
             alert("Error al buscar la dirección.");
         }
+    };
+
+    const aplicarFiltros = () => {
+        if (fechaFin && fechaFin < fechaInicio) {
+            alert("La fecha fin no puede ser anterior a la fecha inicio.");
+            return;
+        }
+
+        const filtros: Filtros = {
+            distanciaMin: range[0],
+            distanciaMax: range[1],
+            fechaInicio,
+            fechaFin,
+            lugar: null, 
+        };
+
+        onApply(filtros);
     };
 
 
@@ -240,9 +262,15 @@ export default function FilterContent() {
                     <Text style={styles.clearText}>Limpiar</Text>
                 </Pressable>
 
-                <Pressable style={styles.applyButton}>
-                    <Text style={styles.applyText}>Aplicar filtros</Text>
+                <Pressable
+                    style={styles.applyButton}
+                    onPress={aplicarFiltros}
+                >
+                    <Text style={styles.applyText}>
+                        Aplicar filtros
+                    </Text>
                 </Pressable>
+
             </View>
 
 
@@ -298,6 +326,7 @@ const stylesFn = (theme: Theme, width: number) => {
 
         container: {
             padding: 16,
+            paddingBottom: 100,
             gap: 20,
         },
 
@@ -352,9 +381,15 @@ const stylesFn = (theme: Theme, width: number) => {
         },
 
         actions: {
-            marginTop: 30,
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
             flexDirection: "row",
             justifyContent: "space-between",
+            alignItems: "flex-end",
+            paddingHorizontal: 20,
+            paddingVertical: 15,
         },
 
         clearButton: {

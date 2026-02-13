@@ -1,22 +1,21 @@
 import { Ubicacion } from "@/scripts/types";
 import { URL_BACKEND } from "@/src/config";
 import { ImageSourcePropType } from "react-native";
+import { Evento } from "../types/event";
 
 const EVENT_PATH = URL_BACKEND + "/events";
 
 const getEvents = async (
     tokenAuth: string | null,
-    userLocation: {
-        lat: number,
-        lon: number
-    },
-    rango: number
-) => {
+    location: { lat: number; lon: number },
+    distanciaMin: number,
+    distanciaMax: number
+): Promise<Evento[]> => {
     try {
         // console.log("llegue al getEvents del front");
         const ubicacion = {
-            latitud: userLocation.lat,
-            longitud: userLocation.lon
+            latitud: location.lat,
+            longitud: location.lon
         }
         // console.log("a ver la ubi: ", ubicacion);
         const res = await fetch(`${EVENT_PATH}/`, {
@@ -27,7 +26,8 @@ const getEvents = async (
             },
             body: JSON.stringify({
                 coordenadasUsuario: ubicacion,
-                rango: rango
+                rangoMin: distanciaMin,
+                rangoMax: distanciaMax
             })
         });
         if (!res.ok) throw new Error(`Error ${res.status}`);
@@ -155,7 +155,7 @@ const getFavs = async (tokenAuth: string | null) => {
 
 const getAllEvents = async (
     tokenAuth: string | null
-) => {
+): Promise<Evento[]> => {
     try {
 
         // console.log("Entraal getALlEvents del front???");

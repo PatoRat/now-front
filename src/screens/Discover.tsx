@@ -28,6 +28,8 @@ import { useAuth } from "../hooks/auth-hooks";
 import MaterialIcons from "@expo/vector-icons/build/MaterialIcons";
 import FilterModal from "../components/Filter/Filter";
 import FilterContent from "../components/Filter/FilterContent";
+import { Filtros } from "@/src/types/filtros";
+import { Evento } from "@/src/types/event";
 
 
 export default function Discover() {
@@ -48,7 +50,6 @@ export default function Discover() {
     // Refresh
     const [refreshing, setRefreshing] = useState(false);
 
-    const [rango, setRango] = useState("10");
 
     const { visible, mensaje, success } = useAlertState();
 
@@ -72,7 +73,40 @@ export default function Discover() {
     };
 
     //FILTER
+
+
+
+    const [filtros, setFiltros] = useState<Filtros>({
+        fechaInicio: new Date(),
+        fechaFin: null,
+        distanciaMin: 0,
+        distanciaMax: 50,
+        lugar: null,
+    });
+
+    useEffect(() => {
+        if (userLocation) {
+            setFiltros(prev => ({
+                ...prev,
+                lugar: userLocation,
+            }));
+        }
+    }, [userLocation]);
+
     const [filterVisible, setFilterVisible] = useState(false);
+
+    const aplicarFiltros = (f: Filtros) => {
+        const filtrosFinales: Filtros = {
+            ...f,
+            lugar: f.lugar ?? userLocation,
+        };
+
+        setFiltros(filtrosFinales);
+        setFilterVisible(false);
+        cargarEventos(filtrosFinales);
+    };
+
+
 
     // Carga de los likes del usuario a una const global
 
@@ -109,23 +143,53 @@ export default function Discover() {
         setPosts([...ordenados, ...sinUbicacion]);
     };
 
-    const cargarEventos = async () => {
+    const cargarEventos = async (filtrosActivos?: Filtros) => {
         setRefreshing(true);
+
+        const filtrosAUsar = filtrosActivos ?? filtros;
+
         try {
-            if (userLocation) {
-                // console.log("llegue a userloc: ", userLocation);
-                const eventos = await getEvents(token, userLocation, Number(rango));
-                ordenarPorCercaniaConArray(eventos, userLocation);
+            const location = filtrosAUsar.lugar ?? userLocation;
+
+            if (location) {
+                const eventos = await getEvents(
+                    token,
+                    location,
+                    filtrosAUsar.distanciaMin,
+                    filtrosAUsar.distanciaMax
+                );
+
+                const eventosFiltrados = eventos.filter((evento) => {
+                    const fechaEvento = new Date(evento.fechaInicio);
+
+                    // Filtro fechaInicio
+                    if (
+                        filtrosAUsar.fechaInicio &&
+                        fechaEvento < filtrosAUsar.fechaInicio
+                    ) {
+                        return false;
+                    }
+
+                    // Filtro fechaFin
+                    if (
+                        filtrosAUsar.fechaFin &&
+                        fechaEvento > filtrosAUsar.fechaFin
+                    ) {
+                        return false;
+                    }
+
+                    return true;
+                });
+
+                ordenarPorCercaniaConArray(eventosFiltrados, location);
             } else {
                 const eventos = await getAllEvents(token);
                 setPosts(eventos);
             }
         } catch (error) {
-            // console.log("Error al traer eventos:", error);
             mensaje.set(`Error al traer eventos: ${error}`);
             success.set(false);
             visible.set(true);
-
         } finally {
             setRefreshing(false);
         }
@@ -133,8 +197,10 @@ export default function Discover() {
 
     useFocusEffect(
         useCallback(() => {
-            if (userLocation) cargarEventos();
-        }, [userLocation, rango])
+            if (userLocation) {
+                cargarEventos();
+            }
+        }, [userLocation, filtros])
     );
 
     // Ubicación
@@ -184,14 +250,7 @@ export default function Discover() {
     }
     return (
         <View style={{ flex: 1 }}>
-            <TextInput
-                placeholder="Rango"
-                placeholderTextColor="#aaa"
-                value={rango}
-                onChangeText={setRango}
-                keyboardType="numeric"
-                style={styles.input}
-            />
+
             <FlatList
                 data={posts}
                 keyExtractor={item => item.id.toString()}
@@ -259,12 +318,14 @@ export default function Discover() {
                     color="#000"
                 />
             </Pressable>
-            
+
+            {/* Boton de Filtros */}
             <FilterModal
                 visible={filterVisible}
                 onClose={() => setFilterVisible(false)}
             >
-                <FilterContent />
+
+                <FilterContent onApply={aplicarFiltros} />
             </FilterModal>
 
 
