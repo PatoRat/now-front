@@ -1,21 +1,21 @@
 import { Ubicacion } from "@/scripts/types";
 import { URL_BACKEND } from "@/src/config";
 import { ImageSourcePropType } from "react-native";
+import { Evento } from "../types/event";
 
 const EVENT_PATH = URL_BACKEND + "/events";
 
 const getEvents = async (
     tokenAuth: string | null,
-    userLocation: {
-        lat: number,
-        lon: number
-    }
-) => {
+    location: { lat: number; lon: number },
+    distanciaMin: number,
+    distanciaMax: number
+): Promise<Evento[]> => {
     try {
         // console.log("llegue al getEvents del front");
         const ubicacion = {
-            latitud: userLocation.lat,
-            longitud: userLocation.lon
+            latitud: location.lat,
+            longitud: location.lon
         }
         // console.log("a ver la ubi: ", ubicacion);
         const res = await fetch(`${EVENT_PATH}/`, {
@@ -25,18 +25,22 @@ const getEvents = async (
                 'Authorization': `Bearer ${tokenAuth}`,
             },
             body: JSON.stringify({
-                coordenadasUsuario: ubicacion
+                coordenadasUsuario: ubicacion,
+                rangoMin: distanciaMin,
+                rangoMax: distanciaMax
             })
         });
         if (!res.ok) throw new Error(`Error ${res.status}`);
         const data = await res.json();
         return data; // Array de eventos
     } catch (error) {
-        console.error("Error fetching events:", error);
+        // console.error("Error fetching events:", error);
         throw error;
     }
 };
-const agregarFavs = async (tokenAuth: string | null, id : string) => {
+
+
+const agregarFavs = async (tokenAuth: string | null, id: string) => {
 
     try {
         const res = await fetch(`${EVENT_PATH}/add-fav`, {
@@ -52,7 +56,7 @@ const agregarFavs = async (tokenAuth: string | null, id : string) => {
 
 
         if (!res.ok) {
-            console.error("Error al crear favoritos:", res.status);
+            // console.error("Error al crear favoritos:", res.status);
             throw new Error(`Error ${res.status}: `);
         }
 
@@ -61,13 +65,13 @@ const agregarFavs = async (tokenAuth: string | null, id : string) => {
         return favs; // Array de eventos favoritos
 
     } catch (error) {
-        console.error("Error creating favoritos:", error);
+        // console.error("Error creating favoritos:", error);
         throw error;
     }
 };
 
 
-const quitarFavs = async (tokenAuth: string | null, id : string) => {
+const quitarFavs = async (tokenAuth: string | null, id: string) => {
 
     try {
         const res = await fetch(`${EVENT_PATH}/rem-fav`, {
@@ -83,7 +87,7 @@ const quitarFavs = async (tokenAuth: string | null, id : string) => {
 
 
         if (!res.ok) {
-            console.error("Error al borrar favoritos:", res.status);
+            // console.error("Error al borrar favoritos:", res.status);
             throw new Error(`Error ${res.status}: `);
         }
 
@@ -92,7 +96,7 @@ const quitarFavs = async (tokenAuth: string | null, id : string) => {
         return favs; // Array de eventos favoritos
 
     } catch (error) {
-        console.error("Error al borrar favoritos:", error);
+        // console.error("Error al borrar favoritos:", error);
         throw error;
     }
 };
@@ -135,7 +139,7 @@ const getFavs = async (tokenAuth: string | null) => {
 
 
         if (!res.ok) {
-            console.error("Error al cargar favoritos:", res.status);
+            // console.error("Error al cargar favoritos:", res.status);
             throw new Error(`Error ${res.status}: `);
         }
 
@@ -144,16 +148,16 @@ const getFavs = async (tokenAuth: string | null) => {
         return favs; // Array de eventos favoritos
 
     } catch (error) {
-        console.error("Error fetching favoritos:", error);
+        // console.error("Error fetching favoritos:", error);
         throw error;
     }
 };
 
 const getAllEvents = async (
     tokenAuth: string | null
-) => {
+): Promise<Evento[]> => {
     try {
-        
+
         // console.log("Entraal getALlEvents del front???");
         const res = await fetch(`${EVENT_PATH}/all`, {
             method: 'GET',
@@ -165,7 +169,7 @@ const getAllEvents = async (
         const data = await res.json();
         return data; // Array de eventos
     } catch (error) {
-        console.error("Error fetching events:", error);
+        // console.error("Error fetching events:", error);
         throw error;
     }
 };
@@ -176,7 +180,7 @@ const getMyEvents = async (
     tokenAuth: string | null
 ) => {
     try {
-        
+
         const res = await fetch(`${EVENT_PATH}/created-by-authorized-user`, {
             method: 'GET',
             headers: {
@@ -187,7 +191,7 @@ const getMyEvents = async (
         const data = await res.json();
         return data; // Array de eventos
     } catch (error) {
-        console.error("Error fetching events:", error);
+        // console.error("Error fetching events:", error);
         throw error;
     }
 };
