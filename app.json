@@ -9,9 +9,13 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Necesitamos tu ubicación para mostrar eventos cercanos."
+      },
       "supportsTablet": true
     },
     "android": {
+      "permissions": ["ACCESS_FINE_LOCATION"],
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

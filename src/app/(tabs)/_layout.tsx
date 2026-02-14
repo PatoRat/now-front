@@ -27,9 +27,9 @@ export default function TabLayout() {
 							tabBarActiveTintColor: "#52e4f5ff",
 							tabBarStyle: {
 								backgroundColor: theme.colors.background,
-								borderTopWidth: 0,       // #################
-								elevation: 0,             // arregla la linea blanca de las tabs
-								shadowColor: "transparent", //############
+								borderTopWidth: 0,
+								elevation: 0,             
+								shadowColor: "transparent",
 							},
 							tabBarInactiveBackgroundColor: theme.colors.background,
 							tabBarActiveBackgroundColor: theme.colors.card,
@@ -59,6 +59,15 @@ export default function TabLayout() {
 								title: "DISCOVER",
 								tabBarIcon: ({ color }) => (
 									<FontAwesome size={28} name="search" color={color} />
+								),
+							}}
+						/>
+						<Tabs.Screen
+							name="map"
+							options={{
+								title: "MAP",
+								tabBarIcon: ({ color }) => (
+									<FontAwesome size={28} name="map-marker" color={color} />
 								),
 							}}
 						/>

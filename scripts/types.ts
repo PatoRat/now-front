@@ -17,6 +17,18 @@ type Ubicacion = {
     direccion: string
 };
 
+type Coordenadas = {
+    lat: number;
+    lon: number;
+};
+
+type Filtros = {
+    fechaInicio: Date | null;
+    fechaFin: Date | null;
+    distanciaMin: number;
+    distanciaMax: number;
+    lugar: Coordenadas | null;
+};
 type RegisterInput = {
     nombre: string,
     email: string,
@@ -67,6 +79,8 @@ type ThemeColors = {
 }
 
 export {
+    Coordenadas,
+    Filtros,
     Fav,
     LoginInput,
     PostType,

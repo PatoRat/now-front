@@ -15,7 +15,6 @@ import {
     Pressable,
     RefreshControl,
     StyleSheet,
-    TextInput,
     View,
     useWindowDimensions
 } from "react-native";
@@ -28,8 +27,7 @@ import { useAuth } from "../hooks/auth-hooks";
 import MaterialIcons from "@expo/vector-icons/build/MaterialIcons";
 import FilterModal from "../components/Filter/Filter";
 import FilterContent from "../components/Filter/FilterContent";
-import { Filtros } from "@/src/types/filtros";
-import { Evento } from "@/src/types/event";
+import { Filtros } from "@/scripts/types";
 
 
 export default function Discover() {
