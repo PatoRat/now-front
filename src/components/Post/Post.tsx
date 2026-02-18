@@ -164,7 +164,14 @@ const Post = (
 
 					<GestureDetector gesture={heartTapGesture}>
 						{/* Corazón animado */}
-						<Animated.View style={{ position: "absolute", top: 10, left: 10, zIndex: 20 }}>
+						<Animated.View style={{
+							position: "absolute",
+							top: 10,
+							left: 10,
+							zIndex: 20,
+							flexDirection: "row",
+							alignItems: "center"
+						}}>
 							{/* Corazón que siempre se ve: vacío si no likeado, rojo si likeado */}
 							<FontAwesome
 								name={showHeart ? "heart" : "heart-o"}
@@ -438,5 +445,4 @@ const stylesFn = (theme: Theme, width: number) =>
 			flexShrink: 1,
 		},
 
-	}
-	);
+	});
