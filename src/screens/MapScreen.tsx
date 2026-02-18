@@ -2,30 +2,20 @@ import { useEffect, useState } from "react";
 import { StyleSheet, View, ActivityIndicator } from "react-native";
 import MapView, { PROVIDER_GOOGLE, Marker, Region } from "react-native-maps";
 import * as Location from "expo-location";
+import { useMapEvents } from "@/src/hooks/useMapEvents";
+import { useAuth } from "../hooks/auth-hooks";
+
 
 export default function MapScreen() {
     const [region, setRegion] = useState<Region | null>(null);
     const [loading, setLoading] = useState(true);
-    const mockEvents = [
-        {
-            id: "1",
-            titulo: "Evento Centro",
-            ubicacion: {
-                latitud: -34.6037,
-                longitud: -58.3816,
-                direccion: "Obelisco"
-            }
-        },
-        {
-            id: "2",
-            titulo: "Evento Palermo",
-            ubicacion: {
-                latitud: -34.5883,
-                longitud: -58.4300,
-                direccion: "Palermo"
-            }
-        }
-    ];
+    const { token } = useAuth(); // o como lo manejes
+
+    const { data: eventos, isLoading } = useMapEvents({
+        token,
+        lat: region?.latitude ?? 0,
+        lon: region?.longitude ?? 0,
+    });
 
     useEffect(() => {
         (async () => {
@@ -66,72 +56,94 @@ export default function MapScreen() {
             showsMyLocationButton
             customMapStyle={minimalMapStyle}
         >
-            {mockEvents.map(evento => (
-                <Marker
-                    key={evento.id}
-                    coordinate={{
-                        latitude: evento.ubicacion.latitud,
-                        longitude: evento.ubicacion.longitud,
-                    }}
-                    title={evento.titulo}
-                    onPress={() => {
-                        console.log("Pressed:", evento.titulo);
-                    }}
-                />
-            ))}
+            {eventos?.map((evento: any) => {
+                if (!evento.ubicacion) return null;
+
+                return (
+                    <Marker
+                        key={evento.id.toString()}
+                        coordinate={{
+                            latitude: evento.ubicacion.latitud,
+                            longitude: evento.ubicacion.longitud,
+                        }}
+                        onPress={() => {
+                            console.log("Pressed:", evento.titulo);
+                        }}
+                    >
+                        <View style={styles.markerContainer}>
+                            <View style={styles.markerDot} />
+                        </View>
+                    </Marker>
+                );
+            })}
+
         </MapView>
     );
 }
 
-    const styles = StyleSheet.create({
-        map: {
-            flex: 1,
-        },
-        loader: {
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-        },
-    });
+const styles = StyleSheet.create({
+    map: {
+        flex: 1,
+    },
+    loader: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    markerContainer: {
+        alignItems: "center",
+        justifyContent: "center",
+    },
 
-    const minimalMapStyle = [
-        // Oculta puntos de interés (negocios, bares, etc.)
-        {
-            featureType: "poi",
-            stylers: [{ visibility: "off" }],
-        },
+    markerDot: {
+        width: 18,
+        height: 18,
+        borderRadius: 9,
+        backgroundColor: "#52e4f5ff", // tu color activo
+        borderWidth: 2,
+        borderColor: "white",
+    },
 
-        // Oculta transporte
-        {
-            featureType: "transit",
-            stylers: [{ visibility: "off" }],
-        },
+});
 
-        // Oculta edificios y construcciones
-        {
-            featureType: "landscape.man_made",
-            stylers: [{ visibility: "off" }],
-        },
+const minimalMapStyle = [
+    // Oculta puntos de interés (negocios, bares, etc.)
+    {
+        featureType: "poi",
+        stylers: [{ visibility: "off" }],
+    },
 
-        // Oculta áreas administrativas
-        {
-            featureType: "administrative",
-            stylers: [{ visibility: "off" }],
-        },
+    // Oculta transporte
+    {
+        featureType: "transit",
+        stylers: [{ visibility: "off" }],
+    },
 
-        // Mantiene solo calles
-        {
-            featureType: "road",
-            elementType: "geometry",
-            stylers: [{ visibility: "on" }],
-        },
+    // Oculta edificios y construcciones
+    {
+        featureType: "landscape.man_made",
+        stylers: [{ visibility: "off" }],
+    },
 
-        // Mantiene nombres de calles
-        {
-            featureType: "road",
-            elementType: "labels.text",
-            stylers: [{ visibility: "on" }],
-        },
-    ];
+    // Oculta áreas administrativas
+    {
+        featureType: "administrative",
+        stylers: [{ visibility: "off" }],
+    },
+
+    // Mantiene solo calles
+    {
+        featureType: "road",
+        elementType: "geometry",
+        stylers: [{ visibility: "on" }],
+    },
+
+    // Mantiene nombres de calles
+    {
+        featureType: "road",
+        elementType: "labels.text",
+        stylers: [{ visibility: "on" }],
+    },
+];
 
 
