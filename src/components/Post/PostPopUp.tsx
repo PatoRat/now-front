@@ -115,7 +115,17 @@ export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
         url && Linking.openURL(url);
     };
 
-    return (
+    
+
+
+
+
+	// ######################### COMPONENTES ##############################################################
+	
+	
+	
+	
+	return (
         <Modal visible={visible} transparent animationType="none" onRequestClose={onClose}>
             <BlurView intensity={80} style={StyleSheet.absoluteFill}>
                 <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />

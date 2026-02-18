@@ -1,24 +1,24 @@
 import { PostType } from "@/scripts/types";
-import { FontAwesome } from "@expo/vector-icons";
 import { useTheme } from "@/src/hooks/theme-hooks";
+import { FontAwesome } from "@expo/vector-icons";
+import { Theme } from "@react-navigation/native";
 import React, { useEffect, useRef, useState } from "react";
 import {
 	Animated,
 	Image,
+	Modal,
+	Pressable,
 	StyleSheet,
 	Text,
 	useWindowDimensions,
-	View,
-	Pressable,
-	Modal
+	View
 } from "react-native";
-import { GestureDetector, GestureHandlerRootView, Gesture } from "react-native-gesture-handler";
+import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
 import { agregarFavs, quitarFavs } from "../../api/event.route";
 import { useAlertState } from "../../hooks/alert-hooks";
 import { useAuth } from "../../hooks/auth-hooks";
 import { useLikes } from "../context-provider/LikeContext";
 import CustomAlert from "../CustomAlert";
-import { Theme } from "@react-navigation/native";
 
 const Post = (
 	{ id, titulo, descripcion, imagenes, fechaInicio, fechaFin, direccion, onSingleTap }:
@@ -46,7 +46,7 @@ const Post = (
 
 	const { visible, mensaje, success } = useAlertState();
 
-	const handleDoubleTap = async () => {
+	const handleLike = async () => {
 		const nuevoLike = !showHeart; // <-- ESTE es el valor real que queda después del tap
 
 		if (nuevoLike) {
@@ -78,13 +78,11 @@ const Post = (
 	};
 
 
-
-
 	const heartTapGesture = Gesture.Tap()
 		.numberOfTaps(1)
 		.runOnJS(true)
 		.onEnd(() => {
-			handleDoubleTap();
+			handleLike();
 		});
 
 	const [menuVisible, setMenuVisible] = useState(false);
@@ -93,7 +91,7 @@ const Post = (
 		.numberOfTaps(2)
 		.runOnJS(true)
 		.onEnd(() => {
-			handleDoubleTap();
+			handleLike();
 		});
 
 	const postSingleTap = Gesture.Tap()
@@ -145,6 +143,15 @@ const Post = (
 		}).start();
 	}, [heartAnim, showHeart]);
 
+
+
+
+
+	// ######################### COMPONENTES ##############################################################
+	
+	
+	
+	
 	return (
 		<GestureHandlerRootView style={{ flex: 1 }}>
 			<GestureDetector gesture={postGesture}>
@@ -173,6 +180,8 @@ const Post = (
 							</Animated.View>
 						</Animated.View>
 					</GestureDetector>
+
+					
 					{/* Opciones */}
 
 					<GestureDetector gesture={menuTapGesture}>

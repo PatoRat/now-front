@@ -2,6 +2,8 @@ import { distancia } from "@/scripts/functions";
 import Post from "@/src/components/Post/Post";
 import { URL_BACKEND } from "@/src/config";
 import { useTheme } from "@/src/hooks/theme-hooks";
+import { Filtros } from "@/src/types/filtros";
+import MaterialIcons from "@expo/vector-icons/build/MaterialIcons";
 import { Theme } from "@react-navigation/native";
 import * as Location from "expo-location";
 import { useFocusEffect, useRouter } from "expo-router";
@@ -15,21 +17,17 @@ import {
     Pressable,
     RefreshControl,
     StyleSheet,
-    TextInput,
     View,
     useWindowDimensions
 } from "react-native";
 import { getAllEvents, getEvents, getFavs } from "../api/event.route";
 import { useLikes } from "../components/context-provider/LikeContext";
 import CustomAlert from "../components/CustomAlert";
+import FilterModal from "../components/Filter/Filter";
+import FilterContent from "../components/Filter/FilterContent";
 import PostPopUp from "../components/Post/PostPopUp";
 import { useAlertState } from "../hooks/alert-hooks";
 import { useAuth } from "../hooks/auth-hooks";
-import MaterialIcons from "@expo/vector-icons/build/MaterialIcons";
-import FilterModal from "../components/Filter/Filter";
-import FilterContent from "../components/Filter/FilterContent";
-import { Filtros } from "@/src/types/filtros";
-import { Evento } from "@/src/types/event";
 
 
 export default function Discover() {
