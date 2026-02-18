@@ -11,11 +11,15 @@ export default function MapScreen() {
     const [loading, setLoading] = useState(true);
     const { token } = useAuth(); // o como lo manejes
 
-    const { data: eventos, isLoading } = useMapEvents({
+    const { data: events, isLoading, isError } = useMapEvents({
         token,
         lat: region?.latitude ?? null,
         lon: region?.longitude ?? null,
+        rangoMin: 0,
+        rangoMax: 20,
     });
+
+
 
 
     useEffect(() => {
@@ -51,32 +55,31 @@ export default function MapScreen() {
     return (
         <MapView
             provider={PROVIDER_GOOGLE}
+            onRegionChangeComplete={(newRegion) => setRegion(newRegion)}
             style={styles.map}
             initialRegion={region}
             showsUserLocation
             showsMyLocationButton
             customMapStyle={minimalMapStyle}
         >
-            {eventos?.map((evento: any) => {
-                if (!evento.ubicacion) return null;
+            {events?.map((event) => {
+                const { latitud, longitud } = event.ubicacion;
+
+                if (!latitud || !longitud) return null;
 
                 return (
                     <Marker
-                        key={evento.id.toString()}
+                        key={event.id}
                         coordinate={{
-                            latitude: evento.ubicacion.latitud,
-                            longitude: evento.ubicacion.longitud,
+                            latitude: latitud,
+                            longitude: longitud,
                         }}
-                        onPress={() => {
-                            console.log("Pressed:", evento.titulo);
-                        }}
-                    >
-                        <View style={styles.markerContainer}>
-                            <View style={styles.markerDot} />
-                        </View>
-                    </Marker>
+                    />
                 );
             })}
+
+
+
 
         </MapView>
     );
