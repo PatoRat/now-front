@@ -28,6 +28,24 @@ type Ubicacion = {
     longitud: number,
     direccion: string
 };
+type BackendEvent = {
+    id: number;
+    titulo: string;
+    descripcion: string;
+    fechaInicio: string;
+    fechaFin: string;
+    ubicacion: {
+        latitud: number;
+        longitud: number;
+        direccion: string;
+    } | null;
+};
+
+type BackendUbicacion = {
+    latitud: number;
+    longitud: number;
+    direccion: string;
+};
 
 type RegisterInput = {
     nombre: string,
@@ -79,6 +97,8 @@ type ThemeColors = {
 }
 
 export {
+    BackendEvent,
+    BackendUbicacion,
     Fav,
     Filtros,
     Coordenadas,

@@ -13,9 +13,10 @@ export default function MapScreen() {
 
     const { data: eventos, isLoading } = useMapEvents({
         token,
-        lat: region?.latitude ?? 0,
-        lon: region?.longitude ?? 0,
+        lat: region?.latitude ?? null,
+        lon: region?.longitude ?? null,
     });
+
 
     useEffect(() => {
         (async () => {
