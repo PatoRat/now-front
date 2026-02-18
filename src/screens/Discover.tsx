@@ -2,7 +2,6 @@ import { distancia } from "@/scripts/functions";
 import Post from "@/src/components/Post/Post";
 import { URL_BACKEND } from "@/src/config";
 import { useTheme } from "@/src/hooks/theme-hooks";
-import { Filtros } from "@/src/types/filtros";
 import MaterialIcons from "@expo/vector-icons/build/MaterialIcons";
 import { Theme } from "@react-navigation/native";
 import * as Location from "expo-location";
@@ -28,6 +27,7 @@ import FilterContent from "../components/Filter/FilterContent";
 import PostPopUp from "../components/Post/PostPopUp";
 import { useAlertState } from "../hooks/alert-hooks";
 import { useAuth } from "../hooks/auth-hooks";
+import { Filtros } from "@/scripts/types";
 
 
 export default function Discover() {

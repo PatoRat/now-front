@@ -1,4 +1,16 @@
 import { ImageSourcePropType } from "react-native";
+type Coordenadas = {
+    lat: number;
+    lon: number;
+};
+
+type Filtros = {
+    fechaInicio: Date | null;
+    fechaFin: Date | null;
+    distanciaMin: number;
+    distanciaMax: number;
+    lugar: Coordenadas | null;
+};
 
 type PostType = {
     id: string,
@@ -68,6 +80,8 @@ type ThemeColors = {
 
 export {
     Fav,
+    Filtros,
+    Coordenadas,
     LoginInput,
     PostType,
     RegisterInput,
