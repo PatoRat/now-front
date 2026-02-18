@@ -21,8 +21,8 @@ import { useLikes } from "../context-provider/LikeContext";
 import CustomAlert from "../CustomAlert";
 
 const Post = (
-	{ id, titulo, descripcion, imagenes, fechaInicio, fechaFin, direccion, onSingleTap }:
-		PostType & { direccion?: string, onSingleTap?: () => void }
+	{ id, titulo, descripcion, imagenes, fechaInicio, fechaFin, direccion, onSingleTap, likesCont }:
+		PostType & { direccion?: string, onSingleTap?: () => void, likesCont: number }
 ) => {
 
 	const { theme } = useTheme();
@@ -43,6 +43,8 @@ const Post = (
 
 	const { likes, toggleLike } = useLikes();
 	const showHeart = likes[Number(id)] || false;
+
+	const baseLikes = likesCont;
 
 	const { visible, mensaje, success } = useAlertState();
 
@@ -144,14 +146,17 @@ const Post = (
 	}, [heartAnim, showHeart]);
 
 
+	const currentLikes = showHeart
+		? baseLikes + 1
+		: baseLikes;
 
 
 
 	// ######################### COMPONENTES ##############################################################
-	
-	
-	
-	
+
+
+
+
 	return (
 		<GestureHandlerRootView style={{ flex: 1 }}>
 			<GestureDetector gesture={postGesture}>
@@ -178,10 +183,17 @@ const Post = (
 							>
 								<FontAwesome name="heart" size={32} color="red" />
 							</Animated.View>
+
+							{/* Cantidad de Likes */}
+							<Text
+								style={styles.textoLike}
+							>
+								{currentLikes}
+							</Text>
 						</Animated.View>
 					</GestureDetector>
 
-					
+
 					{/* Opciones */}
 
 					<GestureDetector gesture={menuTapGesture}>
@@ -303,6 +315,12 @@ const stylesFn = (theme: Theme, width: number) =>
 			shadowRadius: 6,
 			shadowOffset: { width: 0, height: 4 },
 			elevation: 3,
+		},
+		textoLike: {
+			marginLeft: 6,
+			fontSize: 16,
+			fontWeight: "600",
+			color: theme.colors.text,
 		},
 		titulo: {
 			fontSize: 18,
