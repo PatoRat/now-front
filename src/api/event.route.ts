@@ -1,7 +1,6 @@
-import { Ubicacion } from "@/scripts/types";
+import { PostType, Ubicacion } from "@/scripts/types";
 import { URL_BACKEND } from "@/src/config";
 import { ImageSourcePropType } from "react-native";
-import { Evento } from "../types/event";
 
 const EVENT_PATH = URL_BACKEND + "/events";
 
@@ -10,7 +9,7 @@ const getEvents = async (
     location: { lat: number; lon: number },
     distanciaMin: number,
     distanciaMax: number
-): Promise<Evento[]> => {
+): Promise<PostType[]> => {
     try {
         // console.log("llegue al getEvents del front");
         const ubicacion = {
@@ -155,7 +154,7 @@ const getFavs = async (tokenAuth: string | null) => {
 
 const getAllEvents = async (
     tokenAuth: string | null
-): Promise<Evento[]> => {
+): Promise<PostType[]> => {
     try {
 
         // console.log("Entraal getALlEvents del front???");
