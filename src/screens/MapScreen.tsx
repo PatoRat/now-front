@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { StyleSheet, View, ActivityIndicator } from "react-native";
+import { StyleSheet, View, ActivityIndicator, Image } from "react-native";
 import MapView, { PROVIDER_GOOGLE, Marker, Region } from "react-native-maps";
 import * as Location from "expo-location";
 import { useMapEvents } from "@/src/hooks/useMapEvents";
 import { useAuth } from "../hooks/auth-hooks";
+import { avatarMap } from "@/assets/constants/avatarMap";
 
 
 export default function MapScreen() {
@@ -16,6 +17,7 @@ export default function MapScreen() {
     };
     const [region, setRegion] = useState<Region | null>(null);
     const [debouncedRegion, setDebouncedRegion] = useState<Region | null>(null);
+
 
     const radius = debouncedRegion
         ? calculateRadiusFromDelta(debouncedRegion.latitudeDelta)
@@ -72,8 +74,8 @@ export default function MapScreen() {
     }
 
     return (
-        
-            <MapView
+
+        <MapView
             provider={PROVIDER_GOOGLE}
             onRegionChangeComplete={(newRegion) => setRegion(newRegion)}
             style={styles.map}
@@ -104,7 +106,15 @@ export default function MapScreen() {
                         }}
                         title={event.titulo}
                         description={event.ubicacion.direccion}
-                    />
+                    >
+                        <View style={styles.markerContainer}>
+
+                            <Image
+                                source={avatarMap[event.numeroAvatar] ?? avatarMap[1]}
+                                style={styles.avatar}
+                            />
+                        </View>
+                    </Marker>
                 );
             })}
         </MapView>
@@ -133,6 +143,21 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: "white",
     },
+    avatar: {
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        borderWidth: 3,
+        borderColor: "white",
+        backgroundColor: "#eee",
+
+        shadowColor: "#000",
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        shadowOffset: { width: 0, height: 2 },
+        elevation: 5,
+    },
+
 
 });
 

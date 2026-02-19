@@ -21,6 +21,7 @@ type PostType = {
     fechaFin: Date
     ubicacion: Ubicacion,
     creador: string,
+    numeroAvatar: number,
 };
 
 type Ubicacion = {
