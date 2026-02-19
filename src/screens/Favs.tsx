@@ -116,6 +116,7 @@ export default function Favs() {
                             direccion={item.ubicacion?.direccion ?? ""}
                             creador={item.creador ?? "Anónimo"}
                             onSingleTap={() => openPopup(item)}
+                            likesCont={item.likesCont ?? 0}
                         />
                     );
                 }}
