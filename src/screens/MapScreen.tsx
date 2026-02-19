@@ -110,12 +110,14 @@ export default function MapScreen() {
                             onPress={() => {
                                 setSelectedPost(event);
                                 setIsPopupVisible(true);
+
                             }}
                         >
+                            
                             <View style={styles.markerContainer}>
 
                                 <Image
-                                    source={avatarMap[event.numeroAvatar] ?? avatarMap[1]}
+                                    source={avatarMap[event.creador?.numeroAvatar ?? 1]}
                                     style={styles.avatar}
                                 />
                             </View>

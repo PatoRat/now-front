@@ -20,8 +20,11 @@ type PostType = {
     fechaInicio: Date
     fechaFin: Date
     ubicacion: Ubicacion,
-    creador: string,
-    numeroAvatar: number,
+    creador: {
+        id: string,
+        nombre: string,
+        numeroAvatar: number
+    }
 };
 
 type Ubicacion = {
