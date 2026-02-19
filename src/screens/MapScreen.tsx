@@ -7,20 +7,27 @@ import { useAuth } from "../hooks/auth-hooks";
 
 
 export default function MapScreen() {
-    const [region, setRegion] = useState<Region | null>(null);
     const [loading, setLoading] = useState(true);
     const { token } = useAuth(); // o como lo manejes
+    const calculateRadiusFromDelta = (latitudeDelta: number) => {
+        // 1 grado latitud ≈ 111 km
+        const radius = (latitudeDelta * 111) / 2;
+        return Math.max(radius, 1); // mínimo 1km
+    };
+    const [region, setRegion] = useState<Region | null>(null);
+    const [debouncedRegion, setDebouncedRegion] = useState<Region | null>(null);
 
-    const { data: events, isLoading, isError } = useMapEvents({
+    const radius = debouncedRegion
+        ? calculateRadiusFromDelta(debouncedRegion.latitudeDelta)
+        : 20;
+
+    const { data: events } = useMapEvents({
         token,
-        lat: region?.latitude ?? null,
-        lon: region?.longitude ?? null,
+        lat: debouncedRegion?.latitude ?? null,
+        lon: debouncedRegion?.longitude ?? null,
         rangoMin: 0,
-        rangoMax: 20,
+        rangoMax: radius,
     });
-
-
-
 
     useEffect(() => {
         (async () => {
@@ -33,16 +40,28 @@ export default function MapScreen() {
 
             const location = await Location.getCurrentPositionAsync({});
 
-            setRegion({
+            const initialRegion: Region = {
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude,
-                latitudeDelta: 0.01,
-                longitudeDelta: 0.01,
-            });
+                latitudeDelta: 0.05,
+                longitudeDelta: 0.05,
+            };
 
+            setRegion(initialRegion);
             setLoading(false);
         })();
     }, []);
+
+    useEffect(() => {
+        if (!region) return;
+
+        const timeout = setTimeout(() => {
+            setDebouncedRegion(region);
+        }, 500); // 500ms debounce
+
+        return () => clearTimeout(timeout);
+    }, [region]);
+
 
     if (loading || !region) {
         return (
@@ -53,7 +72,8 @@ export default function MapScreen() {
     }
 
     return (
-        <MapView
+        
+            <MapView
             provider={PROVIDER_GOOGLE}
             onRegionChangeComplete={(newRegion) => setRegion(newRegion)}
             style={styles.map}
@@ -64,8 +84,16 @@ export default function MapScreen() {
         >
             {events?.map((event) => {
                 const { latitud, longitud } = event.ubicacion;
+                console.log(region);
 
-                if (!latitud || !longitud) return null;
+                if (
+                    latitud == null ||
+                    longitud == null ||
+                    typeof latitud !== "number" ||
+                    typeof longitud !== "number"
+                ) {
+                    return null;
+                }
 
                 return (
                     <Marker
@@ -74,13 +102,11 @@ export default function MapScreen() {
                             latitude: latitud,
                             longitude: longitud,
                         }}
+                        title={event.titulo}
+                        description={event.ubicacion.direccion}
                     />
                 );
             })}
-
-
-
-
         </MapView>
     );
 }
