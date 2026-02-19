@@ -5,6 +5,7 @@ import * as Location from "expo-location";
 import { useMapEvents } from "@/src/hooks/useMapEvents";
 import { useAuth } from "../hooks/auth-hooks";
 import { avatarMap } from "@/assets/constants/avatarMap";
+import PostPopUp from "../components/Post/PostPopUp";
 
 
 export default function MapScreen() {
@@ -17,6 +18,8 @@ export default function MapScreen() {
     };
     const [region, setRegion] = useState<Region | null>(null);
     const [debouncedRegion, setDebouncedRegion] = useState<Region | null>(null);
+    const [selectedPost, setSelectedPost] = useState<any>(null);
+    const [isPopupVisible, setIsPopupVisible] = useState(false);
 
 
     const radius = debouncedRegion
@@ -74,50 +77,61 @@ export default function MapScreen() {
     }
 
     return (
+        <>
+            <MapView
+                provider={PROVIDER_GOOGLE}
+                onRegionChangeComplete={(newRegion) => setRegion(newRegion)}
+                style={styles.map}
+                initialRegion={region}
+                showsUserLocation
+                showsMyLocationButton
+                customMapStyle={minimalMapStyle}
+            >
+                {events?.map((event) => {
+                    const { latitud, longitud } = event.ubicacion;
+                    //console.log(region);
 
-        <MapView
-            provider={PROVIDER_GOOGLE}
-            onRegionChangeComplete={(newRegion) => setRegion(newRegion)}
-            style={styles.map}
-            initialRegion={region}
-            showsUserLocation
-            showsMyLocationButton
-            customMapStyle={minimalMapStyle}
-        >
-            {events?.map((event) => {
-                const { latitud, longitud } = event.ubicacion;
-                console.log(region);
+                    if (
+                        latitud == null ||
+                        longitud == null ||
+                        typeof latitud !== "number" ||
+                        typeof longitud !== "number"
+                    ) {
+                        return null;
+                    }
 
-                if (
-                    latitud == null ||
-                    longitud == null ||
-                    typeof latitud !== "number" ||
-                    typeof longitud !== "number"
-                ) {
-                    return null;
-                }
+                    return (
+                        <Marker
+                            key={event.id}
+                            coordinate={{
+                                latitude: latitud,
+                                longitude: longitud,
+                            }}
+                            onPress={() => {
+                                setSelectedPost(event);
+                                setIsPopupVisible(true);
+                            }}
+                        >
+                            <View style={styles.markerContainer}>
 
-                return (
-                    <Marker
-                        key={event.id}
-                        coordinate={{
-                            latitude: latitud,
-                            longitude: longitud,
-                        }}
-                        title={event.titulo}
-                        description={event.ubicacion.direccion}
-                    >
-                        <View style={styles.markerContainer}>
-
-                            <Image
-                                source={avatarMap[event.numeroAvatar] ?? avatarMap[1]}
-                                style={styles.avatar}
-                            />
-                        </View>
-                    </Marker>
-                );
-            })}
-        </MapView>
+                                <Image
+                                    source={avatarMap[event.numeroAvatar] ?? avatarMap[1]}
+                                    style={styles.avatar}
+                                />
+                            </View>
+                        </Marker>
+                    );
+                })}
+            </MapView>
+            <PostPopUp
+                visible={isPopupVisible}
+                post={selectedPost}
+                onClose={() => {
+                    setIsPopupVisible(false);
+                    setSelectedPost(null);
+                }}
+            />
+        </>
     );
 }
 
@@ -144,8 +158,8 @@ const styles = StyleSheet.create({
         borderColor: "white",
     },
     avatar: {
-        width: 44,
-        height: 44,
+        width: 40,
+        height: 40,
         borderRadius: 22,
         borderWidth: 3,
         borderColor: "white",

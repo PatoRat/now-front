@@ -289,8 +289,7 @@ export default function Discover() {
                             ubicacion={item.ubicacion ?? null}
                             direccion={item.ubicacion?.direccion ?? ""}
                             creador={item.creador ?? "Anónimo"}
-                            onSingleTap={() => openPopup(item)}
-                        />
+                            onSingleTap={() => openPopup(item)} numeroAvatar={item.numeroAvatar}                        />
                     );
                 }}
                 contentContainerStyle={styles.listaContenido}
