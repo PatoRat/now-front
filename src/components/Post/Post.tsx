@@ -44,7 +44,7 @@ const Post = (
 	const { likes, toggleLike } = useLikes();
 	const showHeart = likes[Number(id)] || false;
 
-	const baseLikes = likesCont;
+	const [currentLikes, setCurrentLikes] = useState(likesCont);
 
 	const { visible, mensaje, success } = useAlertState();
 
@@ -55,6 +55,7 @@ const Post = (
 			try {
 				await agregarFavs(token, id);
 				toggleLike(Number(id), true);
+				setCurrentLikes(prev => prev + 1);
 			} catch (error) {
 				mensaje.set(`Error al intentar agregar a favoritos: ${error}`);
 				success.set(false);
@@ -64,6 +65,7 @@ const Post = (
 			try {
 				await quitarFavs(token, id);
 				toggleLike(Number(id), false);
+				setCurrentLikes(prev => prev - 1);
 			} catch (error) {
 				mensaje.set(`Error al intentar eliminar de favoritos: ${error}`);
 				success.set(false);
@@ -146,11 +148,9 @@ const Post = (
 	}, [heartAnim, showHeart]);
 
 
-	const currentLikes = showHeart
-		? baseLikes + 1
-		: baseLikes;
-
-
+	useEffect(() => {
+		setCurrentLikes(likesCont);
+	}, [likesCont]);
 
 	// ######################### COMPONENTES ##############################################################
 
