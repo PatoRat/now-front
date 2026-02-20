@@ -1,4 +1,16 @@
 import { ImageSourcePropType } from "react-native";
+type Coordenadas = {
+    lat: number;
+    lon: number;
+};
+
+type Filtros = {
+    fechaInicio: Date | null;
+    fechaFin: Date | null;
+    distanciaMin: number;
+    distanciaMax: number;
+    lugar: Coordenadas | null;
+};
 
 type PostType = {
     id: string,
@@ -8,13 +20,35 @@ type PostType = {
     fechaInicio: Date
     fechaFin: Date
     ubicacion: Ubicacion,
-    creador: string,
+    creador: {
+        id: string,
+        nombre: string,
+        numeroAvatar: number
+    }
 };
 
 type Ubicacion = {
     latitud: number,
     longitud: number,
     direccion: string
+};
+type BackendEvent = {
+    id: number;
+    titulo: string;
+    descripcion: string;
+    fechaInicio: string;
+    fechaFin: string;
+    ubicacion: {
+        latitud: number;
+        longitud: number;
+        direccion: string;
+    } | null;
+};
+
+type BackendUbicacion = {
+    latitud: number;
+    longitud: number;
+    direccion: string;
 };
 
 type RegisterInput = {
@@ -67,7 +101,11 @@ type ThemeColors = {
 }
 
 export {
+    BackendEvent,
+    BackendUbicacion,
     Fav,
+    Filtros,
+    Coordenadas,
     LoginInput,
     PostType,
     RegisterInput,

@@ -34,6 +34,7 @@ export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
     const width = Dimensions.get("window").width;
     const { theme } = useTheme();
     const styles = stylesFn(theme, width);
+    
 
     const nextImage = () => {
         if (currentIndex < imagenesMapeadas.length - 1) {

@@ -27,9 +27,9 @@ export default function TabLayout() {
 							tabBarActiveTintColor: "#52e4f5ff",
 							tabBarStyle: {
 								backgroundColor: theme.colors.background,
-								borderTopWidth: 0,       // #################
-								elevation: 0,             // arregla la linea blanca de las tabs
-								shadowColor: "transparent", //############
+								borderTopWidth: 0,
+								elevation: 0,
+								shadowColor: "transparent",
 							},
 							tabBarInactiveBackgroundColor: theme.colors.background,
 							tabBarActiveBackgroundColor: theme.colors.card,
@@ -53,6 +53,7 @@ export default function TabLayout() {
 								),
 							}}
 						/>
+
 						<Tabs.Screen
 							name="index"
 							options={{
@@ -62,6 +63,18 @@ export default function TabLayout() {
 								),
 							}}
 						/>
+
+						{/* NUEVA TAB MAPA */}
+						<Tabs.Screen
+							name="map"
+							options={{
+								title: "MAP",
+								tabBarIcon: ({ color }) => (
+									<FontAwesome size={28} name="map" color={color} />
+								),
+							}}
+						/>
+
 						<Tabs.Screen
 							name="profile"
 							options={{
@@ -72,6 +85,7 @@ export default function TabLayout() {
 							}}
 						/>
 					</Tabs>
+
 				</View>
 			</LikesProvider>
 		</SafeAreaView>

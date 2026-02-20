@@ -13,7 +13,7 @@ import { useTheme } from "@/src/hooks/theme-hooks";
 import { Theme } from "@react-navigation/native";
 import MultiSlider from "@ptomasroos/react-native-multi-slider";
 import * as Location from "expo-location";
-import { Filtros } from "@/src/types/filtros";
+import { Filtros } from "@/scripts/types";
 
 type Props = {
     onApply: (filtros: Filtros) => void;
