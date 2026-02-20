@@ -34,7 +34,7 @@ export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
     const width = Dimensions.get("window").width;
     const { theme } = useTheme();
     const styles = stylesFn(theme, width);
-    
+
 
     const nextImage = () => {
         if (currentIndex < imagenesMapeadas.length - 1) {
@@ -116,17 +116,17 @@ export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
         url && Linking.openURL(url);
     };
 
-    
 
 
 
 
-	// ######################### COMPONENTES ##############################################################
-	
-	
-	
-	
-	return (
+
+    // ######################### COMPONENTES ##############################################################
+
+
+
+
+    return (
         <Modal visible={visible} transparent animationType="none" onRequestClose={onClose}>
             <BlurView intensity={80} style={StyleSheet.absoluteFill}>
                 <Pressable style={StyleSheet.absoluteFill} onPress={onClose} />
@@ -274,6 +274,12 @@ export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
                 <View style={{ alignItems: "center", marginTop: 10 }}>
                     <Text style={{ fontSize: 16, fontWeight: "bold", color: theme.colors.text }}>
                         Creado por: {post.creador.nombre}
+                    </Text>
+                </View>
+
+                <View style={{ alignItems: "center", marginTop: 6 }}>
+                    <Text style={{ fontSize: 14, color: theme.colors.text }}>
+                        ❤️ {post.likesCont ?? 0} Favs
                     </Text>
                 </View>
 
