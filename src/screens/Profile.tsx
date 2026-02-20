@@ -201,7 +201,6 @@ export default function ProfileGamified() {
 							direccion={item.ubicacion?.direccion ?? ""}
 							creador={item.creador ?? "Anónimo"} // SACAR ANONIMO
 							onSingleTap={() => openPopup(item)}
-							likesCont={item.likesCont ?? 0}
 						/>
 					);
 				}}

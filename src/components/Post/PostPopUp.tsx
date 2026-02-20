@@ -16,6 +16,7 @@ import {
     Text,
     View,
 } from "react-native";
+import { useLikes } from "../context-provider/LikeContext";
 
 type PostPopUpProps = {
     visible: boolean,
@@ -30,11 +31,11 @@ type ImagenSource = {
 
 export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
     const fadeAnim = useRef(new Animated.Value(0)).current;
+    const { currentLikes } = useLikes();
     const [currentIndex, setCurrentIndex] = useState(0);
     const width = Dimensions.get("window").width;
     const { theme } = useTheme();
     const styles = stylesFn(theme, width);
-
 
     const nextImage = () => {
         if (currentIndex < imagenesMapeadas.length - 1) {
@@ -279,7 +280,7 @@ export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
 
                 <View style={{ alignItems: "center", marginTop: 6 }}>
                     <Text style={{ fontSize: 14, color: theme.colors.text }}>
-                        ❤️ {post.likesCont ?? 0} Favs
+                        ❤️ {currentLikes[Number(post.id)] ?? 0} Favs
                     </Text>
                 </View>
 

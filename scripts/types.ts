@@ -24,7 +24,8 @@ type PostType = {
         id: string,
         nombre: string,
         numeroAvatar: number
-    }
+    },
+    likesCont: number
 };
 
 type Ubicacion = {
@@ -102,11 +103,8 @@ type ThemeColors = {
 
 export {
     BackendEvent,
-    BackendUbicacion,
-    Fav,
-    Filtros,
-    Coordenadas,
-    LoginInput,
+    BackendUbicacion, Coordenadas, Fav,
+    Filtros, LoginInput,
     PostType,
     RegisterInput,
     ThemeColors,

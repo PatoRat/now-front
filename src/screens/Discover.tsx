@@ -1,4 +1,5 @@
 import { distancia } from "@/scripts/functions";
+import { Filtros, PostType } from "@/scripts/types";
 import Post from "@/src/components/Post/Post";
 import { URL_BACKEND } from "@/src/config";
 import { useTheme } from "@/src/hooks/theme-hooks";
@@ -27,7 +28,6 @@ import FilterContent from "../components/Filter/FilterContent";
 import PostPopUp from "../components/Post/PostPopUp";
 import { useAlertState } from "../hooks/alert-hooks";
 import { useAuth } from "../hooks/auth-hooks";
-import { Filtros } from "@/scripts/types";
 
 
 export default function Discover() {
@@ -108,7 +108,7 @@ export default function Discover() {
 
     // Carga de los likes del usuario a una const global
 
-    const { setAllLikes } = useLikes();
+    const { setAllLikes, setAllLikesCont } = useLikes();
     const cargarFavoritos = async () => {
         try {
             const favsData = await getFavs(token);
@@ -127,6 +127,15 @@ export default function Discover() {
         }
     };
 
+    const setearLikeContPorEvento = (eventos: PostType[]) => {
+        const likeContMap: Record<number, number> = {};
+
+        eventos.forEach((evento: PostType) => {
+            likeContMap[Number(evento.id)] = evento.likesCont;
+        });
+
+        setAllLikesCont(likeContMap);
+    }
 
     const ordenarPorCercaniaConArray = (eventos: any[], pos: { lat: number; lon: number }) => {
         const conUbicacion = eventos.filter(e => e.ubicacion?.latitud != null && e.ubicacion?.longitud != null);
@@ -179,9 +188,12 @@ export default function Discover() {
                     return true;
                 });
 
+                setearLikeContPorEvento(eventosFiltrados);
+
                 ordenarPorCercaniaConArray(eventosFiltrados, location);
             } else {
                 const eventos = await getAllEvents(token);
+                setearLikeContPorEvento(eventos);
                 setPosts(eventos);
             }
         } catch (error) {
@@ -290,7 +302,6 @@ export default function Discover() {
                             direccion={item.ubicacion?.direccion ?? ""}
                             creador={item.creador ?? "Anónimo"}
                             onSingleTap={() => openPopup(item)}
-                            likesCont={item.likesCont ?? 0}
                         />
                     );
                 }}
