@@ -1,4 +1,5 @@
 import { distancia } from "@/scripts/functions";
+import { Filtros } from "@/scripts/types";
 import Post from "@/src/components/Post/Post";
 import { URL_BACKEND } from "@/src/config";
 import { useTheme } from "@/src/hooks/theme-hooks";
@@ -27,7 +28,6 @@ import FilterContent from "../components/Filter/FilterContent";
 import PostPopUp from "../components/Post/PostPopUp";
 import { useAlertState } from "../hooks/alert-hooks";
 import { useAuth } from "../hooks/auth-hooks";
-import { Filtros } from "@/scripts/types";
 
 
 export default function Discover() {
@@ -249,6 +249,19 @@ export default function Discover() {
     return (
         <View style={{ flex: 1 }}>
 
+            <View style={styles.topMask} />
+
+            <Pressable
+                style={styles.filtroButton}
+                onPress={() => setFilterVisible(true)}
+            >
+                <MaterialIcons
+                    name="filter-list"
+                    size={26}
+                    color="#000"
+                />
+            </Pressable>
+            
             <FlatList
                 data={posts}
                 keyExtractor={item => item.id.toString()}
@@ -294,6 +307,7 @@ export default function Discover() {
                         />
                     );
                 }}
+                ListHeaderComponent={<View style={{ height: 80 }} />}
                 contentContainerStyle={styles.listaContenido}
                 showsVerticalScrollIndicator={false}
                 refreshControl={
@@ -307,16 +321,7 @@ export default function Discover() {
                 }
             />
 
-            <Pressable
-                style={styles.filtroButton}
-                onPress={() => setFilterVisible(true)}
-            >
-                <MaterialIcons
-                    name="filter-list"
-                    size={26}
-                    color="#000"
-                />
-            </Pressable>
+
 
             {/* Boton de Filtros */}
             <FilterModal
@@ -355,6 +360,15 @@ const stylesFn = (theme: Theme, width: number) => {
     const scale = Math.min(width / 400, 1.3);
 
     return StyleSheet.create({
+        topMask: {
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 80, // ajuste fino
+            backgroundColor: theme.colors.background,
+            zIndex: 50,
+        },
         filtroButton: {
             position: "absolute",
             top: 20,
