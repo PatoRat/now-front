@@ -22,7 +22,7 @@ import CustomAlert from "../CustomAlert";
 
 const Post = (
 	{ id, titulo, descripcion, imagenes, fechaInicio, fechaFin, direccion, onSingleTap }:
-		PostType & { direccion?: string, onSingleTap?: () => void }
+		Omit<PostType, "likesCont"> & { direccion?: string, onSingleTap?: () => void}
 ) => {
 
 	const { theme } = useTheme();
@@ -41,8 +41,10 @@ const Post = (
 
 	const heartAnim = useRef(new Animated.Value(0)).current;
 
-	const { likes, toggleLike } = useLikes();
+	const { likes, toggleLike, currentLikes } = useLikes();
 	const showHeart = likes[Number(id)] || false;
+	
+
 
 	const { visible, mensaje, success } = useAlertState();
 
@@ -143,15 +145,11 @@ const Post = (
 		}).start();
 	}, [heartAnim, showHeart]);
 
-
-
-
-
 	// ######################### COMPONENTES ##############################################################
-	
-	
-	
-	
+
+
+
+
 	return (
 		<GestureHandlerRootView style={{ flex: 1 }}>
 			<GestureDetector gesture={postGesture}>
@@ -159,7 +157,14 @@ const Post = (
 
 					<GestureDetector gesture={heartTapGesture}>
 						{/* Corazón animado */}
-						<Animated.View style={{ position: "absolute", top: 10, left: 10, zIndex: 20 }}>
+						<Animated.View style={{
+							position: "absolute",
+							top: 10,
+							left: 10,
+							zIndex: 20,
+							flexDirection: "row",
+							alignItems: "center"
+						}}>
 							{/* Corazón que siempre se ve: vacío si no likeado, rojo si likeado */}
 							<FontAwesome
 								name={showHeart ? "heart" : "heart-o"}
@@ -178,10 +183,17 @@ const Post = (
 							>
 								<FontAwesome name="heart" size={32} color="red" />
 							</Animated.View>
+
+							{/* Cantidad de Likes */}
+							<Text
+								style={styles.textoLike}
+							>
+								{currentLikes[Number(id)] ?? 0}
+							</Text>
 						</Animated.View>
 					</GestureDetector>
 
-					
+
 					{/* Opciones */}
 
 					<GestureDetector gesture={menuTapGesture}>
@@ -304,6 +316,12 @@ const stylesFn = (theme: Theme, width: number) =>
 			shadowOffset: { width: 0, height: 4 },
 			elevation: 3,
 		},
+		textoLike: {
+			marginLeft: 6,
+			fontSize: 16,
+			fontWeight: "600",
+			color: theme.colors.text,
+		},
 		titulo: {
 			fontSize: 18,
 			fontFamily: theme.fonts.bold.fontFamily,
@@ -420,5 +438,4 @@ const stylesFn = (theme: Theme, width: number) =>
 			flexShrink: 1,
 		},
 
-	}
-	);
+	});
