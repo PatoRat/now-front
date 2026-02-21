@@ -23,6 +23,10 @@ import { useFollowing } from "@/src/hooks/useFollowing";
 import { useAlertState } from "@/src/hooks/alert-hooks";
 import { avatarMap } from "@/assets/constants/avatarMap";
 import { followUser, unfollowUser } from "@/src/api/user.route";
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { ParamListBase } from '@react-navigation/native';
+import { useRouter } from "expo-router";
 
 type PostPopUpProps = {
     visible: boolean,
@@ -33,13 +37,14 @@ type PostPopUpProps = {
 type ImagenSource = { uri: string };
 
 export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
+    const router = useRouter();
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const { token } = useAuth();
     const width = Dimensions.get("window").width;
     const { theme } = useTheme();
     const styles = stylesFn(theme, width);
 
-    const { likes, currentLikes, toggleLike } = useLikes();
+    const { likes, toggleLike } = useLikes();
     const { followingIds } = useFollowing(token);
     const { mensaje, success } = useAlertState();
 
@@ -63,7 +68,6 @@ export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
     if (!post) return null;
 
     const liked = likes[post.id] ?? false;
-    const likeCount = currentLikes[post.id] ?? 0;
 
     const imagenesMapeadas: ImagenSource[] =
         post.imagenes?.map((img: { url: string }) => {
@@ -130,13 +134,21 @@ export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
             <Animated.View style={[styles.popupContainer, { opacity: fadeAnim }]}>
 
                 <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "flex-start", marginBottom: 10 }}>
-                    <Image
-                        source={avatarMap[post.creador.numeroAvatar ?? 1]}
-                        style={styles.avatarImage}
-                    />
-                    <Text style={{ fontWeight: "bold", fontSize: 16, color: theme.colors.text, marginLeft: 8 }}>
-                        {post.creador.nombre}
-                    </Text>
+                    <Pressable
+                        onPress={() => {
+                            onClose();
+                            router.push({ pathname: "../../profile/[userId]", params: { userId: String(post.creador.id) } });
+                        }}
+                        style={{ flexDirection: "row", alignItems: "center" }}
+                    >
+                        <Image
+                            source={avatarMap[post.creador.numeroAvatar ?? 1]}
+                            style={styles.avatarImage}
+                        />
+                        <Text style={{ fontWeight: "bold", fontSize: 16, color: theme.colors.text, marginLeft: 8 }}>
+                            {post.creador.nombre}
+                        </Text>
+                    </Pressable>
                     <Pressable
                         onPress={handleFollowToggle}
                         style={({ pressed }) => [

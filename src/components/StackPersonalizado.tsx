@@ -2,6 +2,7 @@ import { Stack } from "expo-router";
 import { Image } from "react-native";
 import { useAuth } from "../hooks/auth-hooks";
 import { useTheme } from "../hooks/theme-hooks";
+import OtherProfile from "../app/profile/[userId]";
 
 const StackPersonalizado = () => {
 	const { isLogged, isFetching } = useAuth();
@@ -65,6 +66,7 @@ const StackPersonalizado = () => {
 					}}
 				/>
 			</Stack.Protected>
+			
 
 			<Stack.Protected guard={!isFetching && !isLogged}>
 				<Stack.Screen

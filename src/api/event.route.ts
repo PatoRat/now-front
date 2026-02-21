@@ -189,26 +189,46 @@ const getAllEvents = async (
     }
 };
 
+const getMyEvents = async (tokenAuth: string | null) => {
+      console.log("Traer eventos propios");
+  return await getUserEvents(tokenAuth);
+};
 
+const otherEvents = async (token: string, otherUserId: number) => {
+      
+      console.log("Traer eventos de otro usuario, id:", otherUserId);
+  return await getUserEvents(token, otherUserId);
+};
 
-const getMyEvents = async (
-    tokenAuth: string | null
-) => {
-    try {
+const getUserEvents = async (tokenAuth: string | null, targetUserId?: number) => {
+  try {
+    let url = "";
+    if (targetUserId) {
+      // Endpoint para traer eventos de otro usuario
 
-        const res = await fetch(`${EVENT_PATH}/created-by-authorized-user`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${tokenAuth}`,
-            },
-        });
-        if (!res.ok) throw new Error(`Error ${res.status}`);
-        const data = await res.json();
-        return data; // Array de eventos
-    } catch (error) {
-        // console.error("Error fetching events:", error);
-        throw error;
+      console.log("Traer eventos de otro usuario, id:", targetUserId);
+
+      url = `${EVENT_PATH}/get-user/${targetUserId}`;
+    } else {
+      // Endpoint para traer mis eventos
+      url = `${EVENT_PATH}/get-user-posts`;
     }
+
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${tokenAuth}`,
+      },
+    });
+    
+
+    if (!res.ok) throw new Error(`Error ${res.status}`);
+
+    const data = await res.json();
+    return data; // Array de eventos
+  } catch (error) {
+    throw error;
+  }
 };
 
 
@@ -257,8 +277,6 @@ const guardarImagenes = async (
 
     formData.append("eventId", `${eventId}`);
 
-    /* Hecho por IA, no daba más de pelear con la forma para guardar archivos
-    en el back */
     imagenes.forEach((img, index) => {
         const fuente = img as { uri: string };
         const uri = fuente.uri;
@@ -356,5 +374,5 @@ const guardarImagenesSoloUri = async (
 }
 */
 
-export { agregarFavs, eventCreate, getAllEvents, getEvents, getFavs, getMyEvents, guardarImagenes, quitarFavs, getMyFollowingIds };
+export { agregarFavs, eventCreate, getAllEvents, getEvents, getFavs, getMyEvents, guardarImagenes, quitarFavs, getMyFollowingIds, otherEvents };
 

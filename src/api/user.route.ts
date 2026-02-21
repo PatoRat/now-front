@@ -87,6 +87,23 @@ const userGet = async (tokenAuth: string) => {
 }
 
 
+const getUser = async (tokenAuth: string) => {
+    // console.log("llegue al fetch", tokenAuth);
+
+    const response = await fetch(`${USER_PATH}/get-user/:userId`, {
+        method: "GET",
+        headers: {
+            'Authorization': `Bearer ${tokenAuth}`,
+        }
+    });
+
+    if (!response.ok) {
+        console.error(response.body);
+        throw new Error("Error al obtener la información del usuario");
+    }
+
+    return await response.json();
+}
 
 const followUser = async (token: string, targetUserId: number) => {
     const response = await fetch(
@@ -120,5 +137,5 @@ const unfollowUser = async (token: string, targetUserId: number) => {
     }
 };
 
-export { cambiarAvatar, userGet, userLogin, userRegister, followUser, unfollowUser };
+export { cambiarAvatar, userGet, getUser, userLogin, userRegister, followUser, unfollowUser };
 
