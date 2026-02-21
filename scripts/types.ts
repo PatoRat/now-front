@@ -13,7 +13,7 @@ type Filtros = {
 };
 
 type PostType = {
-    id: string,
+    id: number,
     titulo: string,
     descripcion: string,
     imagenes: ImageSourcePropType[]
@@ -21,7 +21,7 @@ type PostType = {
     fechaFin: Date
     ubicacion: Ubicacion,
     creador: {
-        id: string,
+        id: number,
         nombre: string,
         numeroAvatar: number
     },

@@ -17,6 +17,11 @@ import {
     View,
 } from "react-native";
 import { useLikes } from "../context-provider/LikeContext";
+import { useRouter } from "expo-router";
+import { useAuth } from "@/src/hooks/auth-hooks";
+import { agregarFavs, followUser, quitarFavs, unfollowUser } from "@/src/api/event.route";
+import { useFollowing } from "@/src/hooks/useFollowing";
+import { useAlertState } from "@/src/hooks/alert-hooks";
 
 type PostPopUpProps = {
     visible: boolean,
@@ -31,7 +36,7 @@ type ImagenSource = {
 
 export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
     const fadeAnim = useRef(new Animated.Value(0)).current;
-    const { currentLikes } = useLikes();
+    const { token } = useAuth();
     const [currentIndex, setCurrentIndex] = useState(0);
     const width = Dimensions.get("window").width;
     const { theme } = useTheme();
@@ -67,7 +72,7 @@ export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
         }
     }, [fadeAnim, visible]);
 
-    if (!post) return null;
+
 
     const formatoFecha = (fecha: Date) => {
         if (!fecha) return "";
@@ -81,6 +86,76 @@ export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
                 timeStyle: "short"
             })
         );
+    };
+
+
+
+    const abrirEnMaps = (lat: number, lng: number) => {
+        const url = Platform.select({
+            ios: `maps:0,0?q=${lat},${lng}`,
+            android: `geo:${lat},${lng}?q=${lat},${lng}`,
+            default: `https://www.google.com/maps?q=${lat},${lng}`,
+        });
+        url && Linking.openURL(url);
+    };
+
+    // FOLLOWING Y UNFOLLOWING / LIKES
+
+    const { followingIds } = useFollowing(token);
+    useEffect(() => {
+        if (post?.creador?.id) {
+            setIsFollowing(followingIds.includes(post.creador.id));
+        }
+    }, [followingIds, post?.creador?.id]);
+
+
+    const [isFollowing, setIsFollowing] = useState(false);
+
+    const { likes, currentLikes, toggleLike } = useLikes();
+
+    const router = useRouter();
+    
+    const { mensaje, success } = useAlertState();
+
+    if (!post) return null;
+
+    const liked = likes[post.id] ?? false;
+    const likeCount = currentLikes[post.id] ?? 0;
+
+
+    const handleFollowToggle = async () => {
+        if (!token) return;
+
+        if (isFollowing) {
+            await unfollowUser(token, Number(post.creador.id));
+            setIsFollowing(false);
+        } else {
+            await followUser(token, Number(post.creador.id));
+            setIsFollowing(true);
+        }
+    };
+
+
+    const handleLike = async () => {
+        const nuevoLike = !liked;
+
+        if (nuevoLike) {
+            try {
+                await agregarFavs(token, String(post.id));
+                toggleLike(Number(post.id), true);
+            } catch (error) {
+                mensaje.set(`Error al intentar agregar a favoritos: ${error}`);
+                success.set(false);
+            }
+        } else {
+            try {
+                await quitarFavs(token, String(post.id));
+                toggleLike(Number(post.id), false);
+            } catch (error) {
+                mensaje.set(`Error al intentar eliminar de favoritos: ${error}`);
+                success.set(false);
+            }
+        }
     };
 
     const imagenesMapeadas: ImagenSource[] =
@@ -105,22 +180,6 @@ export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
                 return { uri };
             })
             .filter(Boolean);
-
-
-
-    const abrirEnMaps = (lat: number, lng: number) => {
-        const url = Platform.select({
-            ios: `maps:0,0?q=${lat},${lng}`,
-            android: `geo:${lat},${lng}?q=${lat},${lng}`,
-            default: `https://www.google.com/maps?q=${lat},${lng}`,
-        });
-        url && Linking.openURL(url);
-    };
-
-
-
-
-
 
     // ######################### COMPONENTES ##############################################################
 
@@ -273,27 +332,54 @@ export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
                 <Text style={styles.fechaText}>Fin: {formatoFecha(post.fechaFin)}</Text>
 
                 <View style={{ alignItems: "center", marginTop: 10 }}>
-                    <Text style={{ fontSize: 16, fontWeight: "bold", color: theme.colors.text }}>
-                        Creado por: {post.creador.nombre}
-                    </Text>
+                    <Pressable
+                        onPress={() => {
+                            onClose(); // cierra el popup
+                            //router.push(`/perfil/${post.creador.id}`);
+                        }}
+                    >
+                        <Text
+                            style={{
+                                fontSize: 16,
+                                fontWeight: "bold",
+                                color: theme.colors.text,
+                            }}
+                        >
+                            {post.creador.nombre}
+                        </Text>
+                    </Pressable>
                 </View>
 
+                <Pressable
+                    onPress={handleLike}
+                    style={({ pressed }) => [
+                        styles.bigButton,
+                        pressed && { opacity: 0.8 }
+                    ]}
+                >
+                    <Text style={styles.bigButtonText}>
+                        {liked ? "💔 Quitar Me gusta" : "❤️ Me gusta"}
+                    </Text>
+                </Pressable>
+                {/* 
                 <View style={{ alignItems: "center", marginTop: 6 }}>
                     <Text style={{ fontSize: 14, color: theme.colors.text }}>
                         ❤️ {currentLikes[Number(post.id)] ?? 0} Favs
                     </Text>
-                </View>
+                </View> */}
 
                 {post.ubicacion && (
                     <Pressable
-                        onPress={() => abrirEnMaps(post.ubicacion.latitud, post.ubicacion.longitud)}
-                        android_ripple={{ color: "rgba(255,255,255,0.2)" }}
-                        style={({ pressed }) => [{ flexDirection: "row", alignItems: "center", justifyContent: "center", marginBottom: 10 }, pressed && { opacity: 0.6 }]}
+                        onPress={() =>
+                            abrirEnMaps(post.ubicacion.latitud, post.ubicacion.longitud)
+                        }
+                        style={({ pressed }) => [
+                            styles.bigButton,
+                            { backgroundColor: "#007AFF" },
+                            pressed && { opacity: 0.8 }
+                        ]}
                     >
-                        <FontAwesome style={{ marginRight: 6, fontSize: 16 }} size={24} name="map-marker" color="red" />
-                        <Text style={{ fontSize: 14, color: theme.colors.text, flexShrink: 1 }}>
-                            {post.ubicacion.direccion}
-                        </Text>
+                        <Text style={styles.bigButtonText}>📍 Cómo ir</Text>
                     </Pressable>
                 )}
 
@@ -396,6 +482,19 @@ const stylesFn = (theme: Theme, width: number) =>
             fontSize: 14,
             color: theme.colors.text,
             flexShrink: 1,
+        },
+        bigButton: {
+            marginTop: 12,
+            paddingVertical: 14,
+            borderRadius: 10,
+            alignItems: "center",
+            backgroundColor: "#E91E63",
+        },
+
+        bigButtonText: {
+            color: "white",
+            fontSize: 16,
+            fontWeight: "bold",
         },
 
     });

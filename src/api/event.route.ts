@@ -301,6 +301,65 @@ const guardarImagenes = async (
     console.log("Imagenes guardadas: ", data);
 }
 
+const getMyFollowingIds = async (token: string) => {
+       try {
+    const res = await fetch(`${URL_BACKEND}/events/following`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    //console.log("Status:", res.status);
+
+    if (!res.ok) {
+      // Captura errores del backend
+      const text = await res.text();
+      throw new Error(`Error fetching following list: ${res.status} ${text}`);
+    }
+
+    const data = await res.json();
+    //console.log("Body:", data);
+    return data;
+
+  } catch (err) {
+    console.error("Error fetching following list", err);
+    throw err; // importante para que el hook lo capture
+  }
+};
+
+const followUser = async (token: string, targetUserId: number) => {
+    const response = await fetch(
+        `${URL_BACKEND}/events/follow/${targetUserId}`,
+        {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error('Error following user');
+    }
+};
+
+const unfollowUser = async (token: string, targetUserId: number) => {
+    const response = await fetch(
+        `${URL_BACKEND}/events/unfollow/${targetUserId}`,
+        {
+            method: 'DELETE',
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error('Error unfollowing user');
+    }
+};
 /*
 // Solo de testeo
 const guardarImagenesSoloUri = async (
@@ -329,5 +388,5 @@ const guardarImagenesSoloUri = async (
 }
 */
 
-export { agregarFavs, eventCreate, getAllEvents, getEvents, getFavs, getMyEvents, guardarImagenes, quitarFavs };
+export { agregarFavs, eventCreate, getAllEvents, getEvents, getFavs, getMyEvents, guardarImagenes, quitarFavs, getMyFollowingIds, followUser, unfollowUser };
 
