@@ -22,6 +22,7 @@ import PostPopUp from "../components/Post/PostPopUp";
 import { URL_BACKEND } from "../config";
 import { useAlertState } from "../hooks/alert-hooks";
 import { useAuth } from "../hooks/auth-hooks";
+import { avatarMap } from "@/assets/constants/avatarMap";
 
 export default function ProfileGamified() {
 	//Referencia para que te lleve a un lugar directo de tu perfil
@@ -195,7 +196,7 @@ export default function ProfileGamified() {
 					style={styles.avatarBox}
 				>
 					<Image
-						source={avatarImages[usuario.numeroAvatar - 1]}
+						source={avatarMap[usuario.numeroAvatar  ?? 1]}
 						style={styles.avatarImage}
 					/>
 				</Pressable>
@@ -283,22 +284,25 @@ export default function ProfileGamified() {
 
 						<View style={{ maxHeight: 400, width: '100%' }}>
 							<FlatList
-								data={avatarImages}
-								keyExtractor={(_, index) => index.toString()}
+								data={Object.entries(avatarMap)} // [[key, value], [key, value], ...]
+								keyExtractor={([key], index) => key.toString()}
 								numColumns={2}
 								columnWrapperStyle={{ justifyContent: 'space-between', marginBottom: 15 }}
 								contentContainerStyle={{ paddingVertical: 10 }}
-								renderItem={({ item, index }) => (
-									<Pressable
-										onPress={() => {
-											cambiarNumeroAvatar(index);
-											setModalVisible(false);
-										}}
-										style={styles.modalAvatarBoxColumn}
-									>
-										<Image source={item} style={styles.modalAvatarImageColumn} />
-									</Pressable>
-								)}
+								renderItem={({ item }) => {
+									const [avatarNumber, avatarSource] = item; // avatarNumber = 1..10, avatarSource = require(...)
+									return (
+										<Pressable
+											onPress={() => {
+												cambiarNumeroAvatar(Number(avatarNumber) - 1);
+												setModalVisible(false);
+											}}
+											style={styles.modalAvatarBoxColumn}
+										>
+											<Image source={avatarSource} style={styles.modalAvatarImageColumn} />
+										</Pressable>
+									);
+								}}
 							/>
 						</View>
 

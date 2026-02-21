@@ -86,5 +86,39 @@ const userGet = async (tokenAuth: string) => {
     return await response.json();
 }
 
-export { cambiarAvatar, userGet, userLogin, userRegister };
+
+
+const followUser = async (token: string, targetUserId: number) => {
+    const response = await fetch(
+        `${USER_PATH}/follow/${targetUserId}`,
+        {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error('Error following user');
+    }
+};
+
+const unfollowUser = async (token: string, targetUserId: number) => {
+    const response = await fetch(
+        `${USER_PATH}/unfollow/${targetUserId}`,
+        {
+            method: 'DELETE',
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error('Error unfollowing user');
+    }
+};
+
+export { cambiarAvatar, userGet, userLogin, userRegister, followUser, unfollowUser };
 

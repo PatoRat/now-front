@@ -328,38 +328,6 @@ const getMyFollowingIds = async (token: string) => {
     throw err; // importante para que el hook lo capture
   }
 };
-
-const followUser = async (token: string, targetUserId: number) => {
-    const response = await fetch(
-        `${URL_BACKEND}/events/follow/${targetUserId}`,
-        {
-            method: 'POST',
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        }
-    );
-
-    if (!response.ok) {
-        throw new Error('Error following user');
-    }
-};
-
-const unfollowUser = async (token: string, targetUserId: number) => {
-    const response = await fetch(
-        `${URL_BACKEND}/events/unfollow/${targetUserId}`,
-        {
-            method: 'DELETE',
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        }
-    );
-
-    if (!response.ok) {
-        throw new Error('Error unfollowing user');
-    }
-};
 /*
 // Solo de testeo
 const guardarImagenesSoloUri = async (
@@ -388,5 +356,5 @@ const guardarImagenesSoloUri = async (
 }
 */
 
-export { agregarFavs, eventCreate, getAllEvents, getEvents, getFavs, getMyEvents, guardarImagenes, quitarFavs, getMyFollowingIds, followUser, unfollowUser };
+export { agregarFavs, eventCreate, getAllEvents, getEvents, getFavs, getMyEvents, guardarImagenes, quitarFavs, getMyFollowingIds };
 
