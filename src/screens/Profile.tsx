@@ -13,8 +13,6 @@ import {
 	View,
 	useWindowDimensions,
 	LayoutAnimation,
-	Platform,
-	UIManager,
 	ScrollView
 } from "react-native";
 import { getMyEvents } from "../api/event.route";
@@ -61,13 +59,6 @@ export default function ProfileGamified() {
 	const [openPasados, setOpenPasados] = useState(false);
 
 	const [modalVisible, setModalVisible] = useState(false);
-	// const [refreshing, setRefreshing] = useState(false);
-
-	// Modal de detalle de trofeo
-	// const [selectedBadge, setSelectedBadge] = useState<{
-	// 	type: "asistencia" | "organizador";
-	// 	index: number;
-	// } | null>(null);
 
 	const queryClient = useQueryClient();
 
@@ -98,7 +89,6 @@ export default function ProfileGamified() {
 		cambiarNumeroAvatarMute(newAvatarIndex);
 	};
 
-	// const maxEvents = 5;
 
 	// Para abrir pop-up
 	const openPopup = (item: any) => {
@@ -119,7 +109,6 @@ export default function ProfileGamified() {
 	};
 
 	const cargarEventos = async () => {
-		// setRefreshing(true); // no se usa
 		try {
 			// console.log("llegue a userloc: ", userLocation);
 			const eventos = await getMyEvents(token);
@@ -131,7 +120,6 @@ export default function ProfileGamified() {
 		}
 	};
 
-	/* Ver draft/Profile Pedazo 1 */
 
 	useFocusEffect(
 		useCallback(() => {
@@ -192,7 +180,7 @@ export default function ProfileGamified() {
 				fechaFin={item.fechaFin ? new Date(item.fechaFin) : new Date()}
 				ubicacion={item.ubicacion ?? null}
 				direccion={item.ubicacion?.direccion ?? ""}
-				creador={item.creador ?? "Anónimo"}
+				creador={item.creador}
 				onSingleTap={() => openPopup(item)}
 			/>
 		);
@@ -218,12 +206,7 @@ export default function ProfileGamified() {
 				</View>
 			</View>
 
-			{/* Trofeos */}
-
-			{/* Ver draft/Profile Pedazo 2 */}
-
 			{/* Mis Publicaciones */}
-			<Text style={styles.name}>Mis Publicaciones</Text>
 			<Text style={styles.name}>Mis Publicaciones</Text>
 
 			<ScrollView

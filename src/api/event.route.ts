@@ -8,32 +8,48 @@ const getEvents = async (
     tokenAuth: string | null,
     location: { lat: number; lon: number },
     distanciaMin: number,
-    distanciaMax: number
+    distanciaMax: number,
+    filtrosExtra?: {
+        fechaInicio?: Date | null;
+        fechaFin?: Date | null;
+    }
 ): Promise<PostType[]> => {
     try {
-        // console.log("llegue al getEvents del front");
-        const ubicacion = {
-            latitud: location.lat,
-            longitud: location.lon
-        }
-        // console.log("a ver la ubi: ", ubicacion);
-        const res = await fetch(`${EVENT_PATH}/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${tokenAuth}`,
+        const body: any = {
+            coordenadasUsuario: {
+                latitud: location.lat,
+                longitud: location.lon
             },
-            body: JSON.stringify({
-                coordenadasUsuario: ubicacion,
-                rangoMin: distanciaMin,
-                rangoMax: distanciaMax
-            })
+            rangoMin: distanciaMin,
+            rangoMax: distanciaMax
+        };
+
+        // Agregamos filtros solo si existen
+        if (filtrosExtra?.fechaInicio) {
+            body.fechaInicio = filtrosExtra.fechaInicio.toISOString();
+        }
+
+        if (filtrosExtra?.fechaFin) {
+            body.fechaFin = filtrosExtra.fechaFin.toISOString();
+        }
+
+        const res = await fetch(`${EVENT_PATH}/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                ...(tokenAuth && { Authorization: `Bearer ${tokenAuth}` })
+            },
+            body: JSON.stringify(body)
         });
-        if (!res.ok) throw new Error(`Error ${res.status}`);
-        const data = await res.json();
-        return data; // Array de eventos
+
+        if (!res.ok) {
+            throw new Error(`Error ${res.status}`);
+        }
+
+        const data: PostType[] = await res.json();
+        return data;
+
     } catch (error) {
-        // console.error("Error fetching events:", error);
         throw error;
     }
 };
