@@ -406,13 +406,11 @@ const guardarImagenesSoloUri = async (
 }
 */
 
-export { agregarFavs, eventCreate, getAllEvents, getEvents, getFavs, getMyEvents, guardarImagenes, quitarFavs, getMyFollowingIds };
 export {
     agregarFavs, eliminarEvento, eventCreate,
     getAllEvents, getEventById, getEvents,
     getFavs,
-    getMyEvents,
-    guardarImagenes,
+    getMyEvents, getMyFollowingIds, guardarImagenes,
     quitarFavs
 };
 

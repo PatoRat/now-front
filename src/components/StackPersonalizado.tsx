@@ -73,6 +73,15 @@ const StackPersonalizado = () => {
 						headerShown: false,
 					}}
 				/>
+
+				<Stack.Screen
+					name="profile/[userId]"
+					options={{
+						presentation: "modal",
+						animation: "slide_from_bottom",
+						headerShown: false,
+					}}
+				/>
 			</Stack.Protected>
 
 			<Stack.Protected guard={!isFetching && !isLogged}>

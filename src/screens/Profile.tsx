@@ -1,3 +1,4 @@
+import { avatarMap } from "@/assets/constants/avatarMap";
 import Post from "@/src/components/Post/Post";
 import { useTheme } from "@/src/hooks/theme-hooks";
 import { Theme, useFocusEffect } from "@react-navigation/native";
@@ -14,9 +15,7 @@ import {
 	StyleSheet,
 	Text,
 	View,
-	useWindowDimensions,
-	LayoutAnimation,
-	ScrollView
+	useWindowDimensions
 } from "react-native";
 import { getMyEvents } from "../api/event.route";
 import { cambiarAvatar } from "../api/user.route";
@@ -24,7 +23,6 @@ import CustomAlert from "../components/CustomAlert";
 import { URL_BACKEND } from "../config";
 import { useAlertState } from "../hooks/alert-hooks";
 import { useAuth } from "../hooks/auth-hooks";
-import { avatarMap } from "@/assets/constants/avatarMap";
 
 export default function ProfileGamified() {
 	//Referencia para que te lleve a un lugar directo de tu perfil

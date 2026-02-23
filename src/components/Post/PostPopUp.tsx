@@ -1,8 +1,15 @@
+import { avatarMap } from "@/assets/constants/avatarMap";
+import { agregarFavs, quitarFavs } from "@/src/api/event.route";
+import { followUser, unfollowUser } from "@/src/api/user.route";
 import { URL_BACKEND } from "@/src/config";
+import { useAlertState } from "@/src/hooks/alert-hooks";
+import { useAuth } from "@/src/hooks/auth-hooks";
 import { useTheme } from "@/src/hooks/theme-hooks";
+import { useFollowing } from "@/src/hooks/useFollowing";
 import { FontAwesome } from "@expo/vector-icons";
 import { Theme } from "@react-navigation/native";
 import { BlurView } from "expo-blur";
+import { router } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import {
     Animated,
@@ -17,13 +24,6 @@ import {
     View,
 } from "react-native";
 import { useLikes } from "../context-provider/LikeContext";
-import { useAuth } from "@/src/hooks/auth-hooks";
-import { agregarFavs, quitarFavs } from "@/src/api/event.route";
-import { useFollowing } from "@/src/hooks/useFollowing";
-import { useAlertState } from "@/src/hooks/alert-hooks";
-import { avatarMap } from "@/assets/constants/avatarMap";
-import { followUser, unfollowUser } from "@/src/api/user.route";
-import { router } from "expo-router";
 
 type PostPopUpProps = {
     visible: boolean,
@@ -53,17 +53,17 @@ export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
         } else {
             Animated.timing(fadeAnim, { toValue: 0, duration: 200, useNativeDriver: true }).start();
         }
-    }, [visible]);
+        // console.log("PostPopUp ListaLikes: ", currentLikes);
+        // console.log("PostPopUp eventID: ", Number(post.id));
+        // console.log("PostPopUp Likes: ", currentLikes[Number(post.id)]);
+    }, [fadeAnim, visible]);
 
     useEffect(() => {
         if (post?.creador?.id) {
             setIsFollowing(followingIds.includes(post.creador.id));
         }
     }, [followingIds, post?.creador?.id]);
-        // console.log("PostPopUp ListaLikes: ", currentLikes);
-        // console.log("PostPopUp eventID: ", Number(post.id));
-        // console.log("PostPopUp Likes: ", currentLikes[Number(post.id)]);
-    }, [fadeAnim, visible]);
+
 
     if (!post) return null;
 
@@ -155,7 +155,7 @@ export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
                         onPress={() => {
                             onClose();
                             router.push({
-                                pathname: "/profile/[userId]",
+                                pathname: "../profile/[userId]",
                                 params: { userId: post.creador.id.toString() }
                             });
                         }}
@@ -230,15 +230,13 @@ export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
 
                 {/* Like y ubicacion*/}
                 <View style={{ flexDirection: "row", justifyContent: "space-around", marginTop: 12 }}>
-                    <Pressable onPress={handleLike} style={({ pressed }) => [styles.bigButtonSmall, pressed && { opacity: 0.8 }]}>
-                        <Text style={styles.bigButtonTextSmall}>{liked ? "💔 Me gusta" : "❤️ Me gusta"}</Text>
-                    </Pressable>
 
                     {post.ubicacion && (
                         <Pressable onPress={() => abrirEnMaps(post.ubicacion.latitud, post.ubicacion.longitud)} style={({ pressed }) => [styles.bigButtonSmall, { backgroundColor: "#007AFF" }, pressed && { opacity: 0.8 }]}>
                             <Text style={styles.bigButtonTextSmall}>📍 Cómo ir</Text>
                         </Pressable>
                     )}
+                </View>
                 <View style={{ alignItems: "center", marginTop: 6 }}>
                     <Text style={{ fontSize: 14, color: theme.colors.text }}>
                         ❤️ {post.likesCont ?? 0} Favs

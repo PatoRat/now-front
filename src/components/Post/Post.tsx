@@ -204,8 +204,8 @@ const Post = (
 
 	const eliminar = async () => {
 		// console.log("\n\n\n###############PRINCIPIO BUTTON###############\n\n\n");
-		await eliminarEvento(id, token);
-		onDelete(id);
+		await eliminarEvento(`${id}`, token);
+		onDelete(`${id}`);
 	}
 
 	const reportar = async (motivoSeleccionado: string | null, descripcionReport: string) => {

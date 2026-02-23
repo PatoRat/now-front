@@ -136,6 +136,5 @@ const unfollowUser = async (token: string, targetUserId: number) => {
     }
 };
 
-export { cambiarAvatar, userGet, userLogin, userRegister, followUser, unfollowUser };
-export { cambiarAvatar, requestSupport, userGet, userLogin, userRegister };
+export { cambiarAvatar, followUser, requestSupport, unfollowUser, userGet, userLogin, userRegister };
 
