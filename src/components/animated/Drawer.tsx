@@ -1,5 +1,7 @@
 import { BamvDark, BamvLight } from "@/scripts/themes";
 import { ThemeColors } from "@/scripts/types";
+import { requestSupport } from "@/src/api/user.route";
+import { useAlertState } from "@/src/hooks/alert-hooks";
 import { useAuth } from "@/src/hooks/auth-hooks";
 import { useTheme } from "@/src/hooks/theme-hooks";
 import { FontAwesome } from "@expo/vector-icons";
@@ -7,7 +9,6 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
     Animated,
-    Linking,
     Pressable,
     StyleSheet,
     Text,
@@ -26,11 +27,12 @@ export const Drawer = () => {
     const drawerWidth = Math.min(420, width - insets.left - 8);
 
     const { theme, cambiarTheme } = useTheme();
-    const { destruir_sesion } = useAuth();
+    const { token, destruir_sesion } = useAuth();
     const [slideAnim] = useState(() => new Animated.Value(0));
     const backgroundColor = theme.colors.card;
 
     const styles = stylesFunc(drawerWidth, theme.colors, insets);
+	const { visible, mensaje, success } = useAlertState();
 
     const toggleDrawer = () => {
         Animated.timing(slideAnim, {
@@ -40,6 +42,23 @@ export const Drawer = () => {
         }).start();
         setIsDrawerOpen(!isDrawerOpen);
     };
+
+    const pedirAsistencia = async () => {
+        toggleDrawer();
+
+        try {
+            await requestSupport(token)
+
+            mensaje.set("Se ha enviado un correo al equipo de soporte.");
+            success.set(true);
+            visible.set(true);
+
+        } catch (error) {
+            mensaje.set(`No se pudo enviar la solicitud de soporte: ${error}`);
+            success.set(false);
+            visible.set(true);
+        }
+    }
 
     const cerrarSesion = () => {
         toggleDrawer();
@@ -104,10 +123,7 @@ export const Drawer = () => {
                     <Text style={styles.drawerText}>MIS EVENTOS</Text>
                 </Pressable>
 
-                <Pressable style={styles.drawerItem} onPress={() => {
-                    toggleDrawer();
-                    Linking.openURL('https://fijate.com/es/tools/generador-frases-motivacionales');
-                }}
+                <Pressable style={styles.drawerItem} onPress={pedirAsistencia}
                 >
                     <Text style={styles.drawerText}>
                         SOPORTE

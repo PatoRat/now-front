@@ -90,7 +90,9 @@ export default function Discover() {
         cargarEventos(filtrosFinales);
     };
 
-
+    const onDelete = (id: string) => {
+        setPosts(prev => prev.filter(event => Number(event.id) !== Number(id)));
+    }
 
     // Carga de los likes del usuario a una const global
 
@@ -299,6 +301,7 @@ export default function Discover() {
                             direccion={item.ubicacion?.direccion ?? ""}
                             creador={item.creador ?? "Anónimo"}
                             onSingleTap={() => openPopup(item)}
+                            onDelete={onDelete}
                         />
                     );
                 }}

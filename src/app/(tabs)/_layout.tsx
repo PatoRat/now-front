@@ -47,9 +47,9 @@ export default function TabLayout() {
 						<Tabs.Screen
 							name="favs"
 							options={{
-								title: "FAVS",
+								title: "ASISTIRE",
 								tabBarIcon: ({ color }) => (
-									<FontAwesome size={28} name="star" color={color} />
+									<FontAwesome size={26} name="star" color={color} />
 								),
 							}}
 						/>
@@ -57,9 +57,9 @@ export default function TabLayout() {
 						<Tabs.Screen
 							name="index"
 							options={{
-								title: "DISCOVER",
+								title: "DESCUBRIR",
 								tabBarIcon: ({ color }) => (
-									<FontAwesome size={28} name="search" color={color} />
+									<FontAwesome size={26} name="search" color={color} />
 								),
 							}}
 						/>
@@ -68,9 +68,9 @@ export default function TabLayout() {
 						<Tabs.Screen
 							name="map"
 							options={{
-								title: "MAP",
+								title: "MAPA",
 								tabBarIcon: ({ color }) => (
-									<FontAwesome size={28} name="map" color={color} />
+									<FontAwesome size={26} name="map" color={color} />
 								),
 							}}
 						/>
@@ -78,9 +78,9 @@ export default function TabLayout() {
 						<Tabs.Screen
 							name="profile"
 							options={{
-								title: "PROFILE",
+								title: "PERFIL",
 								tabBarIcon: ({ color }) => (
-									<FontAwesome size={28} name="male" color={color} />
+									<FontAwesome size={26} name="male" color={color} />
 								),
 							}}
 						/>
