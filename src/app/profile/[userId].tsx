@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
     View,
     Text,
@@ -43,12 +43,20 @@ export default function UserProfile() {
     const [openPasados, setOpenPasados] = useState(false);
     const [followLoading, setFollowLoading] = useState(false);
 
+    const { usuario } = useAuth();
     const toggleSection = (
         setter: React.Dispatch<React.SetStateAction<boolean>>
     ) => {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         setter((prev) => !prev);
     };
+
+    useEffect(() => {
+        if (!usuario || !userId) return;
+        if (Number(userId) === usuario.id) {
+            router.replace("/profile");
+        }
+    }, [userId, usuario]);
 
     const fetchProfile = async () => {
         try {
