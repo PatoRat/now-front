@@ -23,8 +23,8 @@ import { useLikes } from "../context-provider/LikeContext";
 import CustomAlert from "../CustomAlert";
 
 const Post = (
-	{ id, titulo, descripcion, imagenes, fechaInicio, fechaFin, direccion, onSingleTap, likesCont }:
-		PostType & { direccion?: string, onSingleTap?: () => void, likesCont: number }
+	{ id, titulo, descripcion, imagenes, fechaInicio, fechaFin, direccion, onSingleTap }:
+		Omit<PostType, "likesCont"> & { direccion?: string, onSingleTap?: () => void}
 ) => {
 
 	const { theme } = useTheme();
@@ -43,10 +43,10 @@ const Post = (
 
 	const heartAnim = useRef(new Animated.Value(0)).current;
 
-	const { likes, toggleLike } = useLikes();
+	const { likes, toggleLike, currentLikes } = useLikes();
 	const showHeart = likes[Number(id)] || false;
+	
 
-	const [currentLikes, setCurrentLikes] = useState(likesCont);
 
 	const { visible, mensaje, success } = useAlertState();
 
@@ -57,7 +57,6 @@ const Post = (
 			try {
 				await agregarFavs(token, id);
 				toggleLike(Number(id), true);
-				setCurrentLikes(prev => prev + 1);
 			} catch (error) {
 				mensaje.set(`Error al intentar agregar a favoritos: ${error}`);
 				success.set(false);
@@ -67,7 +66,6 @@ const Post = (
 			try {
 				await quitarFavs(token, id);
 				toggleLike(Number(id), false);
-				setCurrentLikes(prev => prev - 1);
 			} catch (error) {
 				mensaje.set(`Error al intentar eliminar de favoritos: ${error}`);
 				success.set(false);
@@ -216,7 +214,7 @@ const Post = (
 							<Text
 								style={styles.textoLike}
 							>
-								{currentLikes}
+								{currentLikes[Number(id)] ?? 0}
 							</Text>
 						</Animated.View>
 					</GestureDetector>

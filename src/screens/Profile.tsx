@@ -11,7 +11,11 @@ import {
 	StyleSheet,
 	Text,
 	View,
-	useWindowDimensions
+	useWindowDimensions,
+	LayoutAnimation,
+	Platform,
+	UIManager,
+	ScrollView
 } from "react-native";
 import { getMyEvents } from "../api/event.route";
 import { cambiarAvatar } from "../api/user.route";
@@ -19,7 +23,6 @@ import CustomAlert from "../components/CustomAlert";
 import { URL_BACKEND } from "../config";
 import { useAlertState } from "../hooks/alert-hooks";
 import { useAuth } from "../hooks/auth-hooks";
-
 
 export default function ProfileGamified() {
 	//Referencia para que te lleve a un lugar directo de tu perfil
@@ -49,6 +52,8 @@ export default function ProfileGamified() {
 
 
 	const [posts, setPosts] = useState<any[]>([]);
+	const [openVigentes, setOpenVigentes] = useState(false);
+	const [openPasados, setOpenPasados] = useState(false);
 
 	const [modalVisible, setModalVisible] = useState(false);
 	// const [refreshing, setRefreshing] = useState(false);
@@ -119,6 +124,65 @@ export default function ProfileGamified() {
 		}, []) // vacío porque no depende de ninguna variable
 	);
 
+	// Para filtrar eventos vigentes y pasados
+	const now = new Date();
+
+	const postsFiltrados = posts.filter(p => !p.estaEliminado);
+
+	const postsVigentes = postsFiltrados
+		.filter(p => new Date(p.fechaFin) >= now)
+		.sort((a, b) =>
+			new Date(a.fechaInicio).getTime() -
+			new Date(b.fechaInicio).getTime()
+		);
+
+	const postsPasados = postsFiltrados
+		.filter(p => new Date(p.fechaFin) < now)
+		.sort((a, b) =>
+			new Date(b.fechaFin).getTime() -
+			new Date(a.fechaFin).getTime()
+		);
+	const toggleSection = (setter: React.Dispatch<React.SetStateAction<boolean>>) => {
+		LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+		setter(prev => !prev);
+	};
+
+	const renderPost = (item: any) => {
+
+		const imagenesMapeadas = item.imagenes?.map((img: { url: string }) => {
+			if (!img.url) return null;
+
+			let uri = img.url;
+
+			if (uri.startsWith("http")) {
+				uri = uri.replace("localhost", URL_BACKEND.replace(/^https?:\/\//, ""));
+				return { uri };
+			}
+
+			uri = uri.startsWith("/")
+				? `${URL_BACKEND}${uri}`
+				: `${URL_BACKEND}/uploads/${uri}`;
+
+			return { uri };
+		}).filter(Boolean);
+
+		return (
+			<Post
+				key={item.id}
+				id={item.id}
+				titulo={item.titulo ?? ""}
+				descripcion={item.descripcion ?? ""}
+				imagenes={imagenesMapeadas}
+				fechaInicio={item.fechaInicio ? new Date(item.fechaInicio) : new Date()}
+				fechaFin={item.fechaFin ? new Date(item.fechaFin) : new Date()}
+				ubicacion={item.ubicacion ?? null}
+				direccion={item.ubicacion?.direccion ?? ""}
+				creador={item.creador ?? "Anónimo"}
+				onSingleTap={() => openPopup(item)}
+			/>
+		);
+	};
+
 	return (
 		<View style={styles.container}>
 			{/* Info del usuario con avatar */}
@@ -145,54 +209,61 @@ export default function ProfileGamified() {
 
 			{/* Mis Publicaciones */}
 			<Text style={styles.name}>Mis Publicaciones</Text>
-			<FlatList
-				data={posts}
-				keyExtractor={item => item.id.toString()}
-				renderItem={({ item }) => {
+			<Text style={styles.name}>Mis Publicaciones</Text>
 
-					// PARA VER EN EL LOG LO QUE SE RECIBE
-					// console.log("Evento:", item);
-					// console.log(
-					// 	"Imagenes del evento:",
-					// 	item.imagenes?.map((img: { id: number; eventId: number; url: string }) => img.url)
-					// );
-
-					const imagenesMapeadas = item.imagenes?.map((img: { url: string }) => {
-						if (!img.url) return null;
-
-						let uri = img.url;
-
-						// Caso 1: empieza con http
-						if (uri.startsWith("http")) {
-							// Reemplazamos localhost si lo contiene
-							uri = uri.replace("localhost", URL_BACKEND.replace(/^https?:\/\//, ""));
-							return { uri };
-						}
-
-						// Caso 2: ruta relativa o nombre de archivo
-						uri = uri.startsWith("/") ? `${URL_BACKEND}${uri}` : `${URL_BACKEND}/uploads/${uri}`;
-						return { uri };
-					}).filter(Boolean); // elimina nulls
-
-					return (
-						<Post
-							id={item.id}
-							titulo={item.titulo ?? ""}
-							descripcion={item.descripcion ?? ""}
-							imagenes={imagenesMapeadas}
-							fechaInicio={item.fechaInicio ? new Date(item.fechaInicio) : new Date()}
-							fechaFin={item.fechaFin ? new Date(item.fechaFin) : new Date()}
-							ubicacion={item.ubicacion ?? null}
-							direccion={item.ubicacion?.direccion ?? ""}
-							creador={item.creador ?? "Anónimo"} // SACAR ANONIMO
-							onSingleTap={() => openPopup(item)}
-							likesCont={item.likesCont ?? 0}
-						/>
-					);
-				}}
+			<ScrollView
 				contentContainerStyle={styles.listaContenido}
 				showsVerticalScrollIndicator={false}
-			/>
+			>
+
+				{/* VIGENTES */}
+				<Pressable
+					style={styles.sectionHeader}
+					onPress={() => toggleSection(setOpenVigentes)}
+				>
+					<Text style={styles.sectionHeaderText}>
+						Eventos Futuros ({postsVigentes.length})
+					</Text>
+
+					<Text
+						style={[
+							styles.arrow,
+							{ transform: [{ rotate: openVigentes ? "90deg" : "0deg" }] }
+						]}
+					>
+						▶
+					</Text>
+				</Pressable>
+
+				{openVigentes &&
+					postsVigentes.map(item => renderPost(item))
+				}
+
+
+				{/* PASADOS */}
+				<Pressable
+					style={styles.sectionHeader}
+					onPress={() => toggleSection(setOpenPasados)}
+				>
+					<Text style={styles.sectionHeaderText}>
+						Eventos Pasados ({postsPasados.length})
+					</Text>
+
+					<Text
+						style={[
+							styles.arrow,
+							{ transform: [{ rotate: openPasados ? "90deg" : "0deg" }] }
+						]}
+					>
+						▶
+					</Text>
+				</Pressable>
+
+				{openPasados &&
+					postsPasados.map(item => renderPost(item))
+				}
+
+			</ScrollView>
 
 			{/* Modal de selección de avatar */}
 			<Modal
@@ -444,6 +515,26 @@ const stylesFn = (theme: Theme, width: number, height: number) => {
 			height: "100%",
 			backgroundColor: "#52e4f5ff",
 			borderRadius: 8 * scale,
+		},
+		sectionHeader: {
+			flexDirection: "row",
+			justifyContent: "space-between",
+			alignItems: "center",
+			paddingVertical: 12 * scale,
+			borderBottomWidth: 1,
+			borderColor: "#ddd",
+			marginTop: 15 * scale,
+		},
+
+		sectionHeaderText: {
+			fontSize: 18 * scale,
+			fontWeight: "bold",
+			color: theme.colors.text,
+		},
+
+		arrow: {
+			fontSize: 18 * scale,
+			color: theme.colors.text,
 		},
 	});
 };
