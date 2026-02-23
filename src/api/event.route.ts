@@ -8,32 +8,48 @@ const getEvents = async (
     tokenAuth: string | null,
     location: { lat: number; lon: number },
     distanciaMin: number,
-    distanciaMax: number
+    distanciaMax: number,
+    filtrosExtra?: {
+        fechaInicio?: Date | null;
+        fechaFin?: Date | null;
+    }
 ): Promise<PostType[]> => {
     try {
-        // console.log("llegue al getEvents del front");
-        const ubicacion = {
-            latitud: location.lat,
-            longitud: location.lon
-        }
-        // console.log("a ver la ubi: ", ubicacion);
-        const res = await fetch(`${EVENT_PATH}/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${tokenAuth}`,
+        const body: any = {
+            coordenadasUsuario: {
+                latitud: location.lat,
+                longitud: location.lon
             },
-            body: JSON.stringify({
-                coordenadasUsuario: ubicacion,
-                rangoMin: distanciaMin,
-                rangoMax: distanciaMax
-            })
+            rangoMin: distanciaMin,
+            rangoMax: distanciaMax
+        };
+
+        // Agregamos filtros solo si existen
+        if (filtrosExtra?.fechaInicio) {
+            body.fechaInicio = filtrosExtra.fechaInicio.toISOString();
+        }
+
+        if (filtrosExtra?.fechaFin) {
+            body.fechaFin = filtrosExtra.fechaFin.toISOString();
+        }
+
+        const res = await fetch(`${EVENT_PATH}/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                ...(tokenAuth && { Authorization: `Bearer ${tokenAuth}` })
+            },
+            body: JSON.stringify(body)
         });
-        if (!res.ok) throw new Error(`Error ${res.status}`);
-        const data = await res.json();
-        return data; // Array de eventos
+
+        if (!res.ok) {
+            throw new Error(`Error ${res.status}`);
+        }
+
+        const data: PostType[] = await res.json();
+        return data;
+
     } catch (error) {
-        // console.error("Error fetching events:", error);
         throw error;
     }
 };
@@ -304,6 +320,33 @@ const guardarImagenes = async (
     console.log("Imagenes guardadas: ", data);
 }
 
+const getMyFollowingIds = async (token: string) => {
+       try {
+    const res = await fetch(`${URL_BACKEND}/events/following`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    //console.log("Status:", res.status);
+
+    if (!res.ok) {
+      // Captura errores del backend
+      const text = await res.text();
+      throw new Error(`Error fetching following list: ${res.status} ${text}`);
+    }
+
+    const data = await res.json();
+    //console.log("Body:", data);
+    return data;
+
+  } catch (err) {
+    console.error("Error fetching following list", err);
+    throw err; // importante para que el hook lo capture
+  }
+};
 const eliminarEvento = async (
     eventId: string,
     tokenAuth: string | null
@@ -363,6 +406,7 @@ const guardarImagenesSoloUri = async (
 }
 */
 
+export { agregarFavs, eventCreate, getAllEvents, getEvents, getFavs, getMyEvents, guardarImagenes, quitarFavs, getMyFollowingIds };
 export {
     agregarFavs, eliminarEvento, eventCreate,
     getAllEvents, getEventById, getEvents,

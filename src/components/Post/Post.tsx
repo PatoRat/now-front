@@ -74,7 +74,7 @@ const Post = (
 
 		if (nuevoLike) {
 			try {
-				await agregarFavs(token, id);
+				await agregarFavs(token, String(id));
 				toggleLike(Number(id), true);
 			} catch (error) {
 				mensaje.set(`Error al intentar agregar a favoritos: ${error}`);
@@ -83,7 +83,7 @@ const Post = (
 			}
 		} else {
 			try {
-				await quitarFavs(token, id);
+				await quitarFavs(token, String(id));
 				toggleLike(Number(id), false);
 			} catch (error) {
 				mensaje.set(`Error al intentar eliminar de favoritos: ${error}`);

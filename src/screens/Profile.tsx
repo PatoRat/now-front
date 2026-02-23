@@ -14,7 +14,9 @@ import {
 	StyleSheet,
 	Text,
 	View,
-	useWindowDimensions
+	useWindowDimensions,
+	LayoutAnimation,
+	ScrollView
 } from "react-native";
 import { getMyEvents } from "../api/event.route";
 import { cambiarAvatar } from "../api/user.route";
@@ -22,24 +24,11 @@ import CustomAlert from "../components/CustomAlert";
 import { URL_BACKEND } from "../config";
 import { useAlertState } from "../hooks/alert-hooks";
 import { useAuth } from "../hooks/auth-hooks";
+import { avatarMap } from "@/assets/constants/avatarMap";
 
 export default function ProfileGamified() {
 	//Referencia para que te lleve a un lugar directo de tu perfil
 	// const postsRef = useRef<View>(null);
-
-	// Array de rutas estáticas
-	const avatarImages = [
-		require("@/assets/images/avatars/Avatar-1.png"),
-		require("@/assets/images/avatars/Avatar-2.png"),
-		require("@/assets/images/avatars/Avatar-3.png"),
-		require("@/assets/images/avatars/Avatar-4.png"),
-		require("@/assets/images/avatars/Avatar-5.png"),
-		require("@/assets/images/avatars/Avatar-6.png"),
-		require("@/assets/images/avatars/Avatar-7.png"),
-		require("@/assets/images/avatars/Avatar-8.png"),
-		require("@/assets/images/avatars/Avatar-9.png"),
-		require("@/assets/images/avatars/Avatar-10.png"),
-	];
 
 	const { theme } = useTheme();
 	const { width, height } = useWindowDimensions();
@@ -55,13 +44,6 @@ export default function ProfileGamified() {
 	const [openPasados, setOpenPasados] = useState(false);
 
 	const [modalVisible, setModalVisible] = useState(false);
-	// const [refreshing, setRefreshing] = useState(false);
-
-	// Modal de detalle de trofeo
-	// const [selectedBadge, setSelectedBadge] = useState<{
-	// 	type: "asistencia" | "organizador";
-	// 	index: number;
-	// } | null>(null);
 
 	const queryClient = useQueryClient();
 
@@ -92,7 +74,6 @@ export default function ProfileGamified() {
 		cambiarNumeroAvatarMute(newAvatarIndex);
 	};
 
-	// const maxEvents = 5;
 
 	// Para abrir pop-up
 	const openPopup = (item: any) => {
@@ -103,7 +84,6 @@ export default function ProfileGamified() {
     };
 
 	const cargarEventos = async () => {
-		// setRefreshing(true); // no se usa
 		try {
 			// console.log("llegue a userloc: ", userLocation);
 			const eventos = await getMyEvents(token);
@@ -180,7 +160,7 @@ export default function ProfileGamified() {
 				fechaFin={item.fechaFin ? new Date(item.fechaFin) : new Date()}
 				ubicacion={item.ubicacion ?? null}
 				direccion={item.ubicacion?.direccion ?? ""}
-				creador={item.creador ?? "Anónimo"}
+				creador={item.creador}
 				onSingleTap={() => openPopup(item)}
 				onDelete={onDelete}
 				posicionActual={null}
@@ -197,7 +177,7 @@ export default function ProfileGamified() {
 					style={styles.avatarBox}
 				>
 					<Image
-						source={avatarImages[usuario.numeroAvatar - 1]}
+						source={avatarMap[usuario.numeroAvatar  ?? 1]}
 						style={styles.avatarImage}
 					/>
 				</Pressable>
@@ -208,12 +188,7 @@ export default function ProfileGamified() {
 				</View>
 			</View>
 
-			{/* Trofeos */}
-
-			{/* Ver draft/Profile Pedazo 2 */}
-
 			{/* Mis Publicaciones */}
-			<Text style={styles.name}>Mis Publicaciones</Text>
 			<Text style={styles.name}>Mis Publicaciones</Text>
 
 			<ScrollView
@@ -283,22 +258,25 @@ export default function ProfileGamified() {
 
 						<View style={{ maxHeight: 400, width: '100%' }}>
 							<FlatList
-								data={avatarImages}
-								keyExtractor={(_, index) => index.toString()}
+								data={Object.entries(avatarMap)} // [[key, value], [key, value], ...]
+								keyExtractor={([key], index) => key.toString()}
 								numColumns={2}
 								columnWrapperStyle={{ justifyContent: 'space-between', marginBottom: 15 }}
 								contentContainerStyle={{ paddingVertical: 10 }}
-								renderItem={({ item, index }) => (
-									<Pressable
-										onPress={() => {
-											cambiarNumeroAvatar(index);
-											setModalVisible(false);
-										}}
-										style={styles.modalAvatarBoxColumn}
-									>
-										<Image source={item} style={styles.modalAvatarImageColumn} />
-									</Pressable>
-								)}
+								renderItem={({ item }) => {
+									const [avatarNumber, avatarSource] = item; // avatarNumber = 1..10, avatarSource = require(...)
+									return (
+										<Pressable
+											onPress={() => {
+												cambiarNumeroAvatar(Number(avatarNumber) - 1);
+												setModalVisible(false);
+											}}
+											style={styles.modalAvatarBoxColumn}
+										>
+											<Image source={avatarSource} style={styles.modalAvatarImageColumn} />
+										</Pressable>
+									);
+								}}
 							/>
 						</View>
 
