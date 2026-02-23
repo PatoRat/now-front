@@ -3,14 +3,19 @@ import { useAlertState } from "@/src/hooks/alert-hooks";
 import { useAuth } from "@/src/hooks/auth-hooks";
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import { Theme } from "@react-navigation/native";
+import { Router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { ImageSourcePropType, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import CustomAlert from "../CustomAlert";
 import ImageSelectorButton from "./ImageSelectorButton";
 import PostMapSelector from "./PostMapSelector";
 
+type Props = {
+	theme: Theme,
+	router: Router
+}
 
-const PostFormContent = ({ theme, router }: any) => {
+const PostFormContent = ({ theme, router }: Props) => {
 	const [titulo, setTitulo] = useState("");
 	const [descripcion, setDescripcion] = useState("");
 	const [fechaInicio, setFechaInicio] = useState(new Date());

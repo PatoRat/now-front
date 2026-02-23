@@ -2,12 +2,15 @@ import Post from "@/src/components/Post/Post";
 import { useTheme } from "@/src/hooks/theme-hooks";
 import { Theme, useFocusEffect } from "@react-navigation/native";
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useCallback, useRef, useState } from "react";
+import { useRouter } from "expo-router";
+import { useCallback, useState } from "react";
 import {
-	Animated,
 	FlatList,
-	Image, Modal,
+	Image,
+	LayoutAnimation,
+	Modal,
 	Pressable,
+	ScrollView,
 	StyleSheet,
 	Text,
 	View,
@@ -18,7 +21,6 @@ import {
 import { getMyEvents } from "../api/event.route";
 import { cambiarAvatar } from "../api/user.route";
 import CustomAlert from "../components/CustomAlert";
-import PostPopUp from "../components/Post/PostPopUp";
 import { URL_BACKEND } from "../config";
 import { useAlertState } from "../hooks/alert-hooks";
 import { useAuth } from "../hooks/auth-hooks";
@@ -32,13 +34,9 @@ export default function ProfileGamified() {
 	const { width, height } = useWindowDimensions();
 	const styles = stylesFn(theme, width, height);
 	const { token, usuario } = useAuth();
+	const router = useRouter();
 
 	const { visible, mensaje, success } = useAlertState();
-
-
-	// Estado del pop-up
-	const [selectedPost, setSelectedPost] = useState<any>(null);
-	const fadeAnim = useRef(new Animated.Value(0)).current;
 
 
 	const [posts, setPosts] = useState<any[]>([]);
@@ -79,21 +77,11 @@ export default function ProfileGamified() {
 
 	// Para abrir pop-up
 	const openPopup = (item: any) => {
-		setSelectedPost(item);
-		Animated.timing(fadeAnim, {
-			toValue: 1,
-			duration: 250,
-			useNativeDriver: true,
-		}).start();
-	};
-
-	const closePopup = () => {
-		Animated.timing(fadeAnim, {
-			toValue: 0,
-			duration: 200,
-			useNativeDriver: true,
-		}).start(() => setSelectedPost(null));
-	};
+        router.push({
+            pathname: "../post/[id]",
+            params: { id: String(item.id) },
+        });
+    };
 
 	const cargarEventos = async () => {
 		try {
@@ -107,6 +95,11 @@ export default function ProfileGamified() {
 		}
 	};
 
+	const onDelete = (id: string) => {
+        setPosts(prev => prev.filter(event => Number(event.id) !== Number(id)));
+    }
+
+	/* Ver draft/Profile Pedazo 1 */
 
 	useFocusEffect(
 		useCallback(() => {
@@ -169,6 +162,8 @@ export default function ProfileGamified() {
 				direccion={item.ubicacion?.direccion ?? ""}
 				creador={item.creador}
 				onSingleTap={() => openPopup(item)}
+				onDelete={onDelete}
+				posicionActual={null}
 			/>
 		);
 	};
@@ -249,13 +244,6 @@ export default function ProfileGamified() {
 				}
 
 			</ScrollView>
-
-
-			<PostPopUp
-				visible={!!selectedPost}
-				post={selectedPost}
-				onClose={closePopup}
-			/>
 
 			{/* Modal de selección de avatar */}
 			<Modal

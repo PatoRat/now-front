@@ -54,7 +54,6 @@ const getEvents = async (
     }
 };
 
-
 const agregarFavs = async (tokenAuth: string | null, id: string) => {
 
     try {
@@ -172,8 +171,7 @@ const getAllEvents = async (
     tokenAuth: string | null
 ): Promise<PostType[]> => {
     try {
-
-        // console.log("Entraal getALlEvents del front???");
+        // console.log("Entra al getAllEvents del front???");
         const res = await fetch(`${EVENT_PATH}/all`, {
             method: 'GET',
             headers: {
@@ -189,6 +187,27 @@ const getAllEvents = async (
     }
 };
 
+const getEventById = async (
+    tokenAuth: string | null,
+    id: string
+): Promise<PostType> => {
+    try {
+
+        // console.log("Entra al getEventById del front???");
+        const res = await fetch(`${EVENT_PATH}/buscar-evento/${id}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${tokenAuth}`,
+            },
+        });
+        if (!res.ok) throw new Error(`Error ${res.status}`);
+        const evento = await res.json();
+        return evento;
+    } catch (error) {
+        // console.error("Error fetching event:", error);
+        throw error;
+    }
+};
 
 
 const getMyEvents = async (
@@ -328,6 +347,37 @@ const getMyFollowingIds = async (token: string) => {
     throw err; // importante para que el hook lo capture
   }
 };
+const eliminarEvento = async (
+    eventId: string,
+    tokenAuth: string | null
+) => {
+    try {
+        
+        // console.log("\n\n\n###########PRINCIPIO ELIMINAR################\n\n\n");
+        const res = await fetch(`${EVENT_PATH}/delete-event`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${tokenAuth}`,
+            },
+            body: JSON.stringify({
+                eventId: Number(eventId),
+            })
+        });
+
+        if (!res.ok) {
+            // console.error("Error al borrar evento:", res.status);
+            throw new Error(`Error ${res.status}: `);
+        }
+
+        console.log("Evento eliminado");
+
+    } catch (error) {
+        // console.error("Error al borrar evento:", error);
+        throw error;
+    }
+}
+
 /*
 // Solo de testeo
 const guardarImagenesSoloUri = async (
@@ -357,4 +407,12 @@ const guardarImagenesSoloUri = async (
 */
 
 export { agregarFavs, eventCreate, getAllEvents, getEvents, getFavs, getMyEvents, guardarImagenes, quitarFavs, getMyFollowingIds };
+export {
+    agregarFavs, eliminarEvento, eventCreate,
+    getAllEvents, getEventById, getEvents,
+    getFavs,
+    getMyEvents,
+    guardarImagenes,
+    quitarFavs
+};
 

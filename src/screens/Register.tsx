@@ -1,5 +1,6 @@
 import { useAuth } from "@/src/hooks/auth-hooks";
 import { useTheme } from "@/src/hooks/theme-hooks";
+import { Theme } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -124,7 +125,7 @@ const Register = () => {
 
 export { Register };
 
-const stylesFn = (theme: any, width: number, height: number) => {
+const stylesFn = (theme: Theme, width: number, height: number) => {
 	const scale = Math.min(width / 400, 1.3);
 
 	return StyleSheet.create({

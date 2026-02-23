@@ -1,3 +1,16 @@
+# NOW App
+
+## Configuracion:
+Para la conexion:
+Crear un archivo en /src llamado config.ts
+Allí deberás hacer ipconfig en consola y poner la IPv4 del Wi-Fi en donde dice TU_IP
+Codigo del config.ts:
+```tsx
+    const TU_IP = ""
+    export const URL_BACKEND = `http://${TU_IP}:3000`;
+```
+#
+#
 # Welcome to your Now 👋
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
@@ -30,14 +43,3 @@ Join our community of developers creating universal apps.
 Read our mission statement in our `GitHub`:
 
 [Mission_Statement](https://github.com/nachodibartolo/now/blob/main/now_mission_statement.md)
-
-
-## Importante!!
-
-Para la conexion:
-Crear un archivo en /src llamado config.ts
-Allí deberás hacer ipconfig en consola y poner la IPv4 del Wi-Fi en donde dice TU_IP
-Codigo del config.ts:
-```tsx
-    const TU_IP = ""
-    export const URL_BACKEND = `http://${TU_IP}:3000`;

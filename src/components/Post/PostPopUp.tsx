@@ -60,11 +60,30 @@ export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
             setIsFollowing(followingIds.includes(post.creador.id));
         }
     }, [followingIds, post?.creador?.id]);
+        // console.log("PostPopUp ListaLikes: ", currentLikes);
+        // console.log("PostPopUp eventID: ", Number(post.id));
+        // console.log("PostPopUp Likes: ", currentLikes[Number(post.id)]);
+    }, [fadeAnim, visible]);
 
     if (!post) return null;
 
     const liked = likes[post.id] ?? false;
     const likeCount = currentLikes[post.id] ?? 0;
+
+    const duracionEnHorasYMinutos = (fechaInicio: Date, fechaFin: Date): string => {
+        const miliseg = Math.abs(new Date(fechaFin).getTime() - new Date(fechaInicio).getTime());
+
+        const totalMinutos = Math.floor(miliseg / (1000 * 60));
+
+        const horas = Math.floor(totalMinutos / 60);
+        const minutos = totalMinutos % 60;
+
+        let resultado = "";
+        if (horas > 0) resultado += `${horas}h `;
+        resultado += `${minutos}m`;
+
+        return resultado;
+    };
 
     const imagenesMapeadas: ImagenSource[] =
         post.imagenes?.map((img: { url: string }) => {
@@ -205,6 +224,9 @@ export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
                 {/* Fechas */}
                 <Text style={styles.fechaText}>Inicio: {formatoFecha(post.fechaInicio)}</Text>
                 <Text style={styles.fechaText}>Fin: {formatoFecha(post.fechaFin)}</Text>
+                <Text style={styles.fechaText}>
+                    ⏱️Duracion: {duracionEnHorasYMinutos(post.fechaInicio, post.fechaFin)}
+                </Text>
 
                 {/* Like y ubicacion*/}
                 <View style={{ flexDirection: "row", justifyContent: "space-around", marginTop: 12 }}>
@@ -217,6 +239,10 @@ export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
                             <Text style={styles.bigButtonTextSmall}>📍 Cómo ir</Text>
                         </Pressable>
                     )}
+                <View style={{ alignItems: "center", marginTop: 6 }}>
+                    <Text style={{ fontSize: 14, color: theme.colors.text }}>
+                        ❤️ {post.likesCont ?? 0} Favs
+                    </Text>
                 </View>
 
                 {/* Cerrar */}
