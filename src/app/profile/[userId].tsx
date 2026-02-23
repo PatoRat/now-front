@@ -1,28 +1,27 @@
+import { avatarMap } from "@/assets/constants/avatarMap";
+import Post from "@/src/components/Post/Post";
+import { useAuth } from "@/src/hooks/auth-hooks";
+import { useTheme } from "@/src/hooks/theme-hooks";
+import { Theme } from "@react-navigation/native";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-    View,
-    Text,
-    StyleSheet,
+    ActivityIndicator,
+    Animated,
     Image,
+    LayoutAnimation,
     Pressable,
     ScrollView,
-    ActivityIndicator,
-    LayoutAnimation,
+    StyleSheet,
+    Text,
     useWindowDimensions,
-    Animated,
+    View,
 } from "react-native";
-import { useLocalSearchParams, useFocusEffect, useRouter } from "expo-router";
 import { URL_BACKEND } from "../../config";
-import { useAuth } from "@/src/hooks/auth-hooks";
-import { avatarMap } from "@/assets/constants/avatarMap";
-import PostPopUp from "@/src/components/Post/PostPopUp";
-import { Theme } from "@react-navigation/native";
-import { useTheme } from "@/src/hooks/theme-hooks";
-import Post from "@/src/components/Post/Post";
 
 
 type Evento = {
-    id: number;
+    id: string;
     titulo: string;
     fecha: string;
     [key: string]: any;
@@ -119,6 +118,7 @@ export default function UserProfile() {
         }
     };
 
+    const onDelete = () => {};
     const posts: Evento[] = profile?.eventos ?? [];
 
     const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -137,12 +137,12 @@ export default function UserProfile() {
     }, [posts]);
 
     const openPopup = (item: any) => {
-        setSelectedPost(item);
-        Animated.timing(fadeAnim, {
-            toValue: 1,
-            duration: 250,
-            useNativeDriver: true,
-        }).start();
+        // setSelectedPost(item);
+        // Animated.timing(fadeAnim, {
+        //     toValue: 1,
+        //     duration: 250,
+        //     useNativeDriver: true,
+        // }).start();
     };
     const renderPost = (item: any) => {
 
@@ -176,6 +176,8 @@ export default function UserProfile() {
                 direccion={item.ubicacion?.direccion ?? ""}
                 creador={item.creador}
                 onSingleTap={() => openPopup(item)}
+                onDelete={onDelete}
+                posicionActual={null}
             />
         );
     };
@@ -303,13 +305,13 @@ export default function UserProfile() {
                 }
             </ScrollView>
 
-            {selectedPost && (
+            {/* {selectedPost && (
                 <PostPopUp
                     post={selectedPost}
                     visible={true}
                     onClose={() => setSelectedPost(null)}
                 />
-            )}
+            )} */}
         </>
     );
 }

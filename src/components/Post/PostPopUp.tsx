@@ -153,7 +153,7 @@ export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
 
                     <Pressable
                         onPress={() => {
-                            onClose();
+                            // onClose();
                             router.push({
                                 pathname: "../profile/[userId]",
                                 params: { userId: post.creador.id.toString() }
