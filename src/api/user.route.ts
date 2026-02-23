@@ -2,6 +2,23 @@ import { URL_BACKEND } from "@/src/config";
 
 const USER_PATH = URL_BACKEND + "/users";
 
+const requestSupport = async (
+    tokenAuth: string | null,
+) => {
+    // console.log("\n\n###LLEGUE AL REQUEST SUPPORT DEL FRONT###\n\n")
+    const res = await fetch(`${USER_PATH}/support`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${tokenAuth}`
+        }
+    });
+
+    if (!res.ok) throw new Error();
+
+    return res.json();
+};
+
 const userRegister = async (
     nombre: string,
     email: string,
@@ -30,7 +47,6 @@ const userRegister = async (
 
     return await response.json();
 };
-
 
 const cambiarAvatar = async (tokenAuth: string | null, index: number) => {
     const response = await fetch(`${USER_PATH}/cambiar-avatar/${index}`, {
@@ -86,5 +102,5 @@ const userGet = async (tokenAuth: string) => {
     return await response.json();
 }
 
-export { cambiarAvatar, userGet, userLogin, userRegister };
+export { cambiarAvatar, requestSupport, userGet, userLogin, userRegister };
 

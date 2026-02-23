@@ -10,7 +10,7 @@ const crearReporte = async (
     fecha: Date,
     estado: "Pendiente" | "Aprobado" | "Denegado"
 ) => {
-    console.log("\n\n\###LLEGO HASTA crearReporte Route Front###n\n");
+    // console.log("\n\n\###LLEGO HASTA crearReporte Route Front###n\n");
     const response = await fetch(`${REPORT_PATH}/`, {
         method: 'POST',
         headers: {
