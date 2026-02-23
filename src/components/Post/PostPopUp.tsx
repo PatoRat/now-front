@@ -86,6 +86,21 @@ export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
         );
     };
 
+    const duracionEnHorasYMinutos = (fechaInicio: Date, fechaFin: Date): string => {
+        const miliseg = Math.abs(new Date(fechaFin).getTime() - new Date(fechaInicio).getTime());
+
+        const totalMinutos = Math.floor(miliseg / (1000 * 60));
+
+        const horas = Math.floor(totalMinutos / 60);
+        const minutos = totalMinutos % 60;
+
+        let resultado = "";
+        if (horas > 0) resultado += `${horas}h `;
+        resultado += `${minutos}m`;
+
+        return resultado;
+    };
+
     const imagenesMapeadas: ImagenSource[] =
         post.imagenes
             ?.map((img: { url: string }) => {
@@ -274,6 +289,9 @@ export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
 
                 <Text style={styles.fechaText}>Inicio: {formatoFecha(post.fechaInicio)}</Text>
                 <Text style={styles.fechaText}>Fin: {formatoFecha(post.fechaFin)}</Text>
+                <Text style={styles.fechaText}>
+                    ⏱️Duracion: {duracionEnHorasYMinutos(post.fechaInicio, post.fechaFin)}
+                </Text>
 
                 <View style={{ alignItems: "center", marginTop: 10 }}>
                     <Text style={{ fontSize: 16, fontWeight: "bold", color: theme.colors.text }}>

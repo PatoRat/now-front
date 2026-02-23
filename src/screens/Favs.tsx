@@ -103,6 +103,7 @@ export default function Favs() {
                             creador={item.creador ?? "Anónimo"}
                             onSingleTap={() => openPopup(item)}
                             onDelete={onDelete}
+                            posicionActual={null}
                         />
                     );
                 }}

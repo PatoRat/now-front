@@ -302,6 +302,7 @@ export default function Discover() {
                             creador={item.creador ?? "Anónimo"}
                             onSingleTap={() => openPopup(item)}
                             onDelete={onDelete}
+                            posicionActual={userLocation}
                         />
                     );
                 }}

@@ -1,3 +1,4 @@
+import { distancia } from "@/scripts/functions";
 import { PostType } from "@/scripts/types";
 import { crearReporte } from "@/src/api/report.route";
 import { useTheme } from "@/src/hooks/theme-hooks";
@@ -25,11 +26,22 @@ import { useLikes } from "../context-provider/LikeContext";
 import CustomAlert from "../CustomAlert";
 
 const Post = (
-	{ id, titulo, descripcion, imagenes, fechaInicio, fechaFin, direccion, onSingleTap, onDelete }:
-		Omit<PostType, "likesCont"> & {
-			direccion?: string,
-			onSingleTap?: () => void, onDelete: (id: string) => void
-		}
+	{ id,
+		titulo,
+		descripcion,
+		imagenes,
+		fechaInicio,
+		fechaFin,
+		direccion,
+		ubicacion,
+		onSingleTap,
+		onDelete,
+		posicionActual
+	}: Omit<PostType, "likesCont"> & {
+		direccion?: string,
+		onSingleTap?: () => void, onDelete: (id: string) => void,
+		posicionActual: { lat: number; lon: number } | null
+	}
 ) => {
 
 	const { theme } = useTheme();
@@ -87,6 +99,18 @@ const Post = (
 			useNativeDriver: true,
 		}).start();
 	};
+
+	const distanciaAcotada = () => {
+		if (posicionActual) {
+			const distanciaSinAcotar = distancia(
+				ubicacion.latitud,
+				ubicacion.longitud,
+				posicionActual.lat,
+				posicionActual.lon
+			);
+			return `A ${distanciaSinAcotar.toFixed(2)} km de distancia`;
+		}
+	}
 
 
 	const heartTapGesture = Gesture.Tap()
@@ -208,6 +232,8 @@ const Post = (
 			visible.set(true);
 		}
 	};
+
+
 
 	const MOTIVOS = [
 		"Contenido inapropiado",
@@ -408,7 +434,16 @@ const Post = (
 
 						{!!descripcion && <Text style={styles.descripcion}>{descripcion}</Text>}
 
-						{direccion && (
+						{ubicacion && posicionActual != null && (
+							<View style={styles.direccionContainer}>
+								<FontAwesome style={styles.direccionIcon} size={24} name="map-marker" color="red" />
+								<Text style={styles.direccionText}>
+									{distanciaAcotada()}
+								</Text>
+							</View>
+						)}
+
+						{direccion && posicionActual == null && (
 							<View style={styles.direccionContainer}>
 								<FontAwesome style={styles.direccionIcon} size={24} name="map-marker" color="red" />
 								<Text style={styles.direccionText}>{direccion}</Text>
