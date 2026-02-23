@@ -1,3 +1,4 @@
+import { PostType } from "@/scripts/types";
 import { getEventById } from "@/src/api/event.route";
 // import { useLikes } from "@/src/components/context-provider/LikeContext";
 import PostPopUp from "@/src/components/Post/PostPopUp";
@@ -15,7 +16,7 @@ export default function PostRoute() {
 
     const fadeAnim = useRef(new Animated.Value(0)).current;
 
-    const [post, setPost] = useState<any>(null);
+    const [post, setPost] = useState<PostType | null>(null);
     const [loading, setLoading] = useState(true);
 
     const closePopup = () => {

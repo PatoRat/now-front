@@ -183,6 +183,7 @@ export default function ProfileGamified() {
 				creador={item.creador ?? "Anónimo"}
 				onSingleTap={() => openPopup(item)}
 				onDelete={onDelete}
+				posicionActual={null}
 			/>
 		);
 	};
