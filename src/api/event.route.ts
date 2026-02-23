@@ -302,31 +302,31 @@ const guardarImagenes = async (
 }
 
 const getMyFollowingIds = async (token: string) => {
-       try {
-    const res = await fetch(`${URL_BACKEND}/events/following`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
+    try {
+        const res = await fetch(`${URL_BACKEND}/events/following`, {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+        });
 
-    //console.log("Status:", res.status);
+        //console.log("Status:", res.status);
 
-    if (!res.ok) {
-      // Captura errores del backend
-      const text = await res.text();
-      throw new Error(`Error fetching following list: ${res.status} ${text}`);
+        if (!res.ok) {
+            // Captura errores del backend
+            const text = await res.text();
+            throw new Error(`Error fetching following list: ${res.status} ${text}`);
+        }
+
+        const data = await res.json();
+        //console.log("Body:", data);
+        return data;
+
+    } catch (err) {
+        console.error("Error fetching following list", err);
+        throw err; // importante para que el hook lo capture
     }
-
-    const data = await res.json();
-    //console.log("Body:", data);
-    return data;
-
-  } catch (err) {
-    console.error("Error fetching following list", err);
-    throw err; // importante para que el hook lo capture
-  }
 };
 /*
 // Solo de testeo
@@ -356,5 +356,30 @@ const guardarImagenesSoloUri = async (
 }
 */
 
-export { agregarFavs, eventCreate, getAllEvents, getEvents, getFavs, getMyEvents, guardarImagenes, quitarFavs, getMyFollowingIds };
+
+const getFollowingEvents = async (
+    tokenAuth: string | null
+): Promise<PostType[]> => {
+    try {
+        const res = await fetch(`${EVENT_PATH}/following`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                ...(tokenAuth && { Authorization: `Bearer ${tokenAuth}` }),
+            },
+        });
+
+        if (!res.ok) {
+            throw new Error(`Error ${res.status}`);
+        }
+
+        const data: PostType[] = await res.json();
+        return data;
+
+    } catch (error) {
+        throw error;
+    }
+};
+
+export { agregarFavs, eventCreate, getAllEvents, getEvents, getFavs, getMyEvents, guardarImagenes, quitarFavs, getMyFollowingIds, getFollowingEvents };
 

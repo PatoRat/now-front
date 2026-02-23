@@ -18,9 +18,10 @@ import {
     RefreshControl,
     StyleSheet,
     View,
+    Text,
     useWindowDimensions
 } from "react-native";
-import { getAllEvents, getEvents, getFavs } from "../api/event.route";
+import { getAllEvents, getEvents, getFavs, getFollowingEvents } from "../api/event.route";
 import { useLikes } from "../components/context-provider/LikeContext";
 import CustomAlert from "../components/CustomAlert";
 import FilterModal from "../components/Filter/Filter";
@@ -40,6 +41,8 @@ export default function Discover() {
 
     const [posts, setPosts] = useState<any[]>([]);
     const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
+
+    const [modoFeed, setModoFeed] = useState<"todos" | "siguiendo">("todos");
 
     // Pop-up
     const [selectedPost, setSelectedPost] = useState<any>(null);
@@ -205,12 +208,54 @@ export default function Discover() {
         }
     };
 
+
+    const cargarEventosToggle = async (filtrosActivos?: Filtros) => {
+        setRefreshing(true);
+        const filtrosAUsar = filtrosActivos ?? filtros;
+        try {
+            const location = filtrosAUsar.lugar ?? userLocation;
+
+            let eventos: any[] = [];
+            if (modoFeed === "todos") {
+                eventos = location
+                    ? await getEvents(token, location, filtrosAUsar.distanciaMin, filtrosAUsar.distanciaMax)
+                    : await getAllEvents(token);
+            } else if (modoFeed === "siguiendo") {
+                eventos = await getFollowingEvents(token);
+            }
+
+            // Filtrado por fechas igual que antes
+            const eventosFiltrados = eventos.filter((evento) => {
+                const fechaEvento = new Date(evento.fechaInicio);
+                if (filtrosAUsar.fechaInicio && fechaEvento < filtrosAUsar.fechaInicio) return false;
+                if (filtrosAUsar.fechaFin && fechaEvento > filtrosAUsar.fechaFin) return false;
+                return true;
+            });
+
+            setearLikeContPorEvento(eventosFiltrados);
+
+            if (location) {
+                ordenarPorCercaniaConArray(eventosFiltrados, location);
+            } else {
+                setPosts(eventosFiltrados);
+            }
+
+        } catch (error) {
+            mensaje.set(`Error al traer eventos: ${error}`);
+            success.set(false);
+            visible.set(true);
+        } finally {
+            setRefreshing(false);
+        }
+    };
+
+
     useFocusEffect(
         useCallback(() => {
             if (userLocation) {
-                cargarEventos();
+                cargarEventosToggle();
             }
-        }, [userLocation, filtros])
+        }, [userLocation, filtros, modoFeed])
     );
 
     // Ubicación
@@ -260,10 +305,36 @@ export default function Discover() {
     }
     return (
         <View style={{ flex: 1 }}>
+            <View style={{ flexDirection: "row", justifyContent: "center", marginVertical: 10 }}>
+                <Pressable
+                    onPress={() => setModoFeed("todos")}
+                    style={{
+                        paddingVertical: 6,
+                        paddingHorizontal: 16,
+                        borderRadius: 20,
+                        backgroundColor: modoFeed === "todos" ? "#52E4F5" : "#E0E0E0",
+                        marginHorizontal: 5,
+                    }}
+                >
+                    <Text style={{ color: modoFeed === "todos" ? "#fff" : "#000", fontWeight: "bold" }}>Todos</Text>
+                </Pressable>
 
+                <Pressable
+                    onPress={() => setModoFeed("siguiendo")}
+                    style={{
+                        paddingVertical: 6,
+                        paddingHorizontal: 16,
+                        borderRadius: 20,
+                        backgroundColor: modoFeed === "siguiendo" ? "#52E4F5" : "#E0E0E0",
+                        marginHorizontal: 5,
+                    }}
+                >
+                    <Text style={{ color: modoFeed === "siguiendo" ? "#fff" : "#000", fontWeight: "bold" }}>Siguiendo</Text>
+                </Pressable>
+            </View>
             <FlatList
                 data={posts}
-                keyExtractor={item => item.id.toString()}
+                keyExtractor={(item) => item?.id?.toString() ?? Math.random().toString()}
                 renderItem={({ item }) => {
 
                     // PARA VER EN EL LOG LO QUE SE RECIBE
