@@ -7,10 +7,9 @@ import MaterialIcons from "@expo/vector-icons/build/MaterialIcons";
 import { Theme } from "@react-navigation/native";
 import * as Location from "expo-location";
 import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
     ActivityIndicator,
-    Animated,
     Dimensions,
     FlatList,
     Image,
@@ -25,7 +24,6 @@ import { useLikes } from "../components/context-provider/LikeContext";
 import CustomAlert from "../components/CustomAlert";
 import FilterModal from "../components/Filter/Filter";
 import FilterContent from "../components/Filter/FilterContent";
-import PostPopUp from "../components/Post/PostPopUp";
 import { useAlertState } from "../hooks/alert-hooks";
 import { useAuth } from "../hooks/auth-hooks";
 
@@ -41,10 +39,6 @@ export default function Discover() {
     const [posts, setPosts] = useState<any[]>([]);
     const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
 
-    // Pop-up
-    const [selectedPost, setSelectedPost] = useState<any>(null);
-    const fadeAnim = useRef(new Animated.Value(0)).current;
-
     // Refresh
     const [refreshing, setRefreshing] = useState(false);
 
@@ -54,21 +48,13 @@ export default function Discover() {
     const nuevoPost = () => router.push({ pathname: "../postear" });
 
     const openPopup = (item: any) => {
-        setSelectedPost(item);
-        Animated.timing(fadeAnim, {
-            toValue: 1,
-            duration: 250,
-            useNativeDriver: true,
-        }).start();
+        router.push({
+            pathname: "../post/[id]",
+            params: { id: String(item.id) },
+        });
     };
 
-    const closePopup = () => {
-        Animated.timing(fadeAnim, {
-            toValue: 0,
-            duration: 200,
-            useNativeDriver: true,
-        }).start(() => setSelectedPost(null));
-    };
+
 
     //FILTER
 
@@ -249,8 +235,6 @@ export default function Discover() {
     return (
         <View style={{ flex: 1 }}>
 
-            <View style={styles.topMask} />
-
             <Pressable
                 style={styles.filtroButton}
                 onPress={() => setFilterVisible(true)}
@@ -261,7 +245,7 @@ export default function Discover() {
                     color="#000"
                 />
             </Pressable>
-            
+
             <FlatList
                 data={posts}
                 keyExtractor={item => item.id.toString()}
@@ -307,7 +291,7 @@ export default function Discover() {
                         />
                     );
                 }}
-                ListHeaderComponent={<View style={{ height: 80 }} />}
+                ListHeaderComponent={<View style={{ height: 70 }} />}
                 contentContainerStyle={styles.listaContenido}
                 showsVerticalScrollIndicator={false}
                 refreshControl={
@@ -342,8 +326,6 @@ export default function Discover() {
                 />
             </Pressable>
 
-
-            <PostPopUp visible={!!selectedPost} post={selectedPost} onClose={closePopup} />
             {/* Alert */}
             <CustomAlert
                 visible={visible.get()}
@@ -360,15 +342,6 @@ const stylesFn = (theme: Theme, width: number) => {
     const scale = Math.min(width / 400, 1.3);
 
     return StyleSheet.create({
-        topMask: {
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 80, // ajuste fino
-            backgroundColor: theme.colors.background,
-            zIndex: 50,
-        },
         filtroButton: {
             position: "absolute",
             top: 20,

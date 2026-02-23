@@ -2,12 +2,14 @@ import { PostType } from "@/scripts/types";
 import { useTheme } from "@/src/hooks/theme-hooks";
 import { FontAwesome } from "@expo/vector-icons";
 import { Theme } from "@react-navigation/native";
+import * as Linking from "expo-linking";
 import React, { useEffect, useRef, useState } from "react";
 import {
 	Animated,
 	Image,
 	Modal,
 	Pressable,
+	Share,
 	StyleSheet,
 	Text,
 	useWindowDimensions,
@@ -152,10 +154,29 @@ const Post = (
 		setCurrentLikes(likesCont);
 	}, [likesCont]);
 
+	const handleShare = async () => {
+		try {
+
+			const url = __DEV__
+				? Linking.createURL(`/post/${id}`)
+				: `now://post/${id}`;
+
+			const mensaje = `Mirá este evento: ${titulo}\n
+			${descripcion}\n\nDescubrí este evento en NOW: ${url}\n
+			(Expo Go no lo abre correctamente)`;
+
+			await Share.share({
+				message: mensaje,
+			});
+		} catch (error) {
+			mensaje.set(`Error al compartir: ${error}`);
+			success.set(false);
+			visible.set(true);
+		}
+	};
+
+
 	// ######################### COMPONENTES ##############################################################
-
-
-
 
 	return (
 		<GestureHandlerRootView style={{ flex: 1 }}>
@@ -240,7 +261,7 @@ const Post = (
 									]}
 								>
 									{/* ######################################################################################################### */}
-									<Pressable style={styles.menuItem}>
+									<Pressable style={styles.menuItem} onPress={handleShare}>
 										<Text style={styles.menuText}>Compartir</Text>
 									</Pressable>
 

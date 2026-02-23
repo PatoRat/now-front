@@ -64,6 +64,15 @@ const StackPersonalizado = () => {
 						animation: "slide_from_bottom",
 					}}
 				/>
+
+				<Stack.Screen
+					name="post/[id]"
+					options={{
+						presentation: "modal",
+						animation: "slide_from_bottom",
+						headerShown: false,
+					}}
+				/>
 			</Stack.Protected>
 
 			<Stack.Protected guard={!isFetching && !isLogged}>
