@@ -1,4 +1,5 @@
 import { PostType } from "@/scripts/types";
+import { crearReporte } from "@/src/api/report.route";
 import { useTheme } from "@/src/hooks/theme-hooks";
 import { FontAwesome } from "@expo/vector-icons";
 import { Theme } from "@react-navigation/native";
@@ -12,6 +13,7 @@ import {
 	Share,
 	StyleSheet,
 	Text,
+	TextInput,
 	useWindowDimensions,
 	View
 } from "react-native";
@@ -49,7 +51,9 @@ const Post = (
 	const { likes, toggleLike, currentLikes } = useLikes();
 	const showHeart = likes[Number(id)] || false;
 
-
+	const [modalVisible, setModalVisible] = useState(false);
+	const [motivoSeleccionado, setMotivoSeleccionado] = useState<string | null>(null);
+	const [descripcionReport, setDescripcionReport] = useState("");
 
 	const { visible, mensaje, success } = useAlertState();
 
@@ -180,6 +184,38 @@ const Post = (
 		onDelete(id);
 	}
 
+	const reportar = async (motivoSeleccionado: string | null, descripcionReport: string) => {
+		if (!motivoSeleccionado || !descripcionReport) {
+			mensaje.set("Por favor completa todos los campos.");
+			success.set(false);
+			visible.set(true);
+			return;
+		}
+
+		try {
+			await crearReporte(
+				token,
+				Number(id),
+				motivoSeleccionado,
+				descripcionReport,
+				new Date(),
+				"Pendiente"
+			);
+
+		} catch (error) {
+			mensaje.set(`Ocurrio un error: ${error}`);
+			success.set(false);
+			visible.set(true);
+		}
+	};
+
+	const MOTIVOS = [
+		"Contenido inapropiado",
+		"Información falsa",
+		"Spam",
+		"Otro"
+	];
+
 
 	// ######################### COMPONENTES ##############################################################
 
@@ -255,32 +291,97 @@ const Post = (
 							onPress={() => setMenuVisible(false)}
 						>
 							{menuPosition && (
-								<View
-									style={[
-										styles.menuContainer,
-										{
-											position: "absolute",
-											top: menuPosition.y + menuPosition.height + 6,
-											left: menuPosition.x - 140 + menuPosition.width,
-										},
-									]}
-								>
-									{/* ######################################################################################################### */}
-									<Pressable style={styles.menuItem} onPress={handleShare}>
-										<Text style={styles.menuText}>Compartir</Text>
-									</Pressable>
+								<View>
+									<View
+										style={[
+											styles.menuContainer,
+											{
+												position: "absolute",
+												top: menuPosition.y + menuPosition.height + 6,
+												left: menuPosition.x - 140 + menuPosition.width,
+											},
+										]}
+									>
+										{/* ######################################################################################################### */}
+										<Pressable style={styles.menuItem} onPress={handleShare}>
+											<Text style={styles.menuText}>Compartir</Text>
+										</Pressable>
 
-									<Pressable style={styles.menuItem}>
-										<Text style={styles.menuText}>Reportar</Text>
-									</Pressable>
+										<Pressable style={styles.menuItem} onPress={() => setModalVisible(true)}>
+											<Text style={styles.menuText}>Reportar</Text>
+										</Pressable>
 
-									<Pressable style={styles.menuItem} onPress={eliminar}>
-										<Text style={[styles.menuText, { color: "red" }]}>
-											Eliminar
-										</Text>
-									</Pressable>
-									{/* ######################################################################################################### */}
+										<Pressable style={styles.menuItem} onPress={eliminar}>
+											<Text style={[styles.menuText, { color: "red" }]}>
+												Eliminar
+											</Text>
+										</Pressable>
+										{/* ######################################################################################################### */}
 
+									</View>
+
+									<Modal
+										visible={modalVisible}
+										transparent
+										animationType="fade"
+										onRequestClose={() => setModalVisible(false)}
+									>
+										<View style={styles.overlay}>
+											<View style={styles.modalContainer}>
+
+												<Text style={styles.title}>Reportar evento</Text>
+
+												{/* Motivos */}
+												{MOTIVOS.map((motivo) => (
+													<Pressable
+														key={motivo}
+														style={[
+															styles.motivoButton,
+															motivoSeleccionado === motivo && styles.motivoSeleccionado
+														]}
+														onPress={() => setMotivoSeleccionado(motivo)}
+													>
+														<Text style={styles.motivoText}>{motivo}</Text>
+													</Pressable>
+												))}
+
+												{/* Descripción */}
+												<TextInput
+													style={styles.input}
+													placeholder="Describa el problema..."
+													multiline
+													value={descripcionReport}
+													onChangeText={setDescripcionReport}
+												/>
+
+												{/* Botones */}
+												<View style={styles.buttonsRow}>
+													<Pressable
+														style={styles.cancelButton}
+														onPress={() => setModalVisible(false)}
+													>
+														<Text>Cancelar</Text>
+													</Pressable>
+
+													<Pressable
+														style={styles.submitButton}
+														disabled={!motivoSeleccionado}
+														onPress={() => {
+															if (!motivoSeleccionado) return;
+
+															reportar(motivoSeleccionado, descripcionReport);
+															setModalVisible(false);
+															setMotivoSeleccionado(null);
+															setDescripcionReport("");
+														}}
+													>
+														<Text style={{ color: "white" }}>Enviar</Text>
+													</Pressable>
+												</View>
+
+											</View>
+										</View>
+									</Modal>
 								</View>
 							)}
 						</Pressable>
@@ -351,6 +452,53 @@ const stylesFn = (theme: Theme, width: number) =>
 			shadowRadius: 6,
 			shadowOffset: { width: 0, height: 4 },
 			elevation: 3,
+		},
+		title: {
+			fontSize: 18,
+			fontWeight: "bold",
+			marginBottom: 12
+		},
+		input: {
+			borderWidth: 1,
+			borderColor: "#ccc",
+			borderRadius: 8,
+			padding: 10,
+			height: 80,
+			marginTop: 10,
+			textAlignVertical: "top"
+		},
+		buttonsRow: {
+			flexDirection: "row",
+			justifyContent: "space-between",
+			marginTop: 15
+		},
+		cancelButton: {
+			padding: 10
+		},
+		submitButton: {
+			backgroundColor: "#007bff",
+			padding: 10,
+			borderRadius: 8
+		},
+		modalContainer: {
+			width: "85%",
+			backgroundColor: "white",
+			borderRadius: 12,
+			padding: 20
+		},
+		motivoButton: {
+			padding: 10,
+			borderRadius: 8,
+			borderWidth: 1,
+			borderColor: "#ccc",
+			marginBottom: 8
+		},
+		motivoSeleccionado: {
+			backgroundColor: "#007bff22",
+			borderColor: "#007bff"
+		},
+		motivoText: {
+			fontSize: 14
 		},
 		textoLike: {
 			marginLeft: 6,
