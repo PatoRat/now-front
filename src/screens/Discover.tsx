@@ -1,5 +1,5 @@
 import { distancia } from "@/scripts/functions";
-import { Filtros } from "@/scripts/types";
+import { Filtros, PostType } from "@/scripts/types";
 import Post from "@/src/components/Post/Post";
 import { URL_BACKEND } from "@/src/config";
 import { useTheme } from "@/src/hooks/theme-hooks";

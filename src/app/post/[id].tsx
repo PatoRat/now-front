@@ -1,4 +1,5 @@
 import { getEventById } from "@/src/api/event.route";
+// import { useLikes } from "@/src/components/context-provider/LikeContext";
 import PostPopUp from "@/src/components/Post/PostPopUp";
 import { useAuth } from "@/src/hooks/auth-hooks";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -9,6 +10,8 @@ export default function PostRoute() {
     const { id } = useLocalSearchParams();
     const router = useRouter();
     const { token } = useAuth();
+
+    // const {setAllLikes, setAllLikesCont} = useLikes();
 
     const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -43,27 +46,27 @@ export default function PostRoute() {
         }).start();
         // console.log(id);
 
-        if (id) fetchPost();
+    if (id) fetchPost();
 
-    }, [id]);
+}, [id]);
 
-    if (loading) {
-        return (
-            <View style={{ flex: 1, justifyContent: "center" }}>
-                <ActivityIndicator size="large" />
-            </View>
-        );
-    }
-
-    if (!post) {
-        return null;
-    }
-
+if (loading) {
     return (
-        <PostPopUp
-            visible={true}
-            post={post}
-            onClose={closePopup}
-        />
+        <View style={{ flex: 1, justifyContent: "center" }}>
+            <ActivityIndicator size="large" />
+        </View>
     );
+}
+
+if (!post) {
+    return null;
+}
+
+return (
+    <PostPopUp
+        visible={true}
+        post={post}
+        onClose={closePopup}
+    />
+);
 }

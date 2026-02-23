@@ -145,6 +145,9 @@ const Post = (
 			duration: 0, // sin animación, solo para sincronizar
 			useNativeDriver: true,
 		}).start();
+        // console.log("Post ListaLikes: ", currentLikes);
+        // console.log("Post eventID: ", Number(id));
+        // console.log("Post Likes: ", currentLikes[Number(id)]);
 	}, [heartAnim, showHeart]);
 
 	const handleShare = async () => {
