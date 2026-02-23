@@ -147,11 +147,6 @@ const Post = (
 		}).start();
 	}, [heartAnim, showHeart]);
 
-
-	useEffect(() => {
-		setCurrentLikes(likesCont);
-	}, [likesCont]);
-
 	const handleShare = async () => {
 		try {
 
