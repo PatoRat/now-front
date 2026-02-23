@@ -16,7 +16,7 @@ import {
     Text,
     View,
 } from "react-native";
-import { useLikes } from "../context-provider/LikeContext";
+// import { useLikes } from "../context-provider/LikeContext";
 
 type PostPopUpProps = {
     visible: boolean,
@@ -31,7 +31,7 @@ type ImagenSource = {
 
 export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
     const fadeAnim = useRef(new Animated.Value(0)).current;
-    const { currentLikes } = useLikes();
+    // const { currentLikes } = useLikes();
     const [currentIndex, setCurrentIndex] = useState(0);
     const width = Dimensions.get("window").width;
     const { theme } = useTheme();
@@ -65,6 +65,9 @@ export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
                 useNativeDriver: true,
             }).start();
         }
+        // console.log("PostPopUp ListaLikes: ", currentLikes);
+        // console.log("PostPopUp eventID: ", Number(post.id));
+        // console.log("PostPopUp Likes: ", currentLikes[Number(post.id)]);
     }, [fadeAnim, visible]);
 
     if (!post) return null;
@@ -280,7 +283,7 @@ export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
 
                 <View style={{ alignItems: "center", marginTop: 6 }}>
                     <Text style={{ fontSize: 14, color: theme.colors.text }}>
-                        ❤️ {currentLikes[Number(post.id)] ?? 0} Favs
+                        ❤️ {post.likesCont ?? 0} Favs
                     </Text>
                 </View>
 
