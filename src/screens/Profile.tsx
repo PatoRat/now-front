@@ -28,20 +28,6 @@ export default function ProfileGamified() {
 	//Referencia para que te lleve a un lugar directo de tu perfil
 	// const postsRef = useRef<View>(null);
 
-	// Array de rutas estáticas
-	const avatarImages = [
-		require("@/assets/images/avatars/Avatar-1.png"),
-		require("@/assets/images/avatars/Avatar-2.png"),
-		require("@/assets/images/avatars/Avatar-3.png"),
-		require("@/assets/images/avatars/Avatar-4.png"),
-		require("@/assets/images/avatars/Avatar-5.png"),
-		require("@/assets/images/avatars/Avatar-6.png"),
-		require("@/assets/images/avatars/Avatar-7.png"),
-		require("@/assets/images/avatars/Avatar-8.png"),
-		require("@/assets/images/avatars/Avatar-9.png"),
-		require("@/assets/images/avatars/Avatar-10.png"),
-	];
-
 	const { theme } = useTheme();
 	const { width, height } = useWindowDimensions();
 	const styles = stylesFn(theme, width, height);

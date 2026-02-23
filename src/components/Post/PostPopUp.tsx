@@ -23,6 +23,7 @@ import { useFollowing } from "@/src/hooks/useFollowing";
 import { useAlertState } from "@/src/hooks/alert-hooks";
 import { avatarMap } from "@/assets/constants/avatarMap";
 import { followUser, unfollowUser } from "@/src/api/user.route";
+import { router } from "expo-router";
 
 type PostPopUpProps = {
     visible: boolean,
@@ -130,21 +131,49 @@ export default function PostPopUp({ visible, post, onClose }: PostPopUpProps) {
             <Animated.View style={[styles.popupContainer, { opacity: fadeAnim }]}>
 
                 <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "flex-start", marginBottom: 10 }}>
-                    <Image
-                        source={avatarMap[post.creador.numeroAvatar ?? 1]}
-                        style={styles.avatarImage}
-                    />
-                    <Text style={{ fontWeight: "bold", fontSize: 16, color: theme.colors.text, marginLeft: 8 }}>
-                        {post.creador.nombre}
-                    </Text>
+
+                    <Pressable
+                        onPress={() => {
+                            onClose();
+                            router.push({
+                                pathname: "/profile/[userId]",
+                                params: { userId: post.creador.id.toString() }
+                            });
+                        }}
+                        style={{ flexDirection: "row", alignItems: "center" }}
+                    >
+                        <Image
+                            source={avatarMap[post.creador.numeroAvatar ?? 1]}
+                            style={styles.avatarImage}
+                        />
+                        <Text
+                            style={{
+                                fontWeight: "bold",
+                                fontSize: 16,
+                                color: theme.colors.text,
+                                marginLeft: 8
+                            }}
+                        >
+                            {post.creador.nombre}
+                        </Text>
+                    </Pressable>
+
                     <Pressable
                         onPress={handleFollowToggle}
                         style={({ pressed }) => [
-                            { paddingHorizontal: 10, paddingVertical: 6, marginLeft: 6, borderRadius: 6, backgroundColor: isFollowing ? "#ccc" : "#007AFF" },
+                            {
+                                paddingHorizontal: 10,
+                                paddingVertical: 6,
+                                marginLeft: 6,
+                                borderRadius: 6,
+                                backgroundColor: isFollowing ? "#ccc" : "#007AFF"
+                            },
                             pressed && { opacity: 0.7 }
                         ]}
                     >
-                        <Text style={{ color: isFollowing ? "#333" : "#fff", fontSize: 14 }}>{isFollowing ? "Siguiendo" : "Seguir"}</Text>
+                        <Text style={{ color: isFollowing ? "#333" : "#fff", fontSize: 14 }}>
+                            {isFollowing ? "Siguiendo" : "Seguir"}
+                        </Text>
                     </Pressable>
                 </View>
 
