@@ -38,7 +38,6 @@ const getEvents = async (
     }
 };
 
-
 const agregarFavs = async (tokenAuth: string | null, id: string) => {
 
     try {
@@ -156,8 +155,7 @@ const getAllEvents = async (
     tokenAuth: string | null
 ): Promise<PostType[]> => {
     try {
-
-        // console.log("Entraal getALlEvents del front???");
+        // console.log("Entra al getAllEvents del front???");
         const res = await fetch(`${EVENT_PATH}/all`, {
             method: 'GET',
             headers: {
@@ -173,6 +171,27 @@ const getAllEvents = async (
     }
 };
 
+const getEventById = async (
+    tokenAuth: string | null,
+    id: string
+): Promise<PostType> => {
+    try {
+
+        // console.log("Entra al getEventById del front???");
+        const res = await fetch(`${EVENT_PATH}/buscar-evento/${id}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${tokenAuth}`,
+            },
+        });
+        if (!res.ok) throw new Error(`Error ${res.status}`);
+        const evento = await res.json();
+        return evento;
+    } catch (error) {
+        // console.error("Error fetching event:", error);
+        throw error;
+    }
+};
 
 
 const getMyEvents = async (
@@ -313,5 +332,13 @@ const guardarImagenesSoloUri = async (
 }
 */
 
-export { agregarFavs, eventCreate, getAllEvents, getEvents, getFavs, getMyEvents, guardarImagenes, quitarFavs };
+export {
+    agregarFavs,
+    eventCreate,
+    getAllEvents, getEventById, getEvents,
+    getFavs,
+    getMyEvents,
+    guardarImagenes,
+    quitarFavs
+};
 

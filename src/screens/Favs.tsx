@@ -1,13 +1,12 @@
 import { useTheme } from "@/src/hooks/theme-hooks";
 import { Theme } from "@react-navigation/native";
-import { useFocusEffect } from "expo-router";
-import React, { useCallback, useContext, useRef, useState } from "react";
-import { Animated, FlatList, StyleSheet, useWindowDimensions, View } from "react-native";
+import { useFocusEffect, useRouter } from "expo-router";
+import React, { useCallback, useContext, useState } from "react";
+import { FlatList, StyleSheet, useWindowDimensions, View } from "react-native";
 import { getFavs } from "../api/event.route";
 import { AuthContext } from "../components/context-provider/AuthContext";
 import CustomAlert from "../components/CustomAlert";
 import Post from "../components/Post/Post";
-import PostPopUp from "../components/Post/PostPopUp";
 import { URL_BACKEND } from "../config";
 import { useAlertState } from "../hooks/alert-hooks";
 
@@ -15,20 +14,13 @@ export default function Favs() {
     const { theme } = useTheme();
     const { width } = useWindowDimensions();
     const styles = stylesFn(theme, width);
+    const router = useRouter();
 
     const { token } = useContext(AuthContext);
 
     const [posts, setPosts] = useState<any[]>([]);
-    // const [selectedPost, setSelectedPost] = useState<null | any>(null);
-    // const [loading, setLoading] = useState(false);
-    // const [error, setError] = useState<string | null>(null);
-    // const [refreshing, setRefreshing] = useState(false);
 
     const { visible, mensaje, success } = useAlertState();
-
-    // Pop-up
-    const [selectedPost, setSelectedPost] = useState<any>(null);
-    const fadeAnim = useRef(new Animated.Value(0)).current;
 
     const cargarFavs = async () => {
         // setRefreshing(true); // no se usa
@@ -57,20 +49,10 @@ export default function Favs() {
     );
 
     const openPopup = (item: any) => {
-        setSelectedPost(item); 
-        Animated.timing(fadeAnim, {
-            toValue: 1,
-            duration: 250,
-            useNativeDriver: true,
-        }).start();
-    };
-
-    const closePopup = () => {
-        Animated.timing(fadeAnim, {
-            toValue: 0,
-            duration: 200,
-            useNativeDriver: true,
-        }).start(() => setSelectedPost(null));
+        router.push({
+            pathname: "../post/[id]",
+            params: { id: String(item.id) },
+        });
     };
 
     return (
@@ -123,9 +105,7 @@ export default function Favs() {
                 showsVerticalScrollIndicator={false}
 
             />
-            
-            <PostPopUp visible={!!selectedPost} post={selectedPost} onClose={closePopup} />
-            
+
             {/* Alert */}
             <CustomAlert
                 visible={visible.get()}
