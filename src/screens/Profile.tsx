@@ -6,16 +6,15 @@ import { useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import {
 	FlatList,
-	Image, Modal,
+	Image,
+	LayoutAnimation,
+	Modal,
 	Pressable,
+	ScrollView,
 	StyleSheet,
 	Text,
 	View,
-	useWindowDimensions,
-	LayoutAnimation,
-	Platform,
-	UIManager,
-	ScrollView
+	useWindowDimensions
 } from "react-native";
 import { getMyEvents } from "../api/event.route";
 import { cambiarAvatar } from "../api/user.route";
@@ -116,6 +115,10 @@ export default function ProfileGamified() {
 		}
 	};
 
+	const onDelete = (id: string) => {
+        setPosts(prev => prev.filter(event => Number(event.id) !== Number(id)));
+    }
+
 	/* Ver draft/Profile Pedazo 1 */
 
 	useFocusEffect(
@@ -179,6 +182,7 @@ export default function ProfileGamified() {
 				direccion={item.ubicacion?.direccion ?? ""}
 				creador={item.creador ?? "Anónimo"}
 				onSingleTap={() => openPopup(item)}
+				onDelete={onDelete}
 			/>
 		);
 	};

@@ -304,6 +304,37 @@ const guardarImagenes = async (
     console.log("Imagenes guardadas: ", data);
 }
 
+const eliminarEvento = async (
+    eventId: string,
+    tokenAuth: string | null
+) => {
+    try {
+        
+        // console.log("\n\n\n###########PRINCIPIO ELIMINAR################\n\n\n");
+        const res = await fetch(`${EVENT_PATH}/delete-event`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${tokenAuth}`,
+            },
+            body: JSON.stringify({
+                eventId: Number(eventId),
+            })
+        });
+
+        if (!res.ok) {
+            // console.error("Error al borrar evento:", res.status);
+            throw new Error(`Error ${res.status}: `);
+        }
+
+        console.log("Evento eliminado");
+
+    } catch (error) {
+        // console.error("Error al borrar evento:", error);
+        throw error;
+    }
+}
+
 /*
 // Solo de testeo
 const guardarImagenesSoloUri = async (
@@ -333,8 +364,7 @@ const guardarImagenesSoloUri = async (
 */
 
 export {
-    agregarFavs,
-    eventCreate,
+    agregarFavs, eliminarEvento, eventCreate,
     getAllEvents, getEventById, getEvents,
     getFavs,
     getMyEvents,

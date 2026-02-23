@@ -55,6 +55,10 @@ export default function Favs() {
         });
     };
 
+    const onDelete = (id: string) => {
+        setPosts(prev => prev.filter(event => Number(event.id) !== Number(id)));
+    }
+
     return (
         <View style={{ flex: 1 }}>
             <FlatList
@@ -98,6 +102,7 @@ export default function Favs() {
                             direccion={item.ubicacion?.direccion ?? ""}
                             creador={item.creador ?? "Anónimo"}
                             onSingleTap={() => openPopup(item)}
+                            onDelete={onDelete}
                         />
                     );
                 }}

@@ -16,15 +16,18 @@ import {
 	View
 } from "react-native";
 import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
-import { agregarFavs, quitarFavs } from "../../api/event.route";
+import { agregarFavs, eliminarEvento, quitarFavs } from "../../api/event.route";
 import { useAlertState } from "../../hooks/alert-hooks";
 import { useAuth } from "../../hooks/auth-hooks";
 import { useLikes } from "../context-provider/LikeContext";
 import CustomAlert from "../CustomAlert";
 
 const Post = (
-	{ id, titulo, descripcion, imagenes, fechaInicio, fechaFin, direccion, onSingleTap }:
-		Omit<PostType, "likesCont"> & { direccion?: string, onSingleTap?: () => void}
+	{ id, titulo, descripcion, imagenes, fechaInicio, fechaFin, direccion, onSingleTap, onDelete }:
+		Omit<PostType, "likesCont"> & {
+			direccion?: string,
+			onSingleTap?: () => void, onDelete: (id: string) => void
+		}
 ) => {
 
 	const { theme } = useTheme();
@@ -45,7 +48,7 @@ const Post = (
 
 	const { likes, toggleLike, currentLikes } = useLikes();
 	const showHeart = likes[Number(id)] || false;
-	
+
 
 
 	const { visible, mensaje, success } = useAlertState();
@@ -145,9 +148,9 @@ const Post = (
 			duration: 0, // sin animación, solo para sincronizar
 			useNativeDriver: true,
 		}).start();
-        // console.log("Post ListaLikes: ", currentLikes);
-        // console.log("Post eventID: ", Number(id));
-        // console.log("Post Likes: ", currentLikes[Number(id)]);
+		// console.log("Post ListaLikes: ", currentLikes);
+		// console.log("Post eventID: ", Number(id));
+		// console.log("Post Likes: ", currentLikes[Number(id)]);
 	}, [heartAnim, showHeart]);
 
 	const handleShare = async () => {
@@ -170,6 +173,12 @@ const Post = (
 			visible.set(true);
 		}
 	};
+
+	const eliminar = async () => {
+		// console.log("\n\n\n###############PRINCIPIO BUTTON###############\n\n\n");
+		await eliminarEvento(id, token);
+		onDelete(id);
+	}
 
 
 	// ######################### COMPONENTES ##############################################################
@@ -265,7 +274,7 @@ const Post = (
 										<Text style={styles.menuText}>Reportar</Text>
 									</Pressable>
 
-									<Pressable style={styles.menuItem}>
+									<Pressable style={styles.menuItem} onPress={eliminar}>
 										<Text style={[styles.menuText, { color: "red" }]}>
 											Eliminar
 										</Text>
